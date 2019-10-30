@@ -1,0 +1,18 @@
+import { FieldResolveInput, FieldResolveOutput } from "@aexol/gaffer-js";
+import { DB } from "../db/mongo";
+
+export const handler = async (
+  input: FieldResolveInput,
+): Promise<FieldResolveOutput> => {
+  try {
+    const db = await DB();
+    return {
+      // Return your resolver data here
+      response: undefined,
+    };
+  } catch (error) {
+    return {
+      error,
+    };
+  }
+};

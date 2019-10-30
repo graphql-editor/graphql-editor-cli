@@ -1,0 +1,25 @@
+import { FieldResolveInput, FieldResolveOutput } from "@aexol/gaffer-js";
+import { {{collection}} } from "../db/collections";
+import { DB } from "../db/mongo";
+import { Utils } from "../Utils";
+import { {{type}}, Query, ResolverType } from "../graphql-zeus";
+
+export const handler = async (
+  input: FieldResolveInput,
+): Promise<FieldResolveOutput> => {
+  try {
+    const args = input.arguments as ResolverType<Query["{{listFilter}}"]>;
+    if (args) {
+      // DO Something
+    }
+    const db = await DB();
+    const col = await db.collection({{collection}});
+    return {
+      response: await Utils.CursorToGraphQLArray<{{type}}>(
+        await col.find({}),
+      ),
+    };
+  } catch (error) {
+    return { error };
+  }
+};

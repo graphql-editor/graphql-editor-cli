@@ -1,0 +1,23 @@
+import { FieldResolveInput, FieldResolveOutput } from "@aexol/gaffer-js";
+import { GraphQLSchema } from "graphql";
+import { {{collection}} } from "../db/collections";
+import { DB } from "../db/mongo";
+import { {{type}}, Query, ResolverType } from "../graphql-zeus";
+import { Utils } from "../Utils";
+
+export const handler = async (
+  input: FieldResolveInput,
+): Promise<FieldResolveOutput> => {
+  try {
+    const { {{pk}} } = input.arguments;
+    const db = await DB();
+    const col = await db.collection({{collection}});
+    const response = await col.findOne({ {{pk}} });
+    if (!response) {
+      throw new Error(`{{type}} with {{pk}} '${{{pk}}}' doesnt exist`);
+    }
+    return { response: Utils.mongoToGraphQL<{{type}}>(response) };
+  } catch (error) {
+    return { error };
+  }
+};

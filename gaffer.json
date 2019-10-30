@@ -1,0 +1,59 @@
+{
+    "resolvers": {
+        "Query.expenses": {
+            "resolve": {
+                "name": "lib/query/expenses"
+            }
+        },
+        "Mutation.createExpense": {
+            "resolve": {
+                "name": "lib/mutation/createExpense"
+            }
+        },
+        "Mutation.upsertExpense": {
+            "resolve": {
+                "name": "lib/mutation/upsertExpense"
+            }
+        },
+        "Mutation.removeExpense": {
+            "resolve": {
+                "name": "lib/mutation/removeExpense"
+            }
+        },
+        "Query.sources": {
+            "resolve": {
+                "name": "lib/query/sources"
+            }
+        },
+        "Mutation.addSource": {
+            "resolve": {
+                "name": "lib/mutation/addSource"
+            }
+        },
+        "Mutation.removeSource": {
+            "resolve": {
+                "name": "lib/mutation/removeSource"
+            }
+        },
+        "Query.incomes": {
+            "resolve": {
+                "name": "lib/query/incomes"
+            }
+        },
+        "Mutation.createIncome": {
+            "resolve": {
+                "name": "lib/mutation/createIncome"
+            }
+        },
+        "Mutation.upsertIncome": {
+            "resolve": {
+                "name": "lib/mutation/upsertIncome"
+            }
+        },
+        "Mutation.removeIncome": {
+            "resolve": {
+                "name": "lib/mutation/removeIncome"
+            }
+        }
+    }
+}
