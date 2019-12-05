@@ -1,20 +1,26 @@
-# GraphQL Mongo Backend template
+![](centaur.jpg)
 
-This template is worth 2020
+> Once you head down the centaur's path
+> forever will it dominate your destiny.
 
-## Quick Start
+# GraphQL Centaur
 
-To start with this template you will need GraphQL Schema.
+Translate GraphQL to Anything and make it your one and only source of truth
 
-1. Run
-   ```sh
-   npm run install
-   ```
-2. Fetch your schemas
-   ```sh
-   npm run schema
-   ```
-3. Create your backend
-   ```sh
-   npm run create
-   ```
+CLI tool to generate MongoDB [Stucco](https://github.com/graphql-editor/stucco-js) Database Resolvers in TypeScript from GraphQL Schema. Compatible with [GraphQL Editor](https://graphqleditor.com). So the main goal is to provide interactive experience creating GraphQL as a service. 
+
+Right now in its early beginnings.
+
+## Installation
+
+```sh
+npm i -g graphql-centaur
+```
+
+## Usage
+
+```sh
+centaur
+```
+
+

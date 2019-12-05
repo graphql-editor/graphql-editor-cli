@@ -1,14 +1,15 @@
+export const utils = `
 import { ObjectID } from "bson";
 import { Cursor, Db } from "mongodb";
 
 export class Utils {
   public static mongoToGraphQL = <T = any>(object: any): T => {
-    const { _id, ...props } = object;
-    if (!_id) {
+    const { _id, id, ...props } = object;
+    if (!_id && !id) {
       return object;
     }
     return {
-      id: (_id as ObjectID).toHexString(),
+      id: ((id || _id) as ObjectID).toHexString(),
       ...props,
     };
   }
@@ -73,3 +74,4 @@ export type AsModel<T> = {
     ? never
     : IsScalar<T, T, string>;
 };
+`;

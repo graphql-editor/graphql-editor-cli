@@ -1,32 +1,36 @@
 {
-  "name": "graphql-backend-template",
-  "version": "1.0.0",
-  "description": "GraphQL Editor template for backend using very fast golang server under the hood",
+  "name": "graphql-centaur",
+  "version": "0.0.1",
+  "description": "GraphQL -> anything. Use GraphQL as your source of truth.",
   "main": "lib/index.js",
   "author": "Artur Czemiel",
-  "license": "ISC",
+  "license": "MIT",
+  "bin": {
+    "graphql-centaur": "lib/index.js",
+    "centaur": "lib/index.js"
+  },
   "scripts": {
-    "start": "gaffer",
     "build": "tsc",
     "watch": "tsc --watch",
-    "restart-database": "npm run rmdatabase && npm run database",
-    "database": "docker run  -d --name mongo -p 27017:27017 mongo",
-    "rmdatabase": "docker stop mongo && docker rm mongo",
-    "schema": "zeus https://YOUR_GRAPHQL_ENDPOINT ./ -n -g ./ && npx zeus https://YOUR_GRAPHQL_ENDPOINT --ts ./src",
-    "create": "plop"
+    "editor": "zeus https://project-api.graphqleditor.com/graphql ./src -n --ts"
   },
   "devDependencies": {
     "@types/bson": "^4.0.0",
     "@types/graphql": "^14.2.3",
-    "@types/mongodb": "^3.2.1",
+    "@types/inquirer": "^6.5.0",
     "@types/node": "^12.6.9",
-    "graphql-zeus": "^1.6.6",
-    "plop": "^2.5.2",
+    "@typescript-eslint/eslint-plugin": "^2.9.0",
+    "@typescript-eslint/parser": "^2.9.0",
+    "eslint": "^6.7.1",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "graphql-zeus": "^2.4.4",
+    "prettier": "^1.19.1",
     "ts-node": "^8.3.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@aexol/gaffer-js": "^0.2.2",
-    "mongodb": "^3.3.0-beta2"
+    "inquirer": "^7.0.0",
+    "node-fetch": "^2.6.0"
   }
 }

@@ -1,11 +1,9 @@
-import { MongoClient } from "mongodb";
+export const mongo = ({ name }: { name: string }) => `import { MongoClient } from 'mongodb';
 
-let mongoConnection: MongoClient | undefined;
+let mongoConnection: MongoClient | undefined = undefined;
 function mongo(): Promise<MongoClient> {
   if (!mongoConnection) {
-    const mongoUrl = process.env.MONGO_URL
-      ? process.env.MONGO_URL
-      : "mongodb://localhost:27017/";
+    let mongoUrl = process.env.MONGO_URL ? process.env.MONGO_URL : 'mongodb://localhost:27017/';
     return new Promise((resolve, reject) =>
       MongoClient.connect(mongoUrl, (err, db) => {
         if (err) {
@@ -21,5 +19,6 @@ function mongo(): Promise<MongoClient> {
 }
 
 export function DB() {
-  return mongo().then((db) => db.db("database"));
+  return mongo().then((db) => db.db('${name}'));
 }
+`;
