@@ -94,9 +94,14 @@ export const CRUD = async (resolverParentName: string, resolverField: ParserFiel
     });
   }
   if (resolverType === 'upsert') {
+    const input = resolverField.args?.find((a) => a.data?.type === ValueDefinition.InputValueDefinition);
+    if (!input) {
+      throw new Error('If you want to create oneinput create please do connect input as the resolver argument');
+    }
     HandleTemplates.action({
-      content: templates.upsert({
+      content: templates.oneInputUpsert({
         collection,
+        input: input.name,
         pk: (
           await inquirer.prompt([
             {

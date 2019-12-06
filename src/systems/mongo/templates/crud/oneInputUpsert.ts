@@ -1,13 +1,15 @@
-export const upsert = ({
+export const oneInputUpsert = ({
   collection,
   pk,
   resolverName,
   resolverParent,
+  input,
 }: {
   collection: string;
   pk: string;
   resolverName: string;
   resolverParent: string;
+  input: string;
 }) => `
 import { IFieldResolveInput, IFieldResolveOutput } from "stucco-js";
 import { ${collection} } from "../db/collections";
@@ -24,11 +26,11 @@ export const handler = async (
     const col = await db.collection(${collection});
     const o = await col.findOneAndUpdate(
       ${pk === 'id' ? `{ _id: new ObjectID(${pk})  }` : `{ ${pk} }`},
-      { $set: args },
-      { upsert: true },
+      { $set: args.${input} },
+      { upsert: true, returnOriginal: false },
     );
     return {
-      response: Utils.mongoToGraphQL(o),
+      response: Utils.mongoToGraphQL(o.value),
     };
   } catch (error) {
     return { error };
