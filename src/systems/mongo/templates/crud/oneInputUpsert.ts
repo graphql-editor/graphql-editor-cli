@@ -11,16 +11,15 @@ export const oneInputUpsert = ({
   resolverParent: string;
   input: string;
 }) => `
-import { IFieldResolveInput, IFieldResolveOutput } from "stucco-js";
+import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
 import { ${collection} } from "../db/collections";
 import { DB } from "../db/mongo";
 import { ResolverType, ValueTypes } from "../graphql-zeus";
 import { Utils } from "../Utils";${pk === 'id' ? `\nimport { ObjectID } from "bson";` : ''}
 
 export const handler = async (
-  input: IFieldResolveInput,
-): Promise<IFieldResolveOutput> => {
-  try {
+  input: FieldResolveInput,
+): Promise<FieldResolveOutput> => {
     const { ${pk},...args } = input.arguments as ResolverType<ValueTypes["${resolverParent}"]["${resolverName}"]>
     const db = await DB();
     const col = await db.collection(${collection});
@@ -29,11 +28,6 @@ export const handler = async (
       { $set: args.${input} },
       { upsert: true, returnOriginal: false },
     );
-    return {
-      response: Utils.mongoToGraphQL(o.value),
-    };
-  } catch (error) {
-    return { error };
-  }
+    return Utils.mongoToGraphQL(o.value);
 };
 `;

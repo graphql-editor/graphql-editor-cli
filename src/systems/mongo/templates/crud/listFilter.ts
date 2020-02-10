@@ -9,7 +9,7 @@ export const listFilter = ({
   resolverParent: string;
   field: ParserField;
 }) => `
-import { IFieldResolveInput, IFieldResolveOutput } from "stucco-js";
+import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
 import { ${collection} } from "../db/collections";
 import { DB } from "../db/mongo";
 import { Utils } from "../Utils";
@@ -18,9 +18,8 @@ import { ${field.type.name}${
 }} from "../graphql-zeus";
 
 export const handler = async (
-  input: IFieldResolveInput,
-): Promise<IFieldResolveOutput> => {
-  try {
+  input: FieldResolveInput,
+): Promise<FieldResolveOutput> => {
     ${
       field.args && field.args.length > 0
         ? `const args = input.arguments as ResolverType<ValueTypes["${resolverParent}"]["${field.name}"]>;
@@ -31,13 +30,8 @@ export const handler = async (
     }
     const db = await DB();
     const col = await db.collection(${collection});
-    return {
-      response: await Utils.CursorToGraphQLArray<${field.type.name}>(
+    return Utils.CursorToGraphQLArray<${field.type.name}>(
         await col.find({}),
-      ),
-    };
-  } catch (error) {
-    return { error };
-  }
+      );
 };
 `;

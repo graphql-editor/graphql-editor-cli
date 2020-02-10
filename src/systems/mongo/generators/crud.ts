@@ -1,12 +1,13 @@
-import fs from 'fs';
-import { ParserField, ValueDefinition, ScalarTypes } from 'graphql-zeus';
+import { ValueDefinition, ScalarTypes } from 'graphql-zeus';
 import inquirer from 'inquirer';
 import { HandleTemplates } from '../../../handleTemplates';
 import * as templates from '../templates';
-import path from 'path';
-import { Config } from '../../../Configuration';
+import { functionParams } from './models';
+import { addStucco } from './stucco';
+import { getPaths } from './paths';
+import { getCollection } from './collection';
 
-export const CRUD = async (resolverParentName: string, resolverField: ParserField, rootTypes: ParserField[]) => {
+export const CRUD = async ({ resolverParentName, resolverField, rootTypes }: functionParams) => {
   const { resolverType } = await inquirer.prompt([
     {
       type: 'list',
@@ -15,25 +16,8 @@ export const CRUD = async (resolverParentName: string, resolverField: ParserFiel
       choices: ['justAResolver', 'oneInputCreate', 'upsert', 'listFilter', 'remove', 'getByParam'],
     },
   ]);
-  const basePath = process.cwd();
-  const srcDir = path.join(basePath, Config.get('srcdir'));
-  const collectionsPath = path.join(srcDir, 'db', 'collections.ts');
-  const resolverPath = path.join(srcDir, resolverParentName, `${resolverField.name}.ts`);
-  const resolverLibPath = path.join(Config.get('libdir'), resolverParentName, `${resolverField.name}`);
-  const gafferResolverName = `${resolverParentName}.${resolverField.name}`;
-  const returnTypeScalar = Object.keys(ScalarTypes).includes(resolverField.type.name);
-  const collection = returnTypeScalar
-    ? `${
-        (
-          await inquirer.prompt({
-            type: 'list',
-            message: 'specify collection Type',
-            choices: rootTypes.map((rt) => rt.name),
-            name: 'collection',
-          })
-        ).collection
-      }Collection`
-    : `${resolverField.type.name}Collection`;
+  const { resolverPath, collectionsPath, basePath, resolverLibPath } = getPaths(resolverParentName, resolverField);
+  const collection = await getCollection(collectionsPath, resolverField, rootTypes);
   if (resolverType === 'justAResolver') {
     HandleTemplates.action({
       content: templates.resolver({
@@ -139,25 +123,6 @@ export const CRUD = async (resolverParentName: string, resolverField: ParserFiel
       type: 'add',
     });
   }
-  HandleTemplates.action({
-    type: 'append',
-    path: collectionsPath,
-    content: `\nexport const ${collection} = "${collection}"`,
-  });
-  const gafferPath = path.join(basePath, 'stucco.json');
-  const gafferFile = fs.existsSync(gafferPath) ? JSON.parse(fs.readFileSync(gafferPath).toString()) : { resolvers: {} };
-  const gafferFileContent = {
-    ...gafferFile,
-    resolvers: {
-      ...gafferFile.resolvers,
-    },
-  };
-
-  gafferFileContent.resolvers[gafferResolverName] = {
-    resolve: {
-      name: resolverLibPath,
-    },
-  };
-  fs.writeFileSync(gafferPath, JSON.stringify(gafferFileContent, null, 4));
+  addStucco({ basePath, stuccoResolverName: `${resolverParentName}.${resolverField.name}`, resolverLibPath });
   return;
 };

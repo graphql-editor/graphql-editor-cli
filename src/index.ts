@@ -206,9 +206,16 @@ welcome()
     }
     const schemaTree = readZeus(parseSchema);
     const { resolver, parentResolver } = await centaur.generators.TypeResolver(schemaTree);
-    mongo.generators.CRUD(
-      parentResolver,
-      resolver,
-      schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition),
-    );
+    const { generatorType }: { generatorType: keyof typeof mongo.generators } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'generatorType',
+        choices: Object.keys(mongo.generators),
+      },
+    ]);
+    mongo.generators[generatorType]({
+      resolverField: resolver,
+      resolverParentName: parentResolver,
+      rootTypes: schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition),
+    });
   });
