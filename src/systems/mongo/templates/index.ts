@@ -1,5 +1,5 @@
 export * from './connection';
-export * from './resolver';
+export * from './common';
 export * from './utils';
 export * from './crud';
 export * from './source';
