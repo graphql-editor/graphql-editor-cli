@@ -12,7 +12,7 @@ export const common = async ({ resolverParentName, resolverField, rootTypes }: f
       type: 'list',
       name: 'resolverType',
       message: `Specify resolver type`,
-      choices: ['resolver', 'pipe'],
+      choices: ['resolver', 'pipe', 'rest'],
     },
   ]);
   if (resolverType === 'resolver') {
@@ -28,6 +28,26 @@ export const common = async ({ resolverParentName, resolverField, rootTypes }: f
   if (resolverType === 'pipe') {
     HandleTemplates.action({
       content: templates.pipe(),
+      path: resolverPath,
+      type: 'add',
+    });
+  }
+  if (resolverType === 'rest') {
+    HandleTemplates.action({
+      content: templates.rest({
+        field: resolverField,
+        resolverParent: resolverParentName,
+        url: (
+          await inquirer.prompt([
+            {
+              name: 'url',
+              message: 'Specify rest endpoint url',
+              type: 'input',
+              default: 'id',
+            },
+          ])
+        ).url,
+      }),
       path: resolverPath,
       type: 'add',
     });

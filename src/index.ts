@@ -2,12 +2,13 @@
 
 import fs from 'fs';
 import path from 'path';
-import { Parser, Utils, TreeToTS, TreeToGraphQL, ParserTree, TypeDefinition } from 'graphql-zeus';
+import { Parser, Utils, TreeToTS, TreeToGraphQL, TypeDefinition } from 'graphql-zeus';
 import inquirer, { QuestionCollection } from 'inquirer';
 import { Editor } from './Editor';
 import * as systems from './systems';
 import * as centaur from './centaur';
 import { Config, SchemaSourceOptions } from './Configuration';
+import { Auth } from './Auth/Auth';
 
 const { mongo } = systems;
 
@@ -202,6 +203,11 @@ welcome()
       parseSchema = await loadFromURL();
     }
     if (source === SchemaSourceOptions.editor) {
+      try {
+        await Auth.login();
+      } catch (error) {
+        throw new Error('Option only for logged in users');
+      }
       parseSchema = await loadFromEditor();
     }
     const schemaTree = readZeus(parseSchema);

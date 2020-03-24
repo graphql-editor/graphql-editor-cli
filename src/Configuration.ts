@@ -10,6 +10,8 @@ interface Options {
   sourceURL?: string;
   sourceEditorNamespace?: string;
   sourceEditorProject?: string;
+  token?: string;
+  tokenLastSet?: string;
 }
 
 export enum SchemaSourceOptions {

@@ -1,10 +1,24 @@
-import { Gql } from './graphql-zeus';
+import { Chain } from './graphql-zeus';
+import { Config } from './Configuration';
+
+const jolt = () => {
+  const token = Config.get('token');
+  const headers: Record<string, string> = token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
+  return Chain('https://project-api.graphqleditor.com/graphql', {
+    headers,
+  });
+};
+
 /**
  * Provides connection to GraphQL Editor
  */
 export class Editor {
   public static nameSpaceExists = async (accountName: string) => {
-    const Query = await Gql.Query({
+    const Query = await jolt().query({
       getNamespace: [
         { slug: accountName },
         {
@@ -15,7 +29,7 @@ export class Editor {
     return !!Query.getNamespace;
   };
   public static fetchProjects = async (accountName: string) => {
-    const Query = await Gql.Query({
+    const Query = await jolt().query({
       getNamespace: [
         { slug: accountName },
         {
