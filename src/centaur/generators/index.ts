@@ -1,19 +1,28 @@
 import { ParserField, ParserTree, TypeDefinition, TypeSystemDefinition } from 'graphql-zeus';
 import inquirer, { DistinctQuestion } from 'inquirer';
+// @ts-ignore
+import AutocompletePrompt from 'inquirer-autocomplete-prompt';
 export interface TypeResolverReturns {
   resolver: ParserField;
   parentResolver: string;
 }
+inquirer.registerPrompt('autocomplete', AutocompletePrompt);
 export const TypeResolver = (tree: ParserTree): Promise<TypeResolverReturns> =>
   new Promise((resolve, reject) => {
     const rootTypes = tree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
     const selectSubType = (types: ParserField[]): DistinctQuestion[] => [
       {
-        type: 'list',
+        type: 'autocomplete',
         name: 'type',
-        choices: types.map((t) => t.name),
+        source: async (answersSoFar: string[], input: string) => {
+          const typeNames = types.map((t) => t.name);
+          if (!input) {
+            return typeNames;
+          }
+          return typeNames.filter((t) => t.toLowerCase().indexOf(input) !== -1);
+        },
         message: 'Specify type',
-      },
+      } as any,
     ];
     inquirer.prompt(selectSubType(rootTypes)).then((answers) => {
       const selectedField = rootTypes.find((n) => n.name === answers.type)!;

@@ -219,6 +219,8 @@ welcome()
         choices: Object.keys(mongo.generators),
       },
     ]);
+    const typeNodes = schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
+    typeNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
     mongo.generators[generatorType]({
       resolverField: resolver,
       resolverParentName: parentResolver,
