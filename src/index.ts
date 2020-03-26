@@ -9,6 +9,7 @@ import * as systems from './systems';
 import * as centaur from './centaur';
 import { Config, SchemaSourceOptions } from './Configuration';
 import { Auth } from './Auth/Auth';
+import { AutocompleteInput, AutocompleteInputPrompt } from './AutoCompleteInput';
 
 const { mongo } = systems;
 
@@ -59,12 +60,15 @@ const configure = (): Promise<void> =>
       });
     }
     if (!srcdir) {
-      prompts.push({
-        type: 'list',
-        choices: fs.readdirSync(cwd).filter((f) => fs.lstatSync(path.join(cwd, f)).isDirectory()),
-        name: 'srcdir',
-        message: 'Choose your src directory',
-      });
+      prompts.push(
+        AutocompleteInput(
+          fs.readdirSync(cwd).filter((f) => fs.lstatSync(path.join(cwd, f)).isDirectory()),
+          {
+            name: 'srcdir',
+            message: 'Choose your src directory',
+          },
+        ),
+      );
     }
     if (!libdir) {
       prompts.push({
@@ -75,12 +79,12 @@ const configure = (): Promise<void> =>
       });
     }
     if (!source) {
-      prompts.push({
-        type: 'list',
-        choices: Object.keys(SourceOptions),
-        name: 'source',
-        message: 'Choose your schema source',
-      });
+      prompts.push(
+        AutocompleteInput(Object.keys(SourceOptions), {
+          name: 'source',
+          message: 'Choose your schema source',
+        }),
+      );
     }
     if (prompts.length > 0) {
       inquirer.prompt(prompts).then((answers) => {
@@ -175,13 +179,13 @@ const loadFromEditor = async () => {
   }
   if (!sourceEditorProject) {
     const projects = await Editor.fetchProjects(Config.get('sourceEditorNamespace'));
-    const { project } = await inquirer.prompt([
+    const project = await AutocompleteInputPrompt(
+      projects.map((p) => p.name),
       {
-        type: 'list',
         name: 'project',
-        choices: projects.map((p) => p.name),
+        message: 'Choose a project',
       },
-    ]);
+    );
     const projectURI = projects.find((p) => p.name === project)!.endpoint!.uri!;
     Config.set({
       sourceEditorProject: projectURI,
@@ -212,13 +216,10 @@ welcome()
     }
     const schemaTree = readZeus(parseSchema);
     const { resolver, parentResolver } = await centaur.generators.TypeResolver(schemaTree);
-    const { generatorType }: { generatorType: keyof typeof mongo.generators } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'generatorType',
-        choices: Object.keys(mongo.generators),
-      },
-    ]);
+    const generatorType = (await AutocompleteInputPrompt(Object.keys(mongo.generators), {
+      name: 'generatorType',
+      message: 'Choose generator type',
+    })) as keyof typeof mongo.generators;
     const typeNodes = schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
     typeNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
     mongo.generators[generatorType]({

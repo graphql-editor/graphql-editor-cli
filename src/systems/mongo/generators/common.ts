@@ -4,17 +4,15 @@ import * as templates from '../templates';
 import { functionParams } from './models';
 import { getPaths } from './paths';
 import { addStucco } from './stucco';
+import { AutocompleteInputPrompt } from '../../../AutoCompleteInput';
 
 export const common = async ({ resolverParentName, resolverField, rootTypes }: functionParams) => {
   const { resolverPath, basePath, resolverLibPath } = getPaths(resolverParentName, resolverField);
-  const { resolverType }: { resolverType: string } = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'resolverType',
-      message: `Specify resolver type`,
-      choices: ['resolver', 'pipe', 'rest'],
-    },
-  ]);
+  const commonResolvers = ['resolver', 'pipe', 'rest'];
+  const resolverType = await AutocompleteInputPrompt(commonResolvers, {
+    name: 'resolverType',
+    message: `Specify resolver type`,
+  });
   if (resolverType === 'resolver') {
     HandleTemplates.action({
       content: templates.resolver({

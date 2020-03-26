@@ -1,45 +1,42 @@
 import { ParserField, ParserTree, TypeDefinition, TypeSystemDefinition } from 'graphql-zeus';
 import inquirer, { DistinctQuestion } from 'inquirer';
-// @ts-ignore
-import AutocompletePrompt from 'inquirer-autocomplete-prompt';
+import { AutocompleteInput, AutocompleteInputPrompt } from '../../AutoCompleteInput';
 export interface TypeResolverReturns {
   resolver: ParserField;
   parentResolver: string;
 }
-inquirer.registerPrompt('autocomplete', AutocompletePrompt);
-export const TypeResolver = (tree: ParserTree): Promise<TypeResolverReturns> =>
-  new Promise((resolve, reject) => {
-    const rootTypes = tree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
-    const selectSubType = (types: ParserField[]): DistinctQuestion[] => [
-      {
-        type: 'autocomplete',
-        name: 'type',
-        source: async (answersSoFar: string[], input: string) => {
-          const typeNames = types.map((t) => t.name);
-          if (!input) {
-            return typeNames;
-          }
-          return typeNames.filter((t) => t.toLowerCase().indexOf(input) !== -1);
-        },
-        message: 'Specify type',
-      } as any,
-    ];
-    inquirer.prompt(selectSubType(rootTypes)).then((answers) => {
-      const selectedField = rootTypes.find((n) => n.name === answers.type)!;
-      const args = selectedField.args?.filter(
-        (n) =>
-          n.data &&
-          (n.data.type === TypeDefinition.ObjectTypeDefinition || n.data.type === TypeSystemDefinition.FieldDefinition),
-      );
-      if (!args) {
-        throw new Error("This type can't have any resolvers");
-      }
-      inquirer.prompt(selectSubType(args)).then((ans) => {
-        const resolver = args.find((a) => ans.type === a.name)!;
-        resolve({
-          resolver,
-          parentResolver: answers.type,
-        });
-      });
-    });
-  });
+const selectSubType = (types: ParserField[], options: Partial<DistinctQuestion> = {}) =>
+  AutocompleteInputPrompt(
+    types.map((t) => t.name),
+    {
+      name: 'type',
+      message: 'specify type',
+      ...options,
+    },
+  );
+export const TypeSelector = async (
+  rootTypes: ParserField[],
+  options: Partial<DistinctQuestion> = {},
+): Promise<ParserField> => {
+  const t = await selectSubType(rootTypes, options);
+  const selectedField = rootTypes.find((n) => n.name === t)!;
+  return selectedField;
+};
+
+export const TypeResolver = async (tree: ParserTree): Promise<TypeResolverReturns> => {
+  const rootTypes = tree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
+  const selectedField = await TypeSelector(rootTypes);
+  const args = selectedField.args?.filter(
+    (n) =>
+      n.data &&
+      (n.data.type === TypeDefinition.ObjectTypeDefinition || n.data.type === TypeSystemDefinition.FieldDefinition),
+  );
+  if (!args) {
+    throw new Error("This type can't have any resolvers");
+  }
+  const resolver = await TypeSelector(args);
+  return {
+    resolver,
+    parentResolver: selectedField.name,
+  };
+};

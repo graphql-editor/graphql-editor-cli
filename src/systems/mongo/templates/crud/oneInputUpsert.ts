@@ -4,22 +4,25 @@ export const oneInputUpsert = ({
   resolverName,
   resolverParent,
   input,
+  sourceType = '',
 }: {
   collection: string;
   pk: string;
   resolverName: string;
   resolverParent: string;
   input: string;
+  sourceType?: string;
 }) => `
 import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
 import { ${collection} } from "../db/collections";
 import { DB } from "../db/mongo";
-import { ResolverType, ValueTypes } from "../graphql-zeus";
+import { ResolverType, ValueTypes${sourceType ? `, ${sourceType} ` : ''} } from "../graphql-zeus";
 import { Utils } from "../Utils";${pk === 'id' ? `\nimport { ObjectID } from "bson";` : ''}
 
 export const handler = async (
   input: FieldResolveInput,
 ): Promise<FieldResolveOutput> => {
+    ${sourceType ? `const source = input.source as ${sourceType}` : ''}
     const { ${pk},...args } = input.arguments as ResolverType<ValueTypes["${resolverParent}"]["${resolverName}"]>
     const db = await DB();
     const col = await db.collection(${collection});

@@ -6,16 +6,14 @@ import { functionParams } from './models';
 import { addStucco } from './stucco';
 import { getPaths } from './paths';
 import { getCollection } from './collection';
+import { AutocompleteInputPrompt } from '../../../AutoCompleteInput';
 
-export const CRUD = async ({ resolverParentName, resolverField, rootTypes }: functionParams) => {
-  const { resolverType } = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'resolverType',
-      message: `Specify resolver type`,
-      choices: ['justAResolver', 'oneInputCreate', 'upsert', 'listFilter', 'remove', 'getByParam'],
-    },
-  ]);
+export const CRUD = async ({ resolverParentName, resolverField, rootTypes, sourceType }: functionParams) => {
+  const crudResolvers = ['justAResolver', 'oneInputCreate', 'upsert', 'listFilter', 'remove', 'getByParam'];
+  const resolverType = await AutocompleteInputPrompt(crudResolvers, {
+    name: 'resolverType',
+    message: `Specify resolver type`,
+  });
   const { resolverPath, collectionsPath, basePath, resolverLibPath } = getPaths(resolverParentName, resolverField);
   const collection = await getCollection(collectionsPath, resolverField, rootTypes);
   if (resolverType === 'justAResolver') {
@@ -40,6 +38,7 @@ export const CRUD = async ({ resolverParentName, resolverField, rootTypes }: fun
         resolverParent: resolverParentName,
         type: resolverField.type.name,
         input: input.name,
+        sourceType,
       }),
       path: resolverPath,
       type: 'add',
@@ -51,6 +50,7 @@ export const CRUD = async ({ resolverParentName, resolverField, rootTypes }: fun
         collection,
         resolverParent: resolverParentName,
         field: resolverField,
+        sourceType,
       }),
       path: resolverPath,
       type: 'add',
@@ -72,6 +72,7 @@ export const CRUD = async ({ resolverParentName, resolverField, rootTypes }: fun
         ).pk,
         resolverParent: resolverParentName,
         resolverName: resolverField.name,
+        sourceType,
       }),
       path: resolverPath,
       type: 'add',
@@ -98,6 +99,7 @@ export const CRUD = async ({ resolverParentName, resolverField, rootTypes }: fun
         ).pk,
         resolverParent: resolverParentName,
         resolverName: resolverField.name,
+        sourceType,
       }),
       path: resolverPath,
       type: 'add',
@@ -118,6 +120,9 @@ export const CRUD = async ({ resolverParentName, resolverField, rootTypes }: fun
           ])
         ).pk,
         type: resolverField.type.name,
+        sourceType,
+        resolverParent: resolverParentName,
+        resolverName: resolverField.name,
       }),
       path: resolverPath,
       type: 'add',
