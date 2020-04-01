@@ -1,8 +1,8 @@
 export const pipe = () => `
-import { FieldResolveInput, FieldResolveOutput } from 'stucco-js';
+import { FieldResolveOutput } from 'stucco-js';
 
-export const handler = async (input: FieldResolveInput): Promise<FieldResolveOutput> => {
-  return input.arguments;
+export const handler = async (): Promise<FieldResolveOutput> => {
+  return {};
 };
 
 `;
