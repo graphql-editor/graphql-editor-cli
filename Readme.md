@@ -53,7 +53,12 @@ Centaur is an interactive tool to create GraphQL Resolvers connected to MongoDB 
 ```sh
 $ centaur
 ```
-First it will ask you to configure your project and the source of schema. Next you can create resolvers for your GraphQL Schema.
+
+Available commands are:
+
+`init` - create new backend project compatible with stucco in js/ts. First it will ask you to configure your project and the source of schema. Next you can create resolvers for your GraphQL Schema.
+
+`code` - run Resolver generation. See below.
 
 
 ## How it works
