@@ -11,13 +11,17 @@ CLI tool to generate MongoDB [Stucco](https://github.com/graphql-editor/stucco-j
 
 Right now in its early beginnings.
 
+## How it works
+
+![./centaur.gif](./centaur.gif)
+
 - [GraphQL Centaur](#graphql-centaur)
+  - [How it works](#how-it-works)
   - [Installation](#installation)
     - [Global](#global)
     - [Inside Backend Repo](#inside-backend-repo)
   - [Usage](#usage)
-  - [How it works](#how-it-works)
-    - [Resolver generation](#resolver-generation)
+  - [Resolver generation](#resolver-generation)
   - [Available Resolvers](#available-resolvers)
     - [CRUD](#crud)
       - [Create](#create)
@@ -61,9 +65,8 @@ Available commands are:
 `code` - run Resolver generation. See below.
 
 
-## How it works
 
-### Resolver generation
+## Resolver generation
 
 First time when you generate a resolver `centaur` will also generate needed libraries for `collections` , `DB`, `Utils` and [graphql-zeus](https://github.com/graphql-editor/graphql-zeus) definitions
 
