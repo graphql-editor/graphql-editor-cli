@@ -14,6 +14,7 @@ export interface ConfigurationOptions {
   sourceEditorProject?: string;
   token?: string;
   tokenLastSet?: string;
+  system?: string;
 }
 
 export enum SchemaSourceOptions {

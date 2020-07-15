@@ -6,7 +6,7 @@ import * as centaur from './centaur';
 import { Config, Configuration } from '../Configuration';
 import { AutocompleteInputPrompt } from '../utils';
 
-const { mongoTs: mongo } = systems;
+const { mongoTs: mongo, common } = systems;
 
 export interface SchemaFileAnswers {
   schema_path: string;
@@ -25,15 +25,35 @@ export const code = async () => {
   const { source } = Config.conf();
   const schemaTree = readZeus(await Config.getSchema(source));
   const { resolver, parentResolver } = await centaur.generators.TypeResolver(schemaTree);
-  const generatorType = (await AutocompleteInputPrompt(Object.keys(mongo.generators), {
-    name: 'generatorType',
-    message: 'Choose generator type',
-  })) as keyof typeof mongo.generators;
-  const typeNodes = schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
-  typeNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
-  mongo.generators[generatorType]({
-    resolverField: resolver,
-    resolverParentName: parentResolver,
-    rootTypes: schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition),
-  });
+  const systemTypes = ['database', 'common'];
+  const systemType = (await AutocompleteInputPrompt(systemTypes, {
+    name: 'systemType',
+    message: 'Choose system type',
+  })) as 'database' | 'common';
+  if (systemType === 'common') {
+    const generatorType = (await AutocompleteInputPrompt(Object.keys(common.generators), {
+      name: 'generatorType',
+      message: 'Choose generator type',
+    })) as keyof typeof common.generators;
+    const typeNodes = schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
+    typeNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
+    common.generators[generatorType]({
+      resolverField: resolver,
+      resolverParentName: parentResolver,
+      rootTypes: schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition),
+    });
+  }
+  if (systemType === 'database') {
+    const generatorType = (await AutocompleteInputPrompt(Object.keys(mongo.generators), {
+      name: 'generatorType',
+      message: 'Choose generator type',
+    })) as keyof typeof mongo.generators;
+    const typeNodes = schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
+    typeNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
+    mongo.generators[generatorType]({
+      resolverField: resolver,
+      resolverParentName: parentResolver,
+      rootTypes: schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition),
+    });
+  }
 };

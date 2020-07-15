@@ -1,0 +1,32 @@
+export default {
+  name: 'centaur-package',
+  version: '0.0.0',
+  description: 'Automatically generated Dgraph starter by graphql-centaur',
+  main: 'index.js',
+  scripts: {
+    start: 'stucco',
+    build: 'tsc',
+    watch: 'tsc --watch',
+    database: 'docker run -v "$(pwd):/dgraph" -p 9000:9000  -it dgraph/standalone:v2.0.0-beta',
+    schema: 'schema=$(cat schema.graphql); curl localhost:9000/admin/schema -d $schema',
+    generate: 'mkdir ./generated-nodets && zeus http://localhost:9000/graphql ./generated-nodets -g ./generated-nodets',
+  },
+  author: 'GraphQL Editor Centaur Generator',
+  devDependencies: {
+    '@types/graphql': '^14.2.3',
+    '@types/node': '^12.6.9',
+    '@typescript-eslint/eslint-plugin': '^2.9.0',
+    '@typescript-eslint/parser': '^2.9.0',
+    eslint: '^6.7.1',
+    'eslint-config-prettier': '^6.7.0',
+    'eslint-plugin-prettier': '^3.1.1',
+    'graphql-zeus': 'latest',
+    prettier: 'latest',
+    'ts-node': 'latest',
+    typescript: 'latest',
+  },
+  dependencies: {
+    'node-fetch': '^2.6.0',
+    'stucco-js': 'latest',
+  },
+};

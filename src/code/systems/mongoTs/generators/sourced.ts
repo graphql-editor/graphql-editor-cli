@@ -1,9 +1,8 @@
-import inquirer from 'inquirer';
 import { HandleTemplates } from '../../../handleTemplates';
 import * as templates from '../templates';
-import { functionParams } from './models';
-import { getPaths } from './paths';
-import { addStucco } from './stucco';
+import { functionParams } from '../../common/models';
+import { getPaths } from '../../common/paths';
+import { addStucco } from '../../common/stucco';
 import { getCollection } from './collection';
 import { AutocompleteInputPrompt } from '../../../../utils';
 

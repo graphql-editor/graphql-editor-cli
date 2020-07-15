@@ -1,5 +1,5 @@
 import { CRUD } from './crud';
-import { functionParams } from './models';
+import { functionParams } from '../../common/models';
 import { TypeSelector } from '../../../centaur/generators';
 
 export const sourcedCrud = async ({ resolverParentName, resolverField, rootTypes }: functionParams) => {

@@ -1,2 +1,3 @@
 import * as mongoTs from './mongoTs';
-export { mongoTs };
+import * as common from './common';
+export { mongoTs, common };

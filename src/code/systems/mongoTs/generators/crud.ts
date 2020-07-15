@@ -2,32 +2,22 @@ import { ValueDefinition, ScalarTypes } from 'graphql-zeus';
 import inquirer from 'inquirer';
 import { HandleTemplates } from '../../../handleTemplates';
 import * as templates from '../templates';
-import { functionParams } from './models';
-import { addStucco } from './stucco';
-import { getPaths } from './paths';
+import { functionParams } from '../../common/models';
+import { addStucco } from '../../common/stucco';
+import { getPaths } from '../../common/paths';
 import { getCollection } from './collection';
 import { AutocompleteInputPrompt } from '../../../../utils';
 import { init } from './init';
 
 export const CRUD = async ({ resolverParentName, resolverField, rootTypes, sourceType }: functionParams) => {
   init();
-  const crudResolvers = ['justAResolver', 'oneInputCreate', 'upsert', 'listFilter', 'remove', 'getByParam'];
+  const crudResolvers = ['oneInputCreate', 'upsert', 'listFilter', 'remove', 'getByParam'];
   const resolverType = await AutocompleteInputPrompt(crudResolvers, {
     name: 'resolverType',
     message: `Specify resolver type`,
   });
   const { resolverPath, collectionsPath, basePath, resolverLibPath } = getPaths(resolverParentName, resolverField);
   const collection = await getCollection(collectionsPath, resolverField, rootTypes);
-  if (resolverType === 'justAResolver') {
-    HandleTemplates.action({
-      content: templates.resolver({
-        field: resolverField,
-        resolverParent: resolverParentName,
-      }),
-      path: resolverPath,
-      type: 'add',
-    });
-  }
   if (resolverType === 'oneInputCreate') {
     const input = resolverField.args?.find((a) => a.data?.type === ValueDefinition.InputValueDefinition);
     if (!input) {

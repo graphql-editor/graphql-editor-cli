@@ -1,9 +1,9 @@
 import inquirer from 'inquirer';
 import { HandleTemplates } from '../../../handleTemplates';
 import * as templates from '../templates';
-import { functionParams } from './models';
-import { getPaths } from './paths';
-import { addStucco } from './stucco';
+import { functionParams } from '../models';
+import { getPaths } from '../paths';
+import { addStucco } from '../stucco';
 import { AutocompleteInputPrompt } from '../../../../utils';
 
 export const common = async ({ resolverParentName, resolverField, rootTypes }: functionParams) => {
