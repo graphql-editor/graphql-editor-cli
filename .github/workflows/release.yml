@@ -1,4 +1,8 @@
 name: Automated releases for npm packages.
+on:
+  push:
+    branches:
+      - master
 uses: mikeal/merge-release@v4.0.7
 env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
