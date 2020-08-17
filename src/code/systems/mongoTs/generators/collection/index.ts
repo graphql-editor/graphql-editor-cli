@@ -1,4 +1,3 @@
-import inquirer from 'inquirer';
 import { ParserField, ScalarTypes } from 'graphql-zeus';
 import { HandleTemplates } from '../../../../handleTemplates';
 import { AutocompleteInputPrompt } from '../../../../../utils';
