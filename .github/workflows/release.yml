@@ -19,6 +19,7 @@ jobs:
       with: # All of theses inputs are optional
         tag_name: "v%s"
         tag_message: "v%s"
+        commit_pattern: "^release (\\S+)"
         workspace: "."
       env: # More info about the environment variables in the README
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this as is, it's automatically generated
