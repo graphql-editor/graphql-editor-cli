@@ -16,7 +16,7 @@ export const oneInputCreate = ({
 import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
 import { ${collection} } from "../db/collections";
 import { DB } from "../db/mongo";
-import { ${type}, ${sourceType ? `${sourceType}, ` : ''}ResolverType, ValueTypes } from "../graphql-zeus";
+import { ${sourceType ? `${sourceType}, ` : ''}ResolverType, ValueTypes } from "../graphql-zeus";
 
 export const handler = async (
   input: FieldResolveInput,
