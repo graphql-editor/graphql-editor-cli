@@ -16,8 +16,9 @@ export const oneInputUpsert = ({
 import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
 import { ${collection} } from "../db/collections";
 import { DB } from "../db/mongo";
-import { ResolverType, ValueTypes${sourceType ? `, ${sourceType} ` : ''} } from "../graphql-zeus";
-import { Utils } from "../Utils";${pk === 'id' ? `\nimport { ObjectID } from "bson";` : ''}
+import { ResolverType, ValueTypes${sourceType ? `, ${sourceType} ` : ''} } from "../graphql-zeus";${
+  pk === 'id' ? `\nimport { ObjectID } from "bson";` : ''
+}
 
 export const handler = async (
   input: FieldResolveInput,
@@ -31,6 +32,6 @@ export const handler = async (
       { $set: args.${input} },
       { upsert: true, returnOriginal: false },
     );
-    return Utils.mongoToGraphQL(o.value);
+    return o.modifiedCount !== 0
 };
 `;

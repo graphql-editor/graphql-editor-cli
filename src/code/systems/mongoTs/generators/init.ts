@@ -1,16 +1,12 @@
 import path from 'path';
 import fs from 'fs';
-import { utils, db } from '../templates';
+import { db } from '../templates';
 import { Config } from '../../../../Configuration';
 
 const createUtils = () => {
   const srcdir = path.join(Config.projectPath, Config.get('srcdir'));
   if (!fs.existsSync(srcdir)) {
     fs.mkdirSync(srcdir, { recursive: true });
-  }
-  const utilsPath = path.join(srcdir, 'Utils.ts');
-  if (!fs.existsSync(utilsPath)) {
-    fs.writeFileSync(utilsPath, utils.ts);
   }
 };
 const createDbAndDbDir = () => {

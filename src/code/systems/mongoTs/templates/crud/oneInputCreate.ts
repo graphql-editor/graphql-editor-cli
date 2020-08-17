@@ -17,7 +17,6 @@ import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
 import { ${collection} } from "../db/collections";
 import { DB } from "../db/mongo";
 import { ${type}, ${sourceType ? `${sourceType}, ` : ''}ResolverType, ValueTypes } from "../graphql-zeus";
-import { Utils } from "../Utils";
 
 export const handler = async (
   input: FieldResolveInput,
@@ -27,9 +26,6 @@ export const handler = async (
     const db = await DB();
     const col = await db.collection(${collection});
     const inserted = await col.insertOne(args.${input});
-    return Utils.mongoToGraphQL<${type}>({
-        ...args.${input},
-        id: inserted.insertedId,
-      })
+    return !!inserted.result.ok
 };
 `;

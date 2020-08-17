@@ -31,5 +31,5 @@ export const handler = async (
     if (!response) {
       throw new Error(\`${type} with ${pk} '\${${pk}}' doesnt exist\`);
     }
-    return Utils.mongoToGraphQL<${type}>(response);
+    return response
 };`;
