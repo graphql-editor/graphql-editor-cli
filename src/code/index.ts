@@ -24,7 +24,6 @@ export const code = async () => {
   new Configuration();
   const { source } = Config.conf();
   const schemaTree = readZeus(await Config.getSchema(source));
-  const { resolver, parentResolver } = await centaur.generators.TypeResolver(schemaTree);
   const systemTypes = ['database', 'common'];
   const systemType = (await AutocompleteInputPrompt(systemTypes, {
     name: 'systemType',
@@ -37,6 +36,7 @@ export const code = async () => {
     })) as keyof typeof common.generators;
     const typeNodes = schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
     typeNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
+    const { resolver, parentResolver } = await centaur.generators.TypeResolver(schemaTree);
     common.generators[generatorType]({
       resolverField: resolver,
       resolverParentName: parentResolver,
@@ -50,6 +50,7 @@ export const code = async () => {
     })) as keyof typeof mongo.generators;
     const typeNodes = schemaTree.nodes.filter((n) => n.data && n.data.type === TypeDefinition.ObjectTypeDefinition);
     typeNodes.sort((a, b) => (a.name > b.name ? 1 : -1));
+    const { resolver, parentResolver } = await centaur.generators.TypeResolver(schemaTree);
     mongo.generators[generatorType]({
       resolverField: resolver,
       resolverParentName: parentResolver,

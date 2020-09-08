@@ -1,7 +1,7 @@
 import { ValueDefinition, ScalarTypes } from 'graphql-zeus';
 import inquirer from 'inquirer';
 import { HandleTemplates } from '../../../handleTemplates';
-import * as templates from '../templates';
+import * as templates from '../templates/crud';
 import { functionParams } from '../../common/models';
 import { addStucco } from '../../common/stucco';
 import { getPaths } from '../../common/paths';

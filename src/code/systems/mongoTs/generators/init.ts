@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { db } from '../templates';
+import { db, operations } from '../templates';
 import { Config } from '../../../../Configuration';
 
 const createUtils = () => {
@@ -8,6 +8,13 @@ const createUtils = () => {
   if (!fs.existsSync(srcdir)) {
     fs.mkdirSync(srcdir, { recursive: true });
   }
+};
+const createOrmEngine = () => {
+  const dbDir = path.join(Config.projectPath, Config.get('srcdir'), 'db');
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(dbDir, 'orm.ts'), operations().ts);
 };
 const createDbAndDbDir = () => {
   const dbDir = path.join(Config.projectPath, Config.get('srcdir'), 'db');
@@ -23,4 +30,5 @@ const createDbAndDbDir = () => {
 export const init = () => {
   createUtils();
   createDbAndDbDir();
+  createOrmEngine();
 };
