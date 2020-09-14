@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "ibm-graphql-query-generator": "^1.1.0",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.2",
     "node-fetch": "^2.6.0",

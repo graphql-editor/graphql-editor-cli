@@ -7,6 +7,7 @@ export interface ConfigurationOptions {
   name?: string;
   srcdir?: string;
   libdir?: string;
+  testdir?: string;
   source?: SchemaSourceOptions;
   sourceFile?: string;
   sourceURL?: string;

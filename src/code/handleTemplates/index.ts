@@ -1,11 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Action } from './models';
-const unifyString = (s: string) =>
-  s
-    .replace(/\s/g, '')
-    .replace(/\n/g, '')
-    .replace(/\"/g, `'`);
+const unifyString = (s: string) => s.replace(/\s/g, '').replace(/\n/g, '').replace(/\"/g, `'`);
 export class HandleTemplates {
   public static action = (a: Action) => {
     const folder = path.dirname(a.path);
@@ -14,6 +10,12 @@ export class HandleTemplates {
       fs.mkdirSync(folder, {
         recursive: true,
       });
+    }
+    if (a.type === 'addIfNotExist') {
+      const existsPath = fs.existsSync(a.path);
+      if (!existsPath) {
+        fs.writeFileSync(a.path, a.content);
+      }
     }
     if (a.type === 'add') {
       fs.writeFileSync(a.path, a.content);

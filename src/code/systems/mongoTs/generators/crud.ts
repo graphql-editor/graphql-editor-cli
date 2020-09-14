@@ -8,29 +8,35 @@ import { getPaths } from '../../common/paths';
 import { getCollection } from './collection';
 import { AutocompleteInputPrompt } from '../../../../utils';
 import { init } from './init';
+import { getModel } from './models';
+import { getField } from './field';
 
 export const CRUD = async ({ resolverParentName, resolverField, rootTypes, sourceType }: functionParams) => {
   init();
-  const crudResolvers = ['oneInputCreate', 'upsert', 'listFilter', 'remove', 'getByParam'];
-  const resolverType = await AutocompleteInputPrompt(crudResolvers, {
+  const resolverType = (await AutocompleteInputPrompt(Object.keys(templates), {
     name: 'resolverType',
     message: `Specify resolver type`,
-  });
-  const { resolverPath, collectionsPath, basePath, resolverLibPath } = getPaths(resolverParentName, resolverField);
-  const collection = await getCollection(collectionsPath, resolverField, rootTypes);
+  })) as keyof typeof templates;
+  const { resolverPath, collectionsPath, basePath, resolverLibPath, modelsPath } = getPaths(
+    resolverParentName,
+    resolverField,
+  );
+  const returnedType = await getField(resolverField, rootTypes);
+  const collection = await getCollection(collectionsPath, returnedType, rootTypes);
+  const modelName = await getModel(modelsPath, returnedType, rootTypes);
+  const input = resolverField.args?.find((a) => a.data?.type === ValueDefinition.InputValueDefinition);
   if (resolverType === 'oneInputCreate') {
-    const input = resolverField.args?.find((a) => a.data?.type === ValueDefinition.InputValueDefinition);
     if (!input) {
       throw new Error('If you want to create oneinput create please do connect input as the resolver argument');
     }
     HandleTemplates.action({
       content: templates.oneInputCreate({
         collection,
-        resolverName: resolverField.name,
+        field: resolverField,
         resolverParent: resolverParentName,
-        type: resolverField.type.name,
         input: input.name,
         sourceType,
+        modelName,
       }),
       path: resolverPath,
       type: 'add',
@@ -43,78 +49,71 @@ export const CRUD = async ({ resolverParentName, resolverField, rootTypes, sourc
         resolverParent: resolverParentName,
         field: resolverField,
         sourceType,
+        modelName,
       }),
       path: resolverPath,
       type: 'add',
     });
   }
-  if (resolverType === 'remove') {
-    HandleTemplates.action({
-      content: templates.remove({
-        collection,
-        pk: (
-          await inquirer.prompt([
-            {
-              name: 'pk',
-              message: 'Specify pk for remove',
-              type: 'input',
-              default: 'id',
-            },
-          ])
-        ).pk,
-        resolverParent: resolverParentName,
-        resolverName: resolverField.name,
-        sourceType,
-      }),
-      path: resolverPath,
-      type: 'add',
-    });
-  }
-  if (resolverType === 'upsert') {
-    const input = resolverField.args?.find((a) => a.data?.type === ValueDefinition.InputValueDefinition);
+  if (resolverType === 'oneInputRemove') {
     if (!input) {
       throw new Error('If you want to create oneinput create please do connect input as the resolver argument');
     }
     HandleTemplates.action({
-      content: templates.oneInputUpsert({
+      content: templates.oneInputRemove({
         collection,
-        input: input.name,
-        pk: (
-          await inquirer.prompt([
-            {
-              name: 'pk',
-              message: 'Specify pk for upsert',
-              type: 'input',
-              default: 'id',
-            },
-          ])
-        ).pk,
         resolverParent: resolverParentName,
-        resolverName: resolverField.name,
         sourceType,
+        field: resolverField,
+        input: input.name,
+        modelName,
       }),
       path: resolverPath,
       type: 'add',
     });
   }
-  if (resolverType === 'getByParam') {
+  if (resolverType === 'twoInputUpdate') {
+    const inputs = resolverField.args?.filter((a) => a.data?.type === ValueDefinition.InputValueDefinition) || [];
+    if (inputs?.length !== 2) {
+      throw new Error(
+        'If you want to create twoinput update create please provide field with 2 inputs one for filtering one for update',
+      );
+    }
+
+    const filterInput = await AutocompleteInputPrompt(
+      inputs.map((i) => i.name),
+      {
+        name: 'filteringInput',
+        message: `Specify filtering input`,
+      },
+    );
+    const updatingInput = inputs.find((i) => i.name !== filterInput)!;
     HandleTemplates.action({
-      content: templates.getByParam({
+      content: templates.twoInputUpdate({
         collection,
-        pk: (
-          await inquirer.prompt([
-            {
-              name: 'pk',
-              message: 'Specify pk for get',
-              type: 'input',
-              default: 'id',
-            },
-          ])
-        ).pk,
-        type: resolverField.type.name,
+        filterInput,
+        input: updatingInput.name,
+        resolverParent: resolverParentName,
+        field: resolverField,
+        sourceType,
+        modelName,
+      }),
+      path: resolverPath,
+      type: 'add',
+    });
+  }
+  if (resolverType === 'onInputGetByParam') {
+    if (!input) {
+      throw new Error('If you want to create oneinput create please do connect input as the resolver argument');
+    }
+    HandleTemplates.action({
+      content: templates.onInputGetByParam({
+        collection,
         sourceType,
         resolverParent: resolverParentName,
-        resolverName: resolverField.name,
+        field: resolverField,
+        input: input.name,
+        modelName,
       }),
       path: resolverPath,
       type: 'add',

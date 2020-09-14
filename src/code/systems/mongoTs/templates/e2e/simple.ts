@@ -53,7 +53,6 @@ describe("${testName} resolver", () => {
     .then((response) => response.json())
     .then((json) => {
         expect(json).toBe(${JSON.stringify(response)})
-        console.log("${testName}" passed ✅)
     })
     .catch((error) => {
         console.log("${testName}" failed ❌)

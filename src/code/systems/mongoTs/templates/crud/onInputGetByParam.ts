@@ -1,37 +1,34 @@
 import { ParserField } from 'graphql-zeus';
 
-export const oneInputCreate = ({
+export const onInputGetByParam = ({
   collection,
   resolverParent,
   field,
-  input,
   sourceType,
+  input,
   modelName,
 }: {
   collection: string;
   resolverParent: string;
   field: ParserField;
+  sourceType?: string;
   input: string;
   modelName: string;
-  sourceType?: string;
 }) => {
-  const zeusImports: string[] = [];
-  if (field.args && field.args.length > 0) {
-    zeusImports.push('ResolverType');
-    zeusImports.push('ValueTypes');
-  }
   return `
 import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
 import { DB } from "../db/mongo";
 import { Orm } from "../db/orm";
 import { ${modelName}${sourceType ? `, ${sourceType}` : ''} } from "../db/models";
-${zeusImports.length > 0 ? `import { ${zeusImports.join(', ')} } from "../graphql-zeus";` : ``}
+import { ${field.type.name}${
+    field.args && field.args.length > 0 ? `, ResolverType, ValueTypes ` : ''
+  }} from "../graphql-zeus";
 
 export const handler = async (
   input: FieldResolveInput<ResolverType<ValueTypes["${resolverParent}"]["${field.name}"]>${
     sourceType ? `,${sourceType}` : ''
   }>,
-): Promise<FieldResolveOutput<string>> => {
+): Promise<FieldResolveOutput<${field.type.name} | undefined>> => {
     const {
       arguments:{
         ${input}
@@ -44,8 +41,7 @@ export const handler = async (
       }
     } = input;
     const db = await DB();
-    const o = await Orm<${modelName}>(db,'${collection}').create(${input})
-    return o.insertedId.toHexString()
+    return Orm<${modelName}>(db,'${collection}').one(${input})
 };
 `;
 };

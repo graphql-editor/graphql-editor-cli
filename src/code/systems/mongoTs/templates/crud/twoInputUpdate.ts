@@ -1,19 +1,21 @@
 import { ParserField } from 'graphql-zeus';
 
-export const oneInputCreate = ({
+export const twoInputUpdate = ({
   collection,
   resolverParent,
   field,
   input,
   sourceType,
+  filterInput,
   modelName,
 }: {
   collection: string;
   resolverParent: string;
   field: ParserField;
   input: string;
-  modelName: string;
+  filterInput: string;
   sourceType?: string;
+  modelName: string;
 }) => {
   const zeusImports: string[] = [];
   if (field.args && field.args.length > 0) {
@@ -31,10 +33,11 @@ export const handler = async (
   input: FieldResolveInput<ResolverType<ValueTypes["${resolverParent}"]["${field.name}"]>${
     sourceType ? `,${sourceType}` : ''
   }>,
-): Promise<FieldResolveOutput<string>> => {
+): Promise<FieldResolveOutput<boolean>> => {
     const {
       arguments:{
-        ${input}
+        ${input},
+        ${filterInput}
       }${
         sourceType
           ? `,
@@ -44,8 +47,8 @@ export const handler = async (
       }
     } = input;
     const db = await DB();
-    const o = await Orm<${modelName}>(db,'${collection}').create(${input})
-    return o.insertedId.toHexString()
+    const o = await Orm<${modelName}>(db,'${collection}').update(${filterInput},${input})
+    return o.modifiedCount > 0;
 };
 `;
 };

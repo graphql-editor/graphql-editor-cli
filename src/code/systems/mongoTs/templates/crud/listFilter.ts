@@ -4,35 +4,57 @@ export const listFilter = ({
   collection,
   resolverParent,
   field,
-  sourceType = '',
+  sourceType,
+  modelName,
 }: {
   collection: string;
   resolverParent: string;
   field: ParserField;
+  modelName: string;
   sourceType?: string;
-}) => `
+}) => {
+  if (field.args && field.args.length) {
+    return `
+  import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
+  import { DB } from "../db/mongo";
+  import { Orm } from "../db/orm";
+  import { ${modelName}${sourceType ? `, ${sourceType}` : ''} } from "../db/models";
+  import { ${field.type.name}${`, ResolverType, ValueTypes `}} from "../graphql-zeus";
+  
+  export const handler = async (
+    input: FieldResolveInput<ResolverType<ValueTypes["${resolverParent}"]["${field.name}"]>${
+      sourceType ? `, ${sourceType}` : ', never'
+    }>,
+  ): Promise<FieldResolveOutput<${field.type.name}[]>> => {
+      const {
+        arguments:{
+          ${field.args[0].name}
+        }${
+          sourceType
+            ? `,
+        source
+        `
+            : ''
+        }
+      } = input;
+      const db = await DB();
+      return Orm<${modelName}>(db,'${collection}').list({...${field.args[0].name}})
+  };
+  `;
+  }
+  return `
 import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
-import { ${collection} } from "../db/collections";
 import { DB } from "../db/mongo";
-import { ${field.type.name}${
-  field.args && field.args.length > 0 ? `,${sourceType ? `${sourceType}, ` : ''} ResolverType, ValueTypes ` : ''
-}} from "../graphql-zeus";
+import { Orm } from "../db/orm";
+import { ${modelName} } from "../db/models";
+import { ${field.type.name}${sourceType ? `, ${sourceType}, ` : ''}} from "../graphql-zeus";
 
 export const handler = async (
-  input: FieldResolveInput,
-): Promise<FieldResolveOutput> => {
-    ${sourceType ? `const source = input.source as ${sourceType}` : ''}
-    ${
-      field.args && field.args.length > 0
-        ? `const args = input.arguments as ResolverType<ValueTypes["${resolverParent}"]["${field.name}"]>;
-    if (args) {
-      // DO Something
-    }`
-        : ''
-    }
+  input: FieldResolveInput<never${sourceType ? `, ${sourceType}` : ', never'}>,
+): Promise<FieldResolveOutput<${field.type.name}[]>> => {
+    ${sourceType ? `const { source } = input;` : ``}
     const db = await DB();
-    const col = await db.collection(${collection});
-    const objects = await col.find({}).toArray()
-    return objects
+    return Orm<${modelName}>(db,'${collection}').list()
 };
 `;
+};

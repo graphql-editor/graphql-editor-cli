@@ -14,6 +14,7 @@ export const configure = async (): Promise<void> => {
     libdir = 'lib',
     name = 'centaur',
     srcdir = 'src',
+    testdir = 'test',
     source = SchemaSourceOptions.editor,
     system,
   } = Config.conf();
@@ -34,6 +35,12 @@ export const configure = async (): Promise<void> => {
       name: 'libdir',
       default: libdir,
       message: 'Name your lib directory',
+    },
+    {
+      type: 'input',
+      name: 'testdir',
+      default: testdir,
+      message: 'Name your test directory',
     },
     AutocompleteInput(Object.keys(SourceOptions), {
       name: 'source',
