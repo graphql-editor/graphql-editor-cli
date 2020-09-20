@@ -14,7 +14,6 @@ export default {
   author: 'GraphQL Editor Centaur Generator',
   license: 'ISC',
   devDependencies: {
-    '@types/graphql': '^14.2.3',
     '@types/node': '^12.6.9',
     'babel-eslint': '^10.1.0',
     eslint: '^6.7.1',

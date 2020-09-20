@@ -13,7 +13,6 @@ export default {
   },
   author: 'GraphQL Editor Centaur Generator',
   devDependencies: {
-    '@types/graphql': '^14.2.3',
     '@types/node': '^12.6.9',
     '@typescript-eslint/eslint-plugin': '^2.9.0',
     '@typescript-eslint/parser': '^2.9.0',

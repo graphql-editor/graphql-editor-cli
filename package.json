@@ -10,9 +10,10 @@
     "centaur": "lib/index.js"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
-    "editor": "zeus https://project-api.graphqleditor.com/graphql ./src -n --ts"
+    "build": "ttsc",
+    "start": "ttsc --watch",
+    "editor": "zeus https://project-api.graphqleditor.com/graphql ./src -n --ts",
+    "plop": "plop"
   },
   "devDependencies": {
     "@types/bson": "^4.0.0",
@@ -29,9 +30,12 @@
     "eslint-config-prettier": "^6.7.0",
     "eslint-plugin-prettier": "^3.1.1",
     "graphql-zeus": "^2.6.3",
+    "plop": "^2.7.4",
     "prettier": "^2.0.5",
     "ts-node": "^8.3.0",
-    "typescript": "^3.7.2"
+    "ttypescript": "^1.5.12",
+    "typescript": "^4.0.3",
+    "typescript-transform-paths": "^2.0.1"
   },
   "dependencies": {
     "express": "^4.17.1",

@@ -13,7 +13,6 @@ export default {
   license: 'ISC',
   devDependencies: {
     '@types/bson': '^4.0.0',
-    '@types/graphql': '^14.2.3',
     '@types/mongodb': '^3.3.12',
     '@types/node': '^12.6.9',
     'babel-eslint': '^10.1.0',

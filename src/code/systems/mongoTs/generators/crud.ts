@@ -1,12 +1,8 @@
-import { ValueDefinition, ScalarTypes } from 'graphql-zeus';
-import inquirer from 'inquirer';
-import { HandleTemplates } from '../../../handleTemplates';
-import * as templates from '../templates/crud';
-import { functionParams } from '../../common/models';
-import { addStucco } from '../../common/stucco';
-import { getPaths } from '../../common/paths';
+import { ValueDefinition } from 'graphql-zeus';
+import * as templates from '@/code/systems/mongoTs/templates/crud';
+import { getPaths, addStucco, functionParams, HandleTemplates } from '@/code/common';
 import { getCollection } from './collection';
-import { AutocompleteInputPrompt } from '../../../../utils';
+import { AutocompleteInputPrompt } from '@/utils';
 import { init } from './init';
 import { getModel } from './models';
 import { getField } from './field';

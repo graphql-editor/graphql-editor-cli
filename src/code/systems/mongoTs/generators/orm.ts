@@ -1,7 +1,5 @@
-import { HandleTemplates } from '../../../handleTemplates';
-import * as templates from '../templates/orm';
-import { functionParams } from '../../common/models';
-import { getPaths } from '../../common/paths';
+import { HandleTemplates, getPaths, functionParams } from '@/code/common';
+import * as templates from '@/code/systems/mongoTs/templates/orm';
 import { init } from './init';
 
 export const orm = async ({ resolverParentName, resolverField }: functionParams) => {

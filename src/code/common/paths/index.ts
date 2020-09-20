@@ -1,5 +1,5 @@
 import path from 'path';
-import { Config } from '../../../../Configuration';
+import { Config } from '@/Configuration';
 import { ParserField } from 'graphql-zeus';
 
 export const getPaths = (resolverParentName: string, resolverField: ParserField, extension: string = 'ts') => {

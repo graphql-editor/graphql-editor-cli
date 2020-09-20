@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-import { db, operations } from '../templates';
-import { Config } from '../../../../Configuration';
+import { db, operations } from '@/code/systems/mongoTs/templates';
+import { Config } from '@/Configuration';
 
 const createUtils = () => {
   const srcdir = path.join(Config.projectPath, Config.get('srcdir'));

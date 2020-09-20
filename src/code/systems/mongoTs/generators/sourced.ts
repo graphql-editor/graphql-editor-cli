@@ -1,10 +1,7 @@
-import { HandleTemplates } from '../../../handleTemplates';
-import * as templates from '../templates';
-import { functionParams } from '../../common/models';
-import { getPaths } from '../../common/paths';
-import { addStucco } from '../../common/stucco';
+import * as templates from '@/code/systems/mongoTs/templates';
 import { getCollection } from './collection';
-import { AutocompleteInputPrompt } from '../../../../utils';
+import { AutocompleteInputPrompt } from '@/utils';
+import { getPaths, functionParams, HandleTemplates, addStucco } from '@/code/common';
 
 export const sourced = async ({ resolverParentName, resolverField, rootTypes }: functionParams) => {
   const { resolverPath, collectionsPath, basePath, resolverLibPath } = getPaths(resolverParentName, resolverField);

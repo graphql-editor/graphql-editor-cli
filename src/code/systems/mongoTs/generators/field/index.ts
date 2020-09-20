@@ -1,5 +1,5 @@
 import { ParserField, ScalarTypes } from 'graphql-zeus';
-import { AutocompleteInputPrompt } from '../../../../../utils';
+import { AutocompleteInputPrompt } from '@/utils';
 
 export const getField = async (resolverField: ParserField, rootTypes: ParserField[]) => {
   const returnTypeScalar = Object.keys(ScalarTypes).includes(resolverField.type.name);

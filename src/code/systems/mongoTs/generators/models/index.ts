@@ -1,6 +1,5 @@
-import { ParserField, ScalarTypes } from 'graphql-zeus';
-import { HandleTemplates } from '../../../../handleTemplates';
-import { AutocompleteInputPrompt } from '../../../../../utils';
+import { ParserField } from 'graphql-zeus';
+import { HandleTemplates } from '@/code/common';
 
 export const getModel = async (modelsPath: string, field: ParserField, rootTypes: ParserField[]) => {
   const modelName = `${field.name}Model`;
