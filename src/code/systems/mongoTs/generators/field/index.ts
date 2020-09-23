@@ -11,6 +11,6 @@ export const getField = async (resolverField: ParserField, rootTypes: ParserFiel
           name: 'collection',
         },
       )
-    : resolverField.name;
+    : resolverField.type.name;
   return rootTypes.find((rt) => rt.name === fieldName)!;
 };

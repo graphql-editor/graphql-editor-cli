@@ -46,8 +46,8 @@ export const listFilter = ({
 import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
 import { DB } from "../db/mongo";
 import { Orm } from "../db/orm";
-import { ${modelName} } from "../db/models";
-import { ${field.type.name}${sourceType ? `, ${sourceType}, ` : ''}} from "../graphql-zeus";
+import { ${modelName}${sourceType ? `, ${sourceType}` : ''} } from "../db/models";
+import { ${field.type.name} } from "../graphql-zeus";
 
 export const handler = async (
   input: FieldResolveInput<never${sourceType ? `, ${sourceType}` : ', never'}>,
