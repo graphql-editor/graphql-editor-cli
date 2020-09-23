@@ -13,6 +13,8 @@ export interface ConfigurationOptions {
   sourceURL?: string;
   sourceEditorNamespace?: string;
   sourceEditorProject?: string;
+  sourceEditorProjectName?: string;
+  sourceEditorVersion?: string;
   token?: string;
   tokenLastSet?: string;
   system?: string;

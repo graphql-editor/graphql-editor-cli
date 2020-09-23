@@ -4,6 +4,7 @@ import fs from 'fs';
 import { Editor } from '../Editor';
 import { AutocompleteInputPrompt } from '../utils';
 import { Utils } from 'graphql-zeus';
+import fetch from 'node-fetch';
 
 export const loadFromFile = async () => {
   const { sourceFile } = Config.conf();
@@ -48,8 +49,12 @@ export const loadFromURL = async () => {
   return loadSchema;
 };
 
+export const IS_VERSION_SCHEMA_FILE_REGEX = /^schema-(.*)\.graphql$/;
+export const IS_VERSION_STITCH_FILE_REGEX = /^stitch-(.*)\.graphql$/;
+export const IS_VERSION_FILE_REGEX = /^schema-(.*)\.json$/;
+
 export const loadFromEditor = async () => {
-  const { sourceEditorNamespace, sourceEditorProject } = Config.conf();
+  const { sourceEditorNamespace, sourceEditorProjectName, sourceEditorVersion } = Config.conf();
   if (!sourceEditorNamespace) {
     const { namespaceSlug } = await inquirer.prompt([
       {
@@ -69,8 +74,8 @@ export const loadFromEditor = async () => {
       sourceEditorNamespace: namespaceSlug,
     });
   }
-  if (!sourceEditorProject) {
-    const projects = await Editor.fetchProjects(Config.get('sourceEditorNamespace'));
+  const projects = await Editor.fetchProjects(Config.get('sourceEditorNamespace'));
+  if (!sourceEditorProjectName) {
     const project = await AutocompleteInputPrompt(
       projects.map((p) => p.name),
       {
@@ -78,11 +83,26 @@ export const loadFromEditor = async () => {
         message: 'Choose a project',
       },
     );
-    const projectURI = projects.find((p) => p.name === project)!.endpoint!.uri!;
     Config.set({
-      sourceEditorProject: projectURI,
+      sourceEditorProjectName: project,
     });
   }
-  const loadSchema = await Utils.getFromUrl(Editor.getFakerURL(Config.get('sourceEditorProject')));
-  return loadSchema;
+  const currentProject = projects.find((p) => p.name === Config.get('sourceEditorProjectName'))!;
+  const versionFiles = currentProject.sources!.sources!.filter((s) => IS_VERSION_FILE_REGEX.test(s.filename!));
+  if (!sourceEditorVersion) {
+    const versionNames = versionFiles.map((s) => IS_VERSION_FILE_REGEX.exec(s.filename!)![1]);
+    const chosenVersion = await AutocompleteInputPrompt(versionNames, {
+      name: 'version',
+      message: 'Choose version',
+    });
+    Config.set({
+      sourceEditorVersion: chosenVersion,
+    });
+  }
+  const versionGraphQLFiles = await Promise.all(
+    currentProject
+      .sources!.sources!.filter((v) => v.filename?.endsWith(`${Config.get('sourceEditorVersion')}.graphql`))
+      .map((v) => fetch(v.getUrl!).then((v) => v.text())),
+  );
+  return versionGraphQLFiles.join('\n');
 };

@@ -40,6 +40,15 @@ export class Editor {
                 name: true,
                 description: true,
                 mocked: true,
+                sources: [
+                  {},
+                  {
+                    sources: {
+                      filename: true,
+                      getUrl: true,
+                    },
+                  },
+                ],
                 endpoint: {
                   uri: true,
                 },
@@ -49,7 +58,7 @@ export class Editor {
         },
       ],
     });
-    return Query.getNamespace!.projects!.projects!.filter((p) => p.mocked);
+    return Query.getNamespace!.projects!.projects!;
   };
   public static getFakerURL = (endpointUri: string) => `https://faker.graphqleditor.com/${endpointUri}/graphql`;
 }
