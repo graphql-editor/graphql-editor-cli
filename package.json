@@ -1,6 +1,6 @@
 {
   "name": "graphql-centaur",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth.",
   "main": "lib/index.js",
   "author": "Artur Czemiel",
