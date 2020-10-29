@@ -13,7 +13,7 @@ welcome().then(() => {
     .command('init', 'Bootstrap new stucco based app', (yargs) => {
       init();
     })
-    .command('code', 'Generate code for your backend', (yargs) => {
+    .command('code', 'Generate code for your app', (yargs) => {
       code();
     })
     .showHelpOnFail(true)

@@ -12,11 +12,10 @@ export interface SchemaFileAnswers {
   schema_path: string;
 }
 const readZeus = (schemaFile: string) => {
-  const parseSchema = Parser.parse(schemaFile);
+  const parseSchema = Parser.parseAddExtensions(schemaFile);
   const zeusFile = TreeToTS.resolveTree(parseSchema, 'node');
-  const graphqlFile = TreeToGraphQL.parse(parseSchema);
   fs.writeFileSync(path.join(process.cwd(), Config.get('srcdir'), 'graphql-zeus.ts'), zeusFile);
-  fs.writeFileSync(path.join(process.cwd(), 'schema.graphql'), graphqlFile);
+  fs.writeFileSync(path.join(process.cwd(), 'schema.graphql'), schemaFile);
   return parseSchema;
 };
 

@@ -1,5 +1,5 @@
 import { CRUD } from './crud';
-import { getModel } from './models';
+import { getModel } from '@/code/systems/mongoTs/core/models';
 import { getPaths, functionParams } from '@/code/common';
 import { TypeSelector } from '@/code/centaur/generators';
 

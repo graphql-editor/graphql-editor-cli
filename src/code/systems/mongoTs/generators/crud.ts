@@ -1,11 +1,11 @@
 import { ValueDefinition } from 'graphql-zeus';
 import * as templates from '@/code/systems/mongoTs/templates/crud';
 import { getPaths, addStucco, functionParams, HandleTemplates } from '@/code/common';
-import { getCollection } from './collection';
+import { getCollection } from '@/code/systems/mongoTs/core/collection';
 import { AutocompleteInputPrompt } from '@/utils';
-import { init } from './init';
-import { getModel } from './models';
-import { getField } from './field';
+import { init } from '@/code/systems/mongoTs/core/init';
+import { getModel } from '@/code/systems/mongoTs/core/models';
+import { getField } from '@/code/systems/mongoTs/core/field';
 
 export const CRUD = async ({ resolverParentName, resolverField, rootTypes, sourceType }: functionParams) => {
   init();

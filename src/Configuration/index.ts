@@ -37,6 +37,9 @@ export class Configuration {
   private centaurPath = () => path.join(this.projectPath, '.centaur.js');
   getSchema = async (source?: SchemaSourceOptions) => {
     if (!source) {
+      console.log(`
+      Please init your centaur first
+      `);
       throw new Error('No source is defined');
     }
     let parseSchema;

@@ -15,6 +15,7 @@ export default {
     '@types/bson': '^4.0.0',
     '@types/mongodb': '^3.3.12',
     '@types/node': '^12.6.9',
+    '@types/node-fetch': '^2.5.7',
     'babel-eslint': '^10.1.0',
     eslint: '^6.7.1',
     'eslint-config-prettier': '^6.7.0',

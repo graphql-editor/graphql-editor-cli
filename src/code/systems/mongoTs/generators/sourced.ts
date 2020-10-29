@@ -1,5 +1,5 @@
 import * as templates from '@/code/systems/mongoTs/templates';
-import { getCollection } from './collection';
+import { getCollection } from '@/code/systems/mongoTs/core/collection';
 import { AutocompleteInputPrompt } from '@/utils';
 import { getPaths, functionParams, HandleTemplates, addStucco } from '@/code/common';
 
