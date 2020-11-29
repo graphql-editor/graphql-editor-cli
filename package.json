@@ -1,6 +1,6 @@
 {
   "name": "graphql-centaur",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth.",
   "main": "lib/index.js",
   "author": "Artur Czemiel",
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "graphql-zeus": "^3.0.0-7",
+    "graphql-zeus": "^3.0.0-8",
     "ibm-graphql-query-generator": "^1.1.0",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.2",

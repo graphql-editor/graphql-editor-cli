@@ -10,12 +10,12 @@ export interface BasicResolverProps {
 
 export const basicResolver = ({ field, resolverParent, body = '', imports = '', source }: BasicResolverProps) => `
 import { FieldResolveInput } from 'stucco-js';
-import { resolverFor, ValueTypes } from '../graphql-zeus';
+import { resolverFor } from '../graphql-zeus';
 ${imports}
 
 export const handler = async (
   input: FieldResolveInput,
 )=> resolverFor('${resolverParent}','${field.name}',async (args${source ? `, source:${source}` : ``}) => {
   ${body}
-};
+})(input.arguments${source ? `, input.source` : ``});
 `;
