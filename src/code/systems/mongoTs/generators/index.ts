@@ -1,3 +1,2 @@
 export * from './crud';
-export * from './sourced';
-export * from './sourcedCrud';
+export * from './update';

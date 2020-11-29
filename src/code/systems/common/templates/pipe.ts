@@ -1,8 +1,9 @@
-export const pipe = () => `
-import { FieldResolveOutput } from 'stucco-js';
+import { ParserField } from 'graphql-zeus';
+import { basicResolver } from '../functions';
 
-export const handler = async (): Promise<FieldResolveOutput> => {
-  return {};
-};
-
-`;
+export const pipe = ({ field, resolverParent }: { resolverParent: string; field: ParserField }) =>
+  basicResolver({
+    field,
+    resolverParent,
+    body: 'return {}',
+  });

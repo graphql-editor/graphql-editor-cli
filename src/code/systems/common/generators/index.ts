@@ -22,7 +22,10 @@ export const common = async ({ resolverParentName, resolverField, rootTypes }: f
   }
   if (resolverType === 'pipe') {
     HandleTemplates.action({
-      content: templates.pipe(),
+      content: templates.pipe({
+        field: resolverField,
+        resolverParent: resolverParentName,
+      }),
       path: resolverPath,
       type: 'add',
     });
