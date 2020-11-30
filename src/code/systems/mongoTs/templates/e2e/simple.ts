@@ -20,16 +20,8 @@ const getPromptType = (s: ScalarTypes): InquirerPrompt => {
   return 'input';
 };
 
-export const e2eTest = ({
-  field,
-  resolverParent,
-  hostAddress = 'http://localhost:8080/graphql',
-}: {
-  field: ParserField;
-  resolverParent: string;
-  hostAddress?: string;
-}) => {
-  const body = {};
+export const e2eTest = async ({ field, resolverParent }: { field: ParserField; resolverParent: string }) => {
+  let body;
   if (field.args) {
     const answers = field.args.map(
       (a) =>
@@ -38,25 +30,19 @@ export const e2eTest = ({
           promptType: a.type.name in ScalarTypes ? getPromptType(a.type.name as ScalarTypes) : {},
         } as PromptProps),
     );
+    body = await inquirer.prompt(answers);
   }
-  const response = {};
   const testName = `Test ${resolverParent}.${field.name}`;
   return `
-describe("${testName} resolver", () => {
-    fetch(${hostAddress},{
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(${JSON.stringify(body)})
-    })
-    .then((response) => response.json())
-    .then((json) => {
-        expect(json).toBe(${JSON.stringify(response)})
-    })
-    .catch((error) => {
-        console.log("${testName}" failed ❌)
-    })
+import { handler } from './${field.name}';
+
+test("${testName} resolver", async () => {
+  const result = await handler({
+    info:{ fieldName: '${field.name}'},
+    arguments:${body ? JSON.stringify(body) : ''},
+    source:{}
+  })
+  expect(result).toBeTruthy()
 })  
 `;
 };

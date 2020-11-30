@@ -13,9 +13,8 @@ import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../graphql-zeus';
 ${imports}
 
-export const handler = async (
-  input: FieldResolveInput,
-)=> resolverFor('${resolverParent}','${field.name}',async (args${source ? `, source:${source}` : ``}) => {
-  ${body}
-})(input.arguments${source ? `, input.source` : ``});
+export const handler = async (input: FieldResolveInput) => 
+  resolverFor('${resolverParent}','${field.name}',async (args${source ? `, source:${source}` : ``}) => {
+    ${body}
+  })(input.arguments${source ? `, input.source` : ``});
 `;
