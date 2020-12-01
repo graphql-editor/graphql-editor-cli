@@ -2,6 +2,8 @@ import path from 'path';
 import fs from 'fs';
 import { db, operations } from '@/code/systems/mongoTs/templates';
 import { Config } from '@/Configuration';
+import { ParserField, TypeDefinition } from 'graphql-zeus';
+import { generateModelsFile, getModel } from './models';
 
 const createUtils = () => {
   const srcdir = path.join(Config.projectPath, Config.get('srcdir'));
@@ -26,9 +28,9 @@ const createDbAndDbDir = () => {
     fs.writeFileSync(path.join(dbDir, 'mongo.ts'), db({ name: Config.get('name') }).ts);
   }
 };
-
-export const init = () => {
+export const init = (collectionPath: string, modelsPath: string, nodes: ParserField[]) => {
   createUtils();
   createDbAndDbDir();
   createOrmEngine();
+  generateModelsFile(collectionPath, modelsPath, nodes);
 };

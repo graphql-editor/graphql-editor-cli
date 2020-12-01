@@ -6,21 +6,18 @@ export const crudBase = ({
   resolverParent,
   field,
   sourceType,
-  modelName,
 }: {
   collection: string;
   resolverParent: string;
   field: ParserField;
-  modelName: string;
   sourceType?: string;
 }) => {
   return dbResolver({
     field,
     resolverParent,
     source: sourceType,
-    modelName,
     body: `
-  return Orm<${modelName}>(db,'${collection}')
+  return Orm(db,'${collection}')
   // write your functions after the .
     `,
   });

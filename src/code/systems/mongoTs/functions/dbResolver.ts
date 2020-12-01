@@ -1,9 +1,7 @@
 import { basicResolver, BasicResolverProps } from '@/code/systems/common/functions';
 
-export interface DbResolverProps extends BasicResolverProps {
-  modelName: string;
-}
-export const dbResolver = ({ body, imports, modelName, ...props }: DbResolverProps) =>
+export interface DbResolverProps extends BasicResolverProps {}
+export const dbResolver = ({ body, imports, ...props }: DbResolverProps) =>
   basicResolver({
     ...props,
     body: `
@@ -12,6 +10,5 @@ export const dbResolver = ({ body, imports, modelName, ...props }: DbResolverPro
     `,
     imports: `
 import { DB } from "../db/mongo";
-import { Orm } from "../db/orm";
-import { ${modelName}${props.source ? `, ${props.source}` : ''} } from "../db/models";`,
+import { Orm } from "../db/orm";`,
   });
