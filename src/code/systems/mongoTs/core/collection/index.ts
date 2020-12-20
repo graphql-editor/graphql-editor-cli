@@ -6,7 +6,7 @@ export const getCollection = (collectionsPath: string, field: ParserField) => {
   HandleTemplates.action({
     type: 'append',
     path: collectionsPath,
-    content: `\nexport const ${collection} = "${collection}"`,
+    content: `\nexport const ${field.name} = "${collection}"`,
   });
-  return collection;
+  return field.name;
 };
