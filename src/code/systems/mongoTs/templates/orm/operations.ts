@@ -2,6 +2,7 @@ export const operations = () => {
   return {
     ts: `import { Db } from 'mongodb';
 import * as collections from './collections';
+import { Models } from './models';
 
 type PartialNull<T> = { [P in keyof T]?: T[P] | undefined | null };
 
