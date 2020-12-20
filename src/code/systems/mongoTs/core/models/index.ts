@@ -24,7 +24,7 @@ export const generateModelsFile = async (collectionsPath: string, modelsPath: st
     const collectionName = getCollection(collectionsPath, f);
     importsContent += `import { ${modelName} } from './${modelName}'\n`;
     importCollections.push(collectionName);
-    modelsContent.push(`[${collectionName}]: ${modelName};`);
+    modelsContent.push(`${collectionName}: ${modelName};`);
   }
   const collectionImportString = `import { ${importCollections.join(', ')} } from '../collections'`;
   const modelsContentString = `export type Models = {\n\t${modelsContent.join('\n\t')}\n};`;
