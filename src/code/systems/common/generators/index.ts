@@ -2,14 +2,15 @@ import inquirer from 'inquirer';
 import * as templates from '@/code/systems/common/templates';
 import { addStucco, getPaths, functionParams, HandleTemplates } from '@/code/common';
 import { AutocompleteInputPrompt } from '@/utils';
+import { Config } from '@/Configuration';
 
-export const common = async ({ resolverParentName, resolverField, rootTypes }: functionParams) => {
+export const common = async ({ resolverParentName, resolverField, schema }: functionParams) => {
   const { resolverPath, basePath, resolverLibPath } = getPaths(resolverParentName, resolverField);
-  const commonResolvers = ['resolver', 'pipe', 'rest'];
-  const resolverType = await AutocompleteInputPrompt(commonResolvers, {
+  const commonResolvers = Object.keys(templates);
+  const resolverType = (await AutocompleteInputPrompt(commonResolvers, {
     name: 'resolverType',
     message: `Specify resolver type`,
-  });
+  })) as keyof typeof templates;
   if (resolverType === 'resolver') {
     HandleTemplates.action({
       content: templates.resolver({
@@ -49,6 +50,14 @@ export const common = async ({ resolverParentName, resolverField, rootTypes }: f
       path: resolverPath,
       type: 'add',
     });
+  }
+  if (resolverType === 'schema') {
+    HandleTemplates.action({
+      content: templates.schema(schema),
+      path: await Config.getUnknownString('schemaDir', { message: 'Provide schema directory.', default: './' }),
+      type: 'add',
+    });
+    return;
   }
   addStucco({ basePath, stuccoResolverName: `${resolverParentName}.${resolverField.name}`, resolverLibPath });
 };

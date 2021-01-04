@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { loadFromFile, loadFromEditor, loadFromURL } from './schema';
 import { Auth } from '../Auth';
+import inquirer from 'inquirer';
+import { Environment } from 'graphql-zeus';
 
 export interface ConfigurationOptions {
   name?: string;
@@ -18,6 +20,10 @@ export interface ConfigurationOptions {
   token?: string;
   tokenLastSet?: string;
   system?: string;
+  schemaDir?: string;
+  typings?: string;
+  env?: Environment;
+  host?: string;
 }
 
 export enum SchemaSourceOptions {
@@ -82,5 +88,12 @@ export class Configuration {
     }
   };
   get = (k: keyof ConfigurationOptions) => this.options[k]!;
+  getUnknownString = async <T extends keyof ConfigurationOptions>(
+    k: T,
+    options?: { message?: string; default?: string },
+  ) =>
+    (await inquirer.prompt({ name: k, type: 'input', ...options, default: this.options[k] || options?.default }))[
+      k
+    ] as string;
   conf = () => this.options;
 }

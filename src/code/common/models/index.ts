@@ -5,4 +5,5 @@ export type functionParams = {
   resolverField: ParserField;
   rootTypes: ParserField[];
   sourceType?: string;
+  schema: string;
 };
