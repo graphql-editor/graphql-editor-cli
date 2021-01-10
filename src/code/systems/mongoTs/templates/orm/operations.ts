@@ -7,7 +7,7 @@ export const operations = () => {
     export const Orm = <T extends keyof Models>(db: Db, collection: T) => {
       type Model = Models[T] & { _id: ObjectId };
       const c = collections[collection]
-      const col = db.collection<Model>
+      const col = db.collection<Model>(c);
       const create = db.collection<Model>(c).insertOne;
       const update = db.collection<Model>(c).updateOne;
       const one = db.collection<Model>(c).findOne;
@@ -22,6 +22,7 @@ export const operations = () => {
       const remove = db.collection<Model>(c).deleteOne;
       const removeMany = db.collection<Model>(c).deleteMany;
       return {
+        col,
         create,
         update,
         one,
