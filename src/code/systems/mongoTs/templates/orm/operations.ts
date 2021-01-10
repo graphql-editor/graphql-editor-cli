@@ -1,14 +1,13 @@
 export const operations = () => {
   return {
-    ts: `import { Db, FilterQuery, ObjectId, OptionalId, UpdateQuery } from 'mongodb';
+    ts: `import { Db, FilterQuery, ObjectId } from 'mongodb';
     import * as collections from './collections';
     import { Models } from './models';
     
-    type PartialNull<T> = { [P in keyof T]?: T[P] | undefined | null };
-    
     export const Orm = <T extends keyof Models>(db: Db, collection: T) => {
       type Model = Models[T] & { _id: ObjectId };
-      const c = collections[collection];
+      const c = collections[collection]
+      const col = db.collection<Model>
       const create = db.collection<Model>(c).insertOne;
       const update = db.collection<Model>(c).updateOne;
       const one = db.collection<Model>(c).findOne;
@@ -31,7 +30,6 @@ export const operations = () => {
         remove,
         removeMany,
       };
-    };
-    `,
+    };`,
   };
 };
