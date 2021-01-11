@@ -1,16 +1,29 @@
 export const operations = () => {
   return {
-    ts: `import { Db, FilterQuery, ObjectId } from 'mongodb';
+    ts: `import {
+      Db,
+      FilterQuery,
+      ObjectId,
+      OptionalId,
+      CollectionInsertOneOptions,
+      UpdateQuery,
+      UpdateOneOptions,
+    } from 'mongodb';
     import * as collections from './collections';
     import { Models } from './models';
     
     export const Orm = <T extends keyof Models>(db: Db, collection: T) => {
       type Model = Models[T] & { _id: ObjectId };
-      const c = collections[collection]
+      const c = collections[collection];
       const col = db.collection<Model>(c);
-      const create = db.collection<Model>(c).insertOne;
-      const update = db.collection<Model>(c).updateOne;
-      const one = db.collection<Model>(c).findOne;
+      const create = (docs: OptionalId<Model>, options?: CollectionInsertOneOptions) =>
+        db.collection<Model>(c).insertOne(docs, options);
+      const update = (
+        filter: FilterQuery<Model>,
+        update: UpdateQuery<Model> | Partial<Model>,
+        options?: UpdateOneOptions,
+      ) => db.collection<Model>(c).updateOne(filter, update, options);
+      const one = (filter: FilterQuery<Model>) => db.collection<Model>(c).findOne(filter);
       const oneOrThrow = async (filter: FilterQuery<Model>) => {
         const o = await db.collection<Model>(c).findOne(filter);
         if (!o) {
@@ -19,8 +32,8 @@ export const operations = () => {
         return o;
       };
       const list = (filter: FilterQuery<Model> = {}) => db.collection<Model>(c).find(filter).toArray();
-      const remove = db.collection<Model>(c).deleteOne;
-      const removeMany = db.collection<Model>(c).deleteMany;
+      const remove = (filter: FilterQuery<Model> = {}) => db.collection<Model>(c).deleteOne(filter);
+      const removeMany = (filter: FilterQuery<Model> = {}) => db.collection<Model>(c).deleteMany(filter);
       return {
         col,
         create,
@@ -31,6 +44,7 @@ export const operations = () => {
         remove,
         removeMany,
       };
-    };`,
+    };
+    `,
   };
 };
