@@ -6,23 +6,20 @@ export const operations = () => {
   ObjectId,
   OptionalId,
   CollectionInsertOneOptions,
-  UpdateQuery,
   UpdateOneOptions,
+  MatchKeysAndValues,
 } from 'mongodb';
 import * as collections from './collections';
 import { Models } from './models';
 
 export const Orm = <T extends keyof Models>(db: Db, collection: T) => {
-  type Model = Omit<Models[T], 'id' | '_id'> & { _id: ObjectId };
+  type Model = Models[T] & { _id: ObjectId };
   const c = collections[collection];
   const col = db.collection<Model>(c);
   const create = (docs: OptionalId<Model>, options?: CollectionInsertOneOptions) =>
     db.collection<Model>(c).insertOne(docs, options);
-  const update = (
-    filter: FilterQuery<Model>,
-    update: UpdateQuery<Model> | Partial<Model>,
-    options?: UpdateOneOptions,
-  ) => db.collection<Model>(c).updateOne(filter, update, options);
+  const update = (filter: FilterQuery<Model>, update: MatchKeysAndValues<Model>, options?: UpdateOneOptions) =>
+    db.collection<Model>(c).updateOne(filter, { $set: update }, options);
   const one = (filter: FilterQuery<Model>) => db.collection<Model>(c).findOne(filter);
   const oneOrThrow = async (filter: FilterQuery<Model>) => {
     const o = await db.collection<Model>(c).findOne(filter);
@@ -31,7 +28,11 @@ export const Orm = <T extends keyof Models>(db: Db, collection: T) => {
     }
     return o;
   };
-  const list = (filter: FilterQuery<Model> = {}) => db.collection<Model>(c).find(filter).toArray();
+  const list = (filter: FilterQuery<Model> = {}) =>
+    db
+      .collection<Model>(c)
+      .find(filter)
+      .toArray();
   const remove = (filter: FilterQuery<Model> = {}) => db.collection<Model>(c).deleteOne(filter);
   const removeMany = (filter: FilterQuery<Model> = {}) => db.collection<Model>(c).deleteMany(filter);
   return {
