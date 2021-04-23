@@ -1,0 +1,4 @@
+/node_modules
+/examples
+/src
+.graphql-editor-auth.json

@@ -1,20 +1,95 @@
 #!/usr/bin/env node
 
 import yargs from 'yargs';
-import { code } from './code';
 import { welcome } from './welcome';
-import { init } from './init';
+import { Auth } from '@/Auth';
+import { initConfiguration } from '@/commands/init';
+import { CommandSchema } from '@/commands/schema';
+import { CommandTypings } from '@/commands/typings';
+import { CommandBootstrap } from '@/commands/bootstrap';
+import { Configuration } from '@/Configuration';
 
 welcome().then(() => {
-  yargs
+  new Configuration();
+  return yargs
     .usage('Usage: $0 <command> [options]')
     .help('h')
     .alias('h', 'help')
-    .command('init', 'Bootstrap new stucco based app', (yargs) => {
-      init();
+    .command('init', 'Create editor project config inside current working directory.', (yargs) => {
+      Auth.login().then(initConfiguration);
     })
-    .command('code', 'Generate code for your app', (yargs) => {
-      code();
+    .command('schema [path]', 'Generate GraphQL schema from project at given path', (yargs) => {
+      Auth.login().then(() => {
+        CommandSchema(yargs.argv as any);
+      });
+    })
+    .options({
+      namespace: {
+        describe: 'GraphQL Editor Namespace',
+      },
+      project: {
+        describe: 'GraphQL Editor Project',
+      },
+      version: {
+        describe: 'GraphQL Editor Version name',
+      },
+      compiled: {
+        boolean: true,
+        describe: 'Get project with libraries',
+      },
+    })
+    .command('typings [path]', 'Generate GraphQL typings for TypeScript or Javascript', (yargs) => {
+      yargs.positional('path', {
+        describe: 'Path to store typings',
+        type: 'string',
+      });
+      Auth.login().then(() => {
+        CommandTypings(yargs.argv as any);
+      });
+    })
+    .options({
+      namespace: {
+        describe: 'GraphQL Editor Namespace',
+        type: 'string',
+      },
+      project: {
+        describe: 'GraphQL Editor Project',
+        type: 'string',
+      },
+      projectVersion: {
+        describe: 'GraphQL Editor Version name',
+        type: 'string',
+      },
+      gen: {
+        describe: 'Generation language',
+        choices: ['Javascript', 'TypeScript'],
+      },
+      host: {
+        describe: 'GraphQL Server address',
+        type: 'string',
+      },
+      env: {
+        describe: 'Generation Environment',
+        choices: ['browser', 'node'],
+      },
+      compiled: {
+        boolean: true,
+        describe: 'Get project with libraries',
+      },
+    })
+    .command('bootstrap [type] [name]', 'Bootstrap a new frontend or backend project', (yargs) => {
+      yargs.positional('type', {
+        describe: 'Project type.',
+        type: 'string',
+        choices: ['backend', 'frontend'],
+      });
+      yargs.positional('name', {
+        describe: 'Project name.',
+        type: 'string',
+      });
+      Auth.login().then(() => {
+        CommandBootstrap(yargs.argv as any);
+      });
     })
     .showHelpOnFail(true)
     .demandCommand()

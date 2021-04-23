@@ -1,18 +1,19 @@
 {
-  "name": "graphql-centaur",
-  "version": "0.4.7",
-  "description": "GraphQL -> anything. Use GraphQL as your source of truth.",
+  "name": "graphql-editor-cli",
+  "version": "0.0.1",
+  "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/index.js",
   "author": "Artur Czemiel",
   "license": "MIT",
   "bin": {
-    "graphql-centaur": "lib/index.js",
-    "centaur": "lib/index.js"
+    "graphql-editor-cli": "lib/index.js",
+    "gecli": "lib/index.js"
   },
   "scripts": {
     "build": "ttsc",
     "start": "ttsc --watch",
-    "editor": "zeus https://project-api.graphqleditor.com/graphql ./src -n --ts",
+    "editor": "zeus https://api.staging.project.graphqleditor.com/graphql ./src -n --ts",
+    "cli": "node lib/index.js",
     "plop": "plop"
   },
   "devDependencies": {
@@ -38,7 +39,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "graphql-zeus": "^3.0.0-17",
+    "graphql-zeus": "^3.0.7",
     "ibm-graphql-query-generator": "^1.1.0",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.2",

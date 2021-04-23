@@ -6,17 +6,10 @@ import fetch from 'node-fetch';
 import { Config } from '../Configuration';
 
 function base64URLEncode(str: Buffer) {
-  return str
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+  return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 function sha256(buffer: Buffer) {
-  return crypto
-    .createHash('sha256')
-    .update(buffer)
-    .digest();
+  return crypto.createHash('sha256').update(buffer).digest();
 }
 
 /**
@@ -35,16 +28,15 @@ function dateDelta(date1: Date, date2: Date) {
 export class Auth {
   public static login = async () =>
     new Promise(async (resolve, reject) => {
-      const currentToken = Config.get('token');
+      const currentToken = Config.getTokenOptions('token');
       if (currentToken) {
-        const lastSet = Config.get('tokenLastSet');
+        const lastSet = Config.getTokenOptions('tokenLastSet');
         if (lastSet) {
           const nowDate = new Date();
           const beforeDate = new Date(lastSet);
           const delta = dateDelta(beforeDate, nowDate);
-          console.log(`Delta is ${delta}`);
           if (delta <= 24) {
-            resolve();
+            resolve(undefined);
             return;
           }
         }
@@ -85,10 +77,9 @@ export class Auth {
         const jsonResponse = await rawResponse.json();
         res.send(`You are logged in with GraphQL Editor account. You can go back to CLI`);
         if (jsonResponse.access_token) {
-          Config.set({ token: jsonResponse.access_token });
-          Config.set({ tokenLastSet: new Date().toISOString() });
+          Config.setTokenOptions({ token: jsonResponse.access_token, tokenLastSet: new Date().toISOString() });
           server.close();
-          resolve();
+          resolve(undefined);
         } else {
           reject('Cannot get access token');
         }

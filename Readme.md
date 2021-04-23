@@ -1,160 +1,178 @@
-![](centaur.jpg)
-
-> Once you head down the centaur's path
+> Once you head down the GraphQL's path
 > forever will it dominate your destiny.
 
-# GraphQL Centaur
+# GraphQL Editor Cli
 
-Translate GraphQL to Anything and make it your one and only source of truth. It is named centaur because you need to generate resolvers with this CLI and then add some edits to make them custom. 
+Translate GraphQL to Anything and make it your one and only source of truth. Schema. Compatible with [GraphQL Editor](https://graphqleditor.com) projects( Free and Paid Tiers). So the main goal is to provide interactive experience creating GraphQL as a service.
 
-CLI tool to generate MongoDB [Stucco](https://github.com/graphql-editor/stucco-js) Database Resolvers in TypeScript from GraphQL Schema. Compatible with [GraphQL Editor](https://graphqleditor.com) projects( Free and Paid Tiers). So the main goal is to provide interactive experience creating GraphQL as a service. 
-
-Right now in its early beginnings.
-
-## How it works
-
-![./centaur.gif](./centaur.gif)
-
-- [GraphQL Centaur](#graphql-centaur)
-  - [How it works](#how-it-works)
+- [GraphQL Editor Cli](#graphql-editor-cli)
   - [Installation](#installation)
     - [Global](#global)
-    - [Inside Backend Repo](#inside-backend-repo)
+    - [Inside Repo](#inside-repo)
   - [Usage](#usage)
-  - [Resolver generation](#resolver-generation)
-  - [Available Resolvers](#available-resolvers)
-    - [CRUD](#crud)
-      - [Create](#create)
-      - [Update](#update)
-      - [List](#list)
-      - [Get by parameter](#get-by-parameter)
-      - [Remove](#remove)
-    - [Common](#common)
-      - [Pipe](#pipe)
-      - [Resolver](#resolver)
-      - [Rest](#rest)
-    - [Source](#source)
-    - [SourcedCRUD](#sourcedcrud)
+  - [Commands](#commands)
+    - [Schema](#schema)
+    - [Typings](#typings)
+    - [Backend](#backend)
+      - [Bootstrap](#bootstrap)
+      - [Models](#models)
+        - [MongoDB](#mongodb)
+      - [Resolvers](#resolvers)
+  - [Frontend pages](#frontend-pages)
+  - [Roadmap](#roadmap)
 
 ## Installation
 
 ### Global
 
 ```sh
-npm i -g graphql-centaur
+npm i -g graphql-editor-cli
 ```
 
-### Inside Backend Repo
+### Inside Repo
 
 ```sh
-npm i graphql-centaur
+npm i graphql-editor-cli
 ```
-then use with npx for example or as a `package.json` scrip.
+
+then use with npx for example or as a `package.json` script.
 
 ## Usage
 
-Centaur is an interactive tool to create GraphQL Resolvers connected to MongoDB compatible with [stucco](https://github.com/graphql-editor/stucco-js) hybrid Go and TypeScript backend( the core is a binary and you write in TS). To start using centaur navigate to your backend repository and run command
+All comands work in 3 ways. You can provide all arguments with flags, you can get them from local config file or complete them in interactive modes
+
+## Commands
+
+### Schema
+
+Generate schema from GraphQL Editor project.
+
 ```sh
-$ centaur
+$ gecli schema
 ```
 
-Available commands are:
+### Typings
 
-`init` - create new backend project compatible with stucco in js/ts. First it will ask you to configure your project and the source of schema. Next you can create resolvers for your GraphQL Schema.
+Generate TypeScript or Javascript typings from GraphQL Editor project.
 
-`code` - run Resolver generation. See below.
+```sh
+$ gecli typings
+```
 
+### Backend
 
+#### Bootstrap
 
-## Resolver generation
+```sh
+$ gecli bootstrap backend <project_name>
+```
 
-First time when you generate a resolver `centaur` will also generate needed libraries for `collections` , `DB`, `Utils` and [graphql-zeus](https://github.com/graphql-editor/graphql-zeus) definitions
+Bootstrap a backend stucco project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration.
+
+#### Models
+
+```sh
+$ gecli backend models
+```
+
+Generate TypeScript Models from GraphQL types. They are very useful to use with popular Databases
+
+```graphql
+type Person {
+  firstName: String!
+  lastName: String!
+  email: String
+  phone: String
+  friends: [Person!]!
+}
+```
+
+will be transformed to a model file
+
+```ts
+import type { ModelTypes } from '@/zeus';
+export type Person = ModelTypes['Person'];
+```
+
+later on you may want to transform it so it is a database model.
+
+```ts
+import type { ModelTypes } from '@/zeus';
+export type Person = Omit<ModelTypes['Person'], 'friends'> & { friends: string[] };
+```
+
+So you see the concept.
+
+##### MongoDB
+
+Here is an example how you can use your model in MongoDB.
+
+```ts
+db.collection<MyModel>.find({})
+```
+
+#### Resolvers
+
+CLI tool to generate [Stucco](https://github.com/graphql-editor/stucco-js) resolvers in TypeScript from GraphQL fields.
 
 Given the following schema:
 
 ```graphql
-type Person{
-    firstName: String!
+type Person {
+  firstName: String!
 }
-type Query{
-    people: [Person]!
+type Query {
+  people: [Person]!
 }
-schema{
-    query: Query
+schema {
+  query: Query
 }
 ```
 
 After chosing:
+
 1. `Query`
 2. `people`
-3. `CRUD`
-4. `listFilter`
 
 It should generate TypeScript resolver placed in `$src/Query/people.ts`
 
-
 ```ts
-import { FieldResolveInput, FieldResolveOutput } from "stucco-js";
-import { PersonCollection } from "../db/collections";
-import { DB } from "../db/mongo";
-import { Utils } from "../Utils";
-import { Person, ResolverType, ValueTypes } from "../graphql-zeus";
+import { FieldResolveInput, FieldResolveOutput } from 'stucco-js';
+import { PersonCollection } from '../db/collections';
+import { DB } from '../db/mongo';
+import { Utils } from '../Utils';
+import { Person, ResolverType, ValueTypes } from '../graphql-zeus';
 
-export const handler = async (): Promise<FieldResolveOutput> => {
-    const db = await DB();
-    const col = await db.collection(PersonCollection);
-    return Utils.CursorToGraphQLArray<Person>(
-        await col.find({}),
-    );
-};
+export const handler = async (): Promise<FieldResolveOutput> => {};
 ```
 
 and append correct entries to `stucco.json` file.
 
 ```json
 {
-    "resolvers":{
-        "Query.people":{
-            "resolve":{
-                "name":"lib/Query/people"
-            }
-        }
+  "resolvers": {
+    "Query.people": {
+      "resolve": {
+        "name": "lib/Query/people"
+      }
     }
+  }
 }
 ```
 
 and after running `stucco` your resolver should work out of the box.
-
 Some resolver types however need little code to make them work the way you want.
 
-## Available Resolvers
+## Frontend pages
 
-Resolvers are split into following categories
+CLI tool to generate [GraphQL SSG](https://graphqlssg.com) Frontend Pages.
 
-### CRUD
+```sh
+$ gecli bootstrap frontend <project_name>
+```
 
-#### Create
-Create an object in your database and return it
-#### Update
-Update an object in your database and return it
-#### List
-List all objects of selected type
-#### Get by parameter
-Get object by parameter from the database
-#### Remove
-Remove object from the database and return true
+## Roadmap
 
-
-### Common
-
-#### Pipe
-Pipe the arguments of the query as source for the next resolver
-#### Resolver
-Simple Resolver you need to write
-#### Rest
-Rest proxy resolvers for pointing to existing REST APIs
-
-### Source
-Resolver that receives source from the parent resolver
-### SourcedCRUD
-The same as CRUD, but also use source
+- [ ] Prisma models from GraphQL types interactive CLI
+- [ ] More use cases with other databases and ORMs
+- [ ] Deployment of microservices
