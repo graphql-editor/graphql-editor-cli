@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/index.js",
   "author": "Artur Czemiel",
@@ -21,6 +21,7 @@
     "@types/express": "^4.17.3",
     "@types/graphql": "^14.2.3",
     "@types/inquirer": "^6.5.0",
+    "@types/listr": "^0.14.2",
     "@types/node": "^13.13.5",
     "@types/node-fetch": "^2.5.5",
     "@types/qs": "^6.9.1",
@@ -38,13 +39,17 @@
     "typescript-transform-paths": "^2.0.1"
   },
   "dependencies": {
+    "execa": "^5.0.0",
     "express": "^4.17.1",
     "graphql-zeus": "^3.0.7",
     "ibm-graphql-query-generator": "^1.1.0",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.2",
+    "listr": "^0.14.3",
     "node-fetch": "^2.6.0",
     "open": "^7.0.2",
+    "ora": "^5.4.0",
+    "pkg-install": "^1.0.0",
     "qs": "^6.9.1",
     "yargs": "^15.3.1"
   }

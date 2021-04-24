@@ -3,7 +3,7 @@ import qs from 'qs';
 import open from 'open';
 import express from 'express';
 import fetch from 'node-fetch';
-import { Config } from '../Configuration';
+import { Config, TokenConf } from '../Configuration';
 
 function base64URLEncode(str: Buffer) {
   return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
@@ -26,7 +26,7 @@ function dateDelta(date1: Date, date2: Date) {
  * Provides connection to GraphQL Editor
  */
 export class Auth {
-  public static login = async () =>
+  public static login = async (): Promise<TokenConf> =>
     new Promise(async (resolve, reject) => {
       const currentToken = Config.getTokenOptions('token');
       if (currentToken) {
@@ -36,7 +36,10 @@ export class Auth {
           const beforeDate = new Date(lastSet);
           const delta = dateDelta(beforeDate, nowDate);
           if (delta <= 24) {
-            resolve(undefined);
+            resolve({
+              token: currentToken,
+              tokenLastSet: lastSet,
+            });
             return;
           }
         }
@@ -77,9 +80,8 @@ export class Auth {
         const jsonResponse = await rawResponse.json();
         res.send(`You are logged in with GraphQL Editor account. You can go back to CLI`);
         if (jsonResponse.access_token) {
-          Config.setTokenOptions({ token: jsonResponse.access_token, tokenLastSet: new Date().toISOString() });
           server.close();
-          resolve(undefined);
+          resolve({ token: jsonResponse.access_token, tokenLastSet: new Date().toISOString() });
         } else {
           reject('Cannot get access token');
         }

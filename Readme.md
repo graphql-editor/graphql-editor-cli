@@ -176,3 +176,4 @@ $ gecli bootstrap frontend <project_name>
 - [ ] Prisma models from GraphQL types interactive CLI
 - [ ] More use cases with other databases and ORMs
 - [ ] Deployment of microservices
+- [ ] Add colours

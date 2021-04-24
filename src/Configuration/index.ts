@@ -57,14 +57,19 @@ export class Configuration {
     Config = this;
     this.init();
   }
-  private tokenConfigPath = () => path.join(this.projectPath, '.graphql-editor-auth.json');
-  private configPath = () => path.join(this.projectPath, '.graphql-editor.json');
-
+  private tokenConfigPath = () => path.join(this.projectPath, Configuration.AUTH_NAME);
+  private configPath = () => path.join(this.projectPath, Configuration.CONFIG_NAME);
+  static CONFIG_NAME = '.graphql-editor.json';
+  static AUTH_NAME = '.graphql-editor-auth.json';
   init = () => {
-    const cliConfig: Partial<ConfigurationOptions> = fs.existsSync(this.configPath()) ? require(this.configPath()) : {};
-    const authConfig: Partial<TokenConf> = fs.existsSync(this.tokenConfigPath()) ? require(this.tokenConfigPath()) : {};
-    this.set(cliConfig);
-    this.setTokenOptions(authConfig);
+    const cliConfig = fs.existsSync(this.configPath()) && require(this.configPath());
+    const authConfig = fs.existsSync(this.tokenConfigPath()) && require(this.tokenConfigPath());
+    if (cliConfig) {
+      this.options = { ...cliConfig };
+    }
+    if (authConfig) {
+      this.tokenOptions = { ...authConfig };
+    }
   };
 
   set = (opts?: Partial<ConfigurationOptions>) => {
@@ -102,7 +107,6 @@ export class Configuration {
         projects.map((p) => p.name),
         { message: 'Select a project', name: 'project' },
       );
-      this.options.project = projectName;
       return projectName;
     }
     if (k === 'version' && this.options.namespace && this.options.project) {
@@ -117,7 +121,6 @@ export class Configuration {
         .filter((s) => s.filename!.match(/schema-(.*).graphql/))
         .map((s) => s.filename!.match(/schema-(.*).graphql/)![1]);
       const versionName = await AutocompleteInputPrompt(files, { message: 'Select a version', name: 'version' });
-      this.options.version = versionName;
       return versionName;
     }
     const inqProps: inquirer.QuestionCollection = ConfigurationSpecialPrompts[k]
@@ -129,20 +132,22 @@ export class Configuration {
           default: options?.default,
         };
     const answer = (await inquirer.prompt(inqProps))[k] as any;
-    this.options[k] = answer;
     return answer;
   };
 
-  resolve = async <T>(props: T | ConfigurationOptions) => {
+  resolve = async <T>(props: T | ConfigurationOptions, order?: Array<keyof T>) => {
     const dict: Record<string, any> = {};
-    for (const key of Object.keys(props)) {
-      dict[key] =
+    const o = order ? order : Object.keys(props);
+    for (const key of o) {
+      dict[key as string] =
         props[key as keyof typeof props] ||
         ((await Config.getUnknownString(key as keyof ConfigurationOptions)) as string);
+      this.options[key as keyof ConfigurationOptions] = dict[key as string];
     }
-    return dict as {
+    const updatedOptions = dict as {
       [P in keyof T]: T[P] extends infer R | undefined ? R : T[P];
     };
+    return updatedOptions;
   };
 
   configure = async <T>(props: T | ConfigurationOptions) => {

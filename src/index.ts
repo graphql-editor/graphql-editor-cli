@@ -7,7 +7,7 @@ import { initConfiguration } from '@/commands/init';
 import { CommandSchema } from '@/commands/schema';
 import { CommandTypings } from '@/commands/typings';
 import { CommandBootstrap } from '@/commands/bootstrap';
-import { Configuration } from '@/Configuration';
+import { Config, Configuration } from '@/Configuration';
 
 welcome().then(() => {
   new Configuration();
@@ -15,13 +15,13 @@ welcome().then(() => {
     .usage('Usage: $0 <command> [options]')
     .help('h')
     .alias('h', 'help')
-    .command('init', 'Create editor project config inside current working directory.', (yargs) => {
-      Auth.login().then(initConfiguration);
+    .command('init', 'Create editor project config inside current working directory.', async (yargs) => {
+      await Auth.login().then(Config.setTokenOptions);
+      await initConfiguration();
     })
-    .command('schema [path]', 'Generate GraphQL schema from project at given path', (yargs) => {
-      Auth.login().then(() => {
-        CommandSchema(yargs.argv as any);
-      });
+    .command('schema [path]', 'Generate GraphQL schema from project at given path', async (yargs) => {
+      await Auth.login().then(Config.setTokenOptions);
+      await CommandSchema(yargs.argv as any);
     })
     .options({
       namespace: {
@@ -38,14 +38,13 @@ welcome().then(() => {
         describe: 'Get project with libraries',
       },
     })
-    .command('typings [path]', 'Generate GraphQL typings for TypeScript or Javascript', (yargs) => {
+    .command('typings [path]', 'Generate GraphQL typings for TypeScript or Javascript', async (yargs) => {
       yargs.positional('path', {
         describe: 'Path to store typings',
         type: 'string',
       });
-      Auth.login().then(() => {
-        CommandTypings(yargs.argv as any);
-      });
+      await Auth.login().then(Config.setTokenOptions);
+      await CommandTypings(yargs.argv as any);
     })
     .options({
       namespace: {
@@ -77,7 +76,7 @@ welcome().then(() => {
         describe: 'Get project with libraries',
       },
     })
-    .command('bootstrap [type] [name]', 'Bootstrap a new frontend or backend project', (yargs) => {
+    .command('bootstrap [type] [name]', 'Bootstrap a new frontend or backend project', async (yargs) => {
       yargs.positional('type', {
         describe: 'Project type.',
         type: 'string',
@@ -87,9 +86,7 @@ welcome().then(() => {
         describe: 'Project name.',
         type: 'string',
       });
-      Auth.login().then(() => {
-        CommandBootstrap(yargs.argv as any);
-      });
+      await CommandBootstrap(yargs.argv as any);
     })
     .showHelpOnFail(true)
     .demandCommand()
