@@ -2,6 +2,7 @@ import { TypeResolver } from '@/common/selectors';
 import { addStucco, getPaths, HandleTemplates } from '@/common';
 import { Config } from '@/Configuration';
 import { Parser, ParserField } from 'graphql-zeus';
+import { Editor } from '@/Editor';
 
 interface BasicResolverProps {
   resolverParent: string;
@@ -13,7 +14,7 @@ interface BasicResolverProps {
 
 const basicResolver = ({ field, resolverParent, body = '', imports = '', source }: BasicResolverProps) => `
 import { FieldResolveInput } from 'stucco-js';
-import { resolverFor } from '../graphql-zeus';
+import { resolverFor } from '../zeus';
 ${imports}
 
 export const handler = async (input: FieldResolveInput) => 
@@ -22,24 +23,24 @@ export const handler = async (input: FieldResolveInput) =>
   })(input.arguments${source ? `, input.source` : ``});
 `;
 
-export const resolver = async ({
-  compiled,
+export const CommandResolver = async ({
   namespace,
-  path,
   project,
   version,
 }: {
-  path?: string;
   namespace?: string;
   project?: string;
   version?: string;
-  compiled?: boolean;
 }) => {
-  const resolve = await Config.resolve({ compiled, namespace, path, project, version });
-  const schema = await Config.getSchema(resolve);
+  const resolve = await Config.configure({ namespace, project, version }, ['namespace', 'project', 'version']);
+  const schema = await Editor.getCompiledSchema(resolve);
   const parseSchema = Parser.parseAddExtensions(schema);
   const { parentResolver, resolver } = await TypeResolver(parseSchema);
-  const { resolverPath, basePath, resolverLibPath } = getPaths(parentResolver, resolver);
+  const { resolverPath, basePath, resolverLibPath } = await getPaths({
+    resolverParentName: parentResolver,
+    resolverField: resolver,
+    extension: 'ts',
+  });
   HandleTemplates.action({
     content: basicResolver({
       field: resolver,

@@ -2,21 +2,21 @@ import { Parser, ParserField, TypeDefinition } from 'graphql-zeus';
 import { HandleTemplates } from '@/common';
 import { Config } from '@/Configuration';
 import path from 'path';
+import { Editor } from '@/Editor';
 
 export const getModel = async (modelsPath: string, field: ParserField) => {
   const modelName = `${field.name}Model`;
   HandleTemplates.action({
     type: 'addIfNotExist',
     path: `${modelsPath}/${modelName}.ts`,
-    content: `import { ModelTypes } from '../../graphql-zeus';
+    content: `import { ModelTypes } from '../zeus';
     
 export type ${modelName} = ModelTypes['${field.name}'];`,
   });
   return modelName;
 };
 
-export const generateModelsFile = async ({
-  compiled,
+export const CommandModels = async ({
   namespace,
   backendSrc,
   project,
@@ -26,10 +26,14 @@ export const generateModelsFile = async ({
   namespace?: string;
   project?: string;
   version?: string;
-  compiled?: boolean;
 }) => {
-  const resolve = await Config.resolve({ compiled, namespace, backendSrc, project, version });
-  const schema = await Config.getSchema(resolve);
+  const resolve = await Config.configure({ namespace, backendSrc, project, version }, [
+    'namespace',
+    'project',
+    'version',
+    'backendSrc',
+  ]);
+  const schema = await Editor.getCompiledSchema(resolve);
   const tree = Parser.parseAddExtensions(schema);
   const modelFields = tree.nodes.filter((f) => f.data.type === TypeDefinition.ObjectTypeDefinition);
   const modelsPath = path.join(resolve.backendSrc, 'models');

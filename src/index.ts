@@ -1,13 +1,36 @@
 #!/usr/bin/env node
 
-import yargs from 'yargs';
+import yargs, { Options } from 'yargs';
 import { welcome } from './welcome';
 import { Auth } from '@/Auth';
 import { initConfiguration } from '@/commands/init';
 import { CommandSchema } from '@/commands/schema';
 import { CommandTypings } from '@/commands/typings';
 import { CommandBootstrap } from '@/commands/bootstrap';
-import { Config, Configuration } from '@/Configuration';
+import { Config, Configuration, ConfigurationOptions } from '@/Configuration';
+import { CommandResolver } from '@/commands/backend/commands/resolver';
+import { CommandModels } from '@/commands/backend/commands/models';
+
+type ConfOptions = {
+  [P in keyof ConfigurationOptions]: Options;
+};
+
+const confOptions = (o: ConfOptions) => o as { [key: string]: Options };
+
+const projectOptions: ConfOptions = {
+  namespace: {
+    describe: 'GraphQL Editor Namespace',
+    type: 'string',
+  },
+  project: {
+    describe: 'GraphQL Editor Project',
+    type: 'string',
+  },
+  version: {
+    describe: 'GraphQL Editor Version name',
+    type: 'string',
+  },
+};
 
 welcome().then(() => {
   new Configuration();
@@ -17,78 +40,78 @@ welcome().then(() => {
     .alias('h', 'help')
     .command('init', 'Create editor project config inside current working directory.', async (yargs) => {
       await Auth.login().then(Config.setTokenOptions);
-      await initConfiguration();
+      await initConfiguration(yargs.argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
     })
-    .command('schema [path]', 'Generate GraphQL schema from project at given path', async (yargs) => {
+    .options(
+      confOptions({
+        ...projectOptions,
+      }),
+    )
+    .command('schema', 'Generate GraphQL schema from project at given path', async (yargs) => {
       await Auth.login().then(Config.setTokenOptions);
-      await CommandSchema(yargs.argv as any);
+      await CommandSchema(yargs.argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version' | 'schemaDir'>);
     })
-    .options({
-      namespace: {
-        describe: 'GraphQL Editor Namespace',
-      },
-      project: {
-        describe: 'GraphQL Editor Project',
-      },
-      version: {
-        describe: 'GraphQL Editor Version name',
-      },
-      compiled: {
-        boolean: true,
-        describe: 'Get project with libraries',
-      },
-    })
-    .command('typings [path]', 'Generate GraphQL typings for TypeScript or Javascript', async (yargs) => {
-      yargs.positional('path', {
-        describe: 'Path to store typings',
-        type: 'string',
-      });
+    .options(
+      confOptions({
+        ...projectOptions,
+        schemaDir: {
+          describe: 'Path to created schema containing its name and extension',
+          type: 'string',
+        },
+      }),
+    )
+    .command('typings', 'Generate GraphQL typings for TypeScript or Javascript', async (yargs) => {
       await Auth.login().then(Config.setTokenOptions);
-      await CommandTypings(yargs.argv as any);
+      await CommandTypings(
+        yargs.argv as Pick<
+          ConfigurationOptions,
+          'project' | 'namespace' | 'version' | 'typingsDir' | 'typingsEnv' | 'typingsGen' | 'typingsHost'
+        >,
+      );
     })
-    .options({
-      namespace: {
-        describe: 'GraphQL Editor Namespace',
-        type: 'string',
-      },
-      project: {
-        describe: 'GraphQL Editor Project',
-        type: 'string',
-      },
-      projectVersion: {
-        describe: 'GraphQL Editor Version name',
-        type: 'string',
-      },
-      gen: {
-        describe: 'Generation language',
-        choices: ['Javascript', 'TypeScript'],
-      },
-      host: {
-        describe: 'GraphQL Server address',
-        type: 'string',
-      },
-      env: {
-        describe: 'Generation Environment',
-        choices: ['browser', 'node'],
-      },
-      compiled: {
-        boolean: true,
-        describe: 'Get project with libraries',
-      },
+    .options(
+      confOptions({
+        ...projectOptions,
+        typingsGen: {
+          describe: 'Generation language',
+          choices: ['Javascript', 'TypeScript'],
+        },
+        typingsHost: {
+          describe: 'GraphQL Server address',
+          type: 'string',
+        },
+        typingsDir: {
+          describe: 'Path where to create generated files',
+          type: 'string',
+        },
+        typingsEnv: {
+          describe: 'Generation Environment',
+          choices: ['browser', 'node'],
+        },
+      }),
+    )
+    .command('bootstrap', 'Bootstrap a new frontend or backend project', async (yargs) => {
+      await CommandBootstrap(yargs.argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version' | 'system'>);
     })
-    .command('bootstrap [type] [name]', 'Bootstrap a new frontend or backend project', async (yargs) => {
-      yargs.positional('type', {
-        describe: 'Project type.',
-        type: 'string',
-        choices: ['backend', 'frontend'],
-      });
-      yargs.positional('name', {
-        describe: 'Project name.',
-        type: 'string',
-      });
-      await CommandBootstrap(yargs.argv as any);
+    .options(
+      confOptions({
+        ...projectOptions,
+        system: {
+          type: 'string',
+          choices: ['backend', 'frontend'],
+          describe: 'Choose the type of app you want to bootstrap',
+        },
+      }),
+    )
+    .command('resolver', 'Create resolver for your backend project', async (yargs) => {
+      await CommandResolver(yargs.argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
     })
+    .options(confOptions({ ...projectOptions }))
+    .command('models', 'Generate model files for your backend project', async (yargs) => {
+      await CommandModels(yargs.argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
+    })
+    .options(confOptions({ ...projectOptions }))
     .showHelpOnFail(true)
     .demandCommand()
-    .epilog('copyright 2020').argv;
+    .epilog('Bye!').argv;
 });

@@ -6,34 +6,35 @@ import * as templates from './templates';
 export { generators, templates };
 
 export const CommandTypings = async ({
-  path,
-  compiled,
+  typingsDir,
   namespace,
   project,
   version,
-  gen,
-  env,
-  host,
+  typingsGen,
+  typingsEnv,
+  typingsHost,
 }: {
-  path?: string;
+  typingsDir?: string;
   namespace?: string;
   project?: string;
   version?: string;
-  compiled?: boolean;
-  gen?: TypingsGen;
-  env?: Environment;
-  host?: string;
+  typingsGen?: TypingsGen;
+  typingsEnv?: Environment;
+  typingsHost?: string;
 }) => {
-  const cfg = await Config.configure({
-    typingsDir: path,
-    namespace,
-    project,
-    version,
-    typingsEnv: env,
-    typingsGen: gen,
-    typingsHost: host,
-  });
-  const schema = await Config.getSchema(cfg);
+  const cfg = await Config.configure(
+    {
+      typingsDir,
+      namespace,
+      project,
+      version,
+      typingsEnv,
+      typingsGen,
+      typingsHost,
+    },
+    ['namespace', 'project', 'version', 'typingsDir', 'typingsEnv', 'typingsHost', 'typingsGen'],
+  );
+  const schema = await Editor.getCompiledSchema(cfg);
   if (cfg.typingsGen === 'Javascript') {
     generators.Javacript({
       env: cfg.typingsEnv,

@@ -1,36 +1,27 @@
 /* eslint-disable */
 
 export const AllTypesProps: Record<string,any> = {
-	AccountType: "enum",
-	RenameFileInput:{
-		src:{
-			type:"String",
+	PredictCheckoutInput:{
+		planID:{
+			type:"ID",
 			array:false,
 			arrayRequired:false,
 			required:true
 		},
-		dst:{
+		quantity:{
+			type:"Int",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		coupon:{
 			type:"String",
 			array:false,
 			arrayRequired:false,
-			required:true
+			required:false
 		}
 	},
-	RFC3339Date: "String",
-	Decimal: "String",
 	ProjectsSortInput:{
-		id:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		owner:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
 		public:{
 			type:"SortOrder",
 			array:false,
@@ -66,33 +57,18 @@ export const AllTypesProps: Record<string,any> = {
 			array:false,
 			arrayRequired:false,
 			required:false
-		}
-	},
-	Role: "enum",
-	ProjectOps:{
-		removeSources:{
-			files:{
-				type:"String",
-				array:true,
-				arrayRequired:false,
-				required:true
-			}
 		},
-		renameSources:{
-			files:{
-				type:"RenameFileInput",
-				array:true,
-				arrayRequired:false,
-				required:true
-			}
+		id:{
+			type:"SortOrder",
+			array:false,
+			arrayRequired:false,
+			required:false
 		},
-		update:{
-			in:{
-				type:"UpdateProject",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+		owner:{
+			type:"SortOrder",
+			array:false,
+			arrayRequired:false,
+			required:false
 		}
 	},
 	Query:{
@@ -185,12 +161,6 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		},
 		listProjects:{
-			owned:{
-				type:"Boolean",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
 			last:{
 				type:"String",
 				array:false,
@@ -206,6 +176,12 @@ export const AllTypesProps: Record<string,any> = {
 			sort:{
 				type:"ProjectsSortInput",
 				array:true,
+				arrayRequired:false,
+				required:false
+			},
+			owned:{
+				type:"Boolean",
+				array:false,
 				arrayRequired:false,
 				required:false
 			}
@@ -233,90 +209,40 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		}
 	},
-	Team:{
-		member:{
-			username:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
-		},
-		members:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
-		}
-	},
-	CustomerInput:{
-		email:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		country:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		postCode:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		marketingConsent:{
-			type:"Boolean",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	NewSource:{
-		filename:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		contentLength:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		contentType:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		checksum:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	PredictCheckoutInput:{
+	RFC3339Date: "String",
+	FileServerCredentials: "String",
+	CheckoutDataInput:{
 		quantity:{
 			type:"Int",
 			array:false,
 			arrayRequired:false,
 			required:false
 		},
+		customer:{
+			type:"CustomerInput",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		vat:{
+			type:"VatInput",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
 		coupon:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		successURL:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		cancelURL:{
 			type:"String",
 			array:false,
 			arrayRequired:false,
@@ -351,17 +277,17 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		},
 		createProject:{
-			public:{
-				type:"Boolean",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
 			name:{
 				type:"String",
 				array:false,
 				arrayRequired:false,
 				required:true
+			},
+			public:{
+				type:"Boolean",
+				array:false,
+				arrayRequired:false,
+				required:false
 			}
 		},
 		member:{
@@ -395,19 +321,31 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		}
 	},
+	Team:{
+		member:{
+			username:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
+		},
+		members:{
+			limit:{
+				type:"Int",
+				array:false,
+				arrayRequired:false,
+				required:false
+			},
+			last:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
+		}
+	},
 	VatInput:{
-		state:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		country:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
 		postCode:{
 			type:"String",
 			array:false,
@@ -437,9 +375,72 @@ export const AllTypesProps: Record<string,any> = {
 			array:false,
 			arrayRequired:false,
 			required:false
+		},
+		state:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		country:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
 		}
 	},
-	PaymentDate: "String",
+	ProjectOps:{
+		removeSources:{
+			files:{
+				type:"String",
+				array:true,
+				arrayRequired:false,
+				required:true
+			}
+		},
+		renameSources:{
+			files:{
+				type:"RenameFileInput",
+				array:true,
+				arrayRequired:false,
+				required:true
+			}
+		},
+		update:{
+			in:{
+				type:"UpdateProject",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
+		}
+	},
+	NewSource:{
+		checksum:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		filename:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		contentLength:{
+			type:"Int",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		contentType:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		}
+	},
 	Namespace:{
 		project:{
 			name:{
@@ -464,17 +465,36 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		}
 	},
-	MemberOps:{
-		update:{
-			role:{
-				type:"Role",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+	Role: "enum",
+	ChangeSubscriptionInput:{
+		subscriptionID:{
+			type:"Int",
+			array:false,
+			arrayRequired:false,
+			required:true
+		},
+		subscriptionPlanID:{
+			type:"Int",
+			array:false,
+			arrayRequired:false,
+			required:false
 		}
 	},
-	SortOrder: "enum",
+	RenameFileInput:{
+		src:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:true
+		},
+		dst:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:true
+		}
+	},
+	Decimal: "String",
 	Project:{
 		sources:{
 			last:{
@@ -491,21 +511,8 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		}
 	},
-	ChangeSubscriptionInput:{
-		subscriptionID:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		subscriptionPlanID:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	FileServerCredentials: "String",
+	PaymentDate: "String",
+	SortOrder: "enum",
 	Mutation:{
 		changeSubscription:{
 			in:{
@@ -530,13 +537,13 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		},
 		createTeam:{
-			namespace:{
+			name:{
 				type:"String",
 				array:false,
 				arrayRequired:false,
 				required:true
 			},
-			name:{
+			namespace:{
 				type:"String",
 				array:false,
 				arrayRequired:false,
@@ -618,57 +625,44 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		}
 	},
-	CheckoutDataInput:{
-		customer:{
-			type:"CustomerInput",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		vat:{
-			type:"VatInput",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		coupon:{
+	CustomerInput:{
+		postCode:{
 			type:"String",
 			array:false,
 			arrayRequired:false,
 			required:false
 		},
-		successURL:{
+		marketingConsent:{
+			type:"Boolean",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		email:{
 			type:"String",
 			array:false,
 			arrayRequired:false,
 			required:false
 		},
-		cancelURL:{
+		country:{
 			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		planID:{
-			type:"ID",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		quantity:{
-			type:"Int",
 			array:false,
 			arrayRequired:false,
 			required:false
 		}
 	},
+	AccountType: "enum",
+	MemberOps:{
+		update:{
+			role:{
+				type:"Role",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
+		}
+	},
 	UpdateProject:{
-		project:{
-			type:"ID",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
 		description:{
 			type:"String",
 			array:false,
@@ -686,39 +680,23 @@ export const AllTypesProps: Record<string,any> = {
 			array:false,
 			arrayRequired:false,
 			required:false
+		},
+		project:{
+			type:"ID",
+			array:false,
+			arrayRequired:false,
+			required:false
 		}
 	}
 }
 
 export const ReturnTypes: Record<string,any> = {
-	Payment:{
-		amount:"Decimal",
-		currency:"String",
-		date:"PaymentDate",
-		receiptURL:"String",
-		subscriptionID:"Int"
-	},
-	Endpoint:{
-		uri:"String"
-	},
-	FakerSourceConnection:{
-		pageInfo:"PageInfo",
-		sources:"FakerSource"
-	},
-	Header:{
-		key:"String",
-		value:"String"
-	},
-	ProjectConnection:{
-		pageInfo:"PageInfo",
-		projects:"Project"
-	},
-	ProjectOps:{
-		delete:"Boolean",
-		deployToFaker:"Boolean",
-		removeSources:"Boolean",
-		renameSources:"Boolean",
-		update:"Boolean"
+	User:{
+		accountType:"AccountType",
+		id:"ID",
+		namespace:"Namespace",
+		subscriptions:"SubscriptionConnection",
+		username:"String"
 	},
 	Query:{
 		checkoutData:"String",
@@ -734,23 +712,9 @@ export const ReturnTypes: Record<string,any> = {
 		payments:"Payment",
 		predictCheckout:"PredictCheckout"
 	},
-	Team:{
-		id:"ID",
-		member:"Member",
-		members:"MemberConnection",
-		name:"String",
-		namespace:"Namespace",
-		planID:"Int"
-	},
-	Member:{
-		email:"String",
-		role:"Role",
-		username:"String"
-	},
-	SourceUploadInfo:{
-		filename:"String",
-		headers:"Header",
-		putUrl:"String"
+	ProjectConnection:{
+		pageInfo:"PageInfo",
+		projects:"Project"
 	},
 	TeamOps:{
 		addMember:"Member",
@@ -768,12 +732,6 @@ export const ReturnTypes: Record<string,any> = {
 		members:"Member",
 		pageInfo:"PageInfo"
 	},
-	Namespace:{
-		project:"Project",
-		projects:"ProjectConnection",
-		public:"Boolean",
-		slug:"String"
-	},
 	Subscription:{
 		cancelURL:"String",
 		expiration:"String",
@@ -784,22 +742,42 @@ export const ReturnTypes: Record<string,any> = {
 		subscriptionPlanID:"Int",
 		updateURL:"String"
 	},
-	PageInfo:{
-		last:"String",
-		limit:"Int",
-		next:"Boolean"
+	Team:{
+		id:"ID",
+		member:"Member",
+		members:"MemberConnection",
+		name:"String",
+		namespace:"Namespace",
+		planID:"Int"
+	},
+	ProjectOps:{
+		delete:"Boolean",
+		deployToFaker:"Boolean",
+		removeSources:"Boolean",
+		renameSources:"Boolean",
+		update:"Boolean"
+	},
+	Namespace:{
+		project:"Project",
+		projects:"ProjectConnection",
+		public:"Boolean",
+		slug:"String"
+	},
+	SourceUploadInfo:{
+		filename:"String",
+		headers:"Header",
+		putUrl:"String"
+	},
+	PredictCheckout:{
+		price:"Float",
+		trialDays:"Int"
 	},
 	SubscriptionConnection:{
 		pageInfo:"PageInfo",
 		subscriptions:"Subscription"
 	},
-	TeamConnection:{
-		pageInfo:"PageInfo",
-		teams:"Team"
-	},
-	MemberOps:{
-		delete:"Boolean",
-		update:"Boolean"
+	Endpoint:{
+		uri:"String"
 	},
 	Project:{
 		createdAt:"RFC3339Date",
@@ -816,16 +794,9 @@ export const ReturnTypes: Record<string,any> = {
 		tags:"String",
 		team:"Team"
 	},
-	User:{
-		accountType:"AccountType",
-		id:"ID",
-		namespace:"Namespace",
-		subscriptions:"SubscriptionConnection",
-		username:"String"
-	},
-	PredictCheckout:{
-		price:"Float",
-		trialDays:"Int"
+	UserConnection:{
+		pageInfo:"PageInfo",
+		users:"User"
 	},
 	Mutation:{
 		changeSubscription:"Boolean",
@@ -839,14 +810,43 @@ export const ReturnTypes: Record<string,any> = {
 		updateProject:"Boolean",
 		updateSources:"SourceUploadInfo"
 	},
-	UserConnection:{
-		pageInfo:"PageInfo",
-		users:"User"
+	Header:{
+		key:"String",
+		value:"String"
 	},
 	FakerSource:{
 		checksum:"String",
 		contents:"String",
 		filename:"String",
 		getUrl:"String"
+	},
+	PageInfo:{
+		last:"String",
+		limit:"Int",
+		next:"Boolean"
+	},
+	Payment:{
+		amount:"Decimal",
+		currency:"String",
+		date:"PaymentDate",
+		receiptURL:"String",
+		subscriptionID:"Int"
+	},
+	FakerSourceConnection:{
+		pageInfo:"PageInfo",
+		sources:"FakerSource"
+	},
+	Member:{
+		email:"String",
+		role:"Role",
+		username:"String"
+	},
+	TeamConnection:{
+		pageInfo:"PageInfo",
+		teams:"Team"
+	},
+	MemberOps:{
+		delete:"Boolean",
+		update:"Boolean"
 	}
 }

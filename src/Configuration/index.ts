@@ -5,6 +5,7 @@ import { Environment } from 'graphql-zeus';
 import { Editor } from '@/Editor';
 import { AutocompleteInputPrompt } from '@/utils';
 
+export type AppType = 'backend' | 'frontend';
 export type TypingsGen = 'Javascript' | 'TypeScript';
 
 export interface TokenConf {
@@ -31,9 +32,8 @@ export interface BackendConf {
 }
 
 export interface ConfigurationOptions extends TypingsConf, EditorConf, BackendConf {
-  system?: string;
+  system?: AppType;
   schemaDir?: string;
-  compiled?: boolean;
 }
 
 export let Config: Configuration;
@@ -47,7 +47,7 @@ const ConfigurationSpecialPrompts: { [P in keyof ConfigurationOptions]?: inquire
   },
   typingsEnv: { choices: ['browser', 'node'], message: 'Select environment', name: 'typingsEnv', type: 'list' },
   version: { message: 'Project version', default: 'latest', type: 'input' },
-  compiled: { type: 'checkbox', message: 'Get schema together with its libraries', default: false },
+  system: { type: 'list', choices: ['backend', 'frontend'], message: 'Select project type', name: 'system' },
 };
 
 export class Configuration {
@@ -135,43 +135,27 @@ export class Configuration {
     return answer;
   };
 
-  resolve = async <T>(props: T | ConfigurationOptions, order?: Array<keyof T>) => {
+  resolve = async <T, Z extends Array<keyof T>>(props: T | ConfigurationOptions, order: Z) => {
     const dict: Record<string, any> = {};
-    const o = order ? order : Object.keys(props);
-    for (const key of o) {
+    for (const key of order) {
       dict[key as string] =
         props[key as keyof typeof props] ||
         ((await Config.getUnknownString(key as keyof ConfigurationOptions)) as string);
       this.options[key as keyof ConfigurationOptions] = dict[key as string];
     }
-    const updatedOptions = dict as {
-      [P in keyof T]: T[P] extends infer R | undefined ? R : T[P];
-    };
-    return updatedOptions;
+    const updatedOptions = dict as ConfigurationOptions extends TypingsConf
+      ? {
+          [P in keyof T]: T[P] extends infer R | undefined ? R : T[P];
+        }
+      : never;
+    return updatedOptions as Pick<typeof updatedOptions, Z extends Array<infer R> ? R : {}>;
   };
 
-  configure = async <T>(props: T | ConfigurationOptions) => {
-    const reconfigured = await this.resolve(props);
+  configure = async <T, Z extends Array<keyof T>>(props: T | ConfigurationOptions, order: Z) => {
+    const reconfigured = await this.resolve(props, order);
     this.set(reconfigured);
     return reconfigured;
   };
 
   conf = () => this.options;
-
-  getSchema = async (resolve: { namespace: string; project: string; version: string; compiled?: boolean }) => {
-    const p = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
-    if (!p) {
-      throw new Error(`Project "${resolve.project}" does not exist in "${resolve.namespace}" namespace`);
-    }
-
-    const schemaSource = resolve.compiled
-      ? p.sources?.sources?.find((s) => s.filename === `schema.graphql`)
-      : p.sources?.sources?.find((s) => s.filename === `schema-${resolve.version}.graphql`);
-    if (!schemaSource?.getUrl) {
-      throw new Error(`Project "${resolve.project}" does not have a version "${resolve.version}"`);
-    }
-
-    const schema = await Editor.getSource(schemaSource.getUrl);
-    return schema;
-  };
 }

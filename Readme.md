@@ -64,7 +64,7 @@ $ gecli typings
 #### Bootstrap
 
 ```sh
-$ gecli bootstrap backend <project_name>
+$ gecli bootstrap
 ```
 
 Bootstrap a backend stucco project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration.
@@ -72,7 +72,7 @@ Bootstrap a backend stucco project. It will create folder with `package.json` `s
 #### Models
 
 ```sh
-$ gecli backend models
+$ gecli models
 ```
 
 Generate TypeScript Models from GraphQL types. They are very useful to use with popular Databases
@@ -168,7 +168,7 @@ Some resolver types however need little code to make them work the way you want.
 CLI tool to generate [GraphQL SSG](https://graphqlssg.com) Frontend Pages.
 
 ```sh
-$ gecli bootstrap frontend <project_name>
+$ gecli bootstrap
 ```
 
 ## Roadmap
@@ -177,3 +177,4 @@ $ gecli bootstrap frontend <project_name>
 - [ ] More use cases with other databases and ORMs
 - [ ] Deployment of microservices
 - [ ] Add colours
+- [ ] Push files to editor

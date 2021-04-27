@@ -1,40 +1,38 @@
 import inquirer from 'inquirer';
 import fs from 'fs';
 import path from 'path';
-import listr from 'listr';
 import { projectInstall } from 'pkg-install';
 import ora from 'ora';
 import { Auth } from '@/Auth';
-import { Config, Configuration } from '@/Configuration';
+import { AppType, Config, Configuration, ConfigurationOptions } from '@/Configuration';
+import { Editor } from '@/Editor';
+import { Javacript } from '@/commands/typings/generators';
+import { TypeScript } from '@/commands/typings/generators';
 
 const cwd = process.cwd();
 const jsonFile = (json: any) => JSON.stringify(json, null, 4);
-export type AppType = 'backend' | 'frontend';
 
 export const CommandBootstrap = async ({
-  type,
+  system,
   name,
   namespace,
   project,
   version,
 }: {
-  type?: AppType;
+  system?: AppType;
   name?: string;
   project?: string;
   namespace?: string;
   version?: string;
 }) => {
-  const appSystemType =
-    type ??
-    ((
-      await inquirer.prompt({
-        type: 'list',
-        name: 'type',
-        message: 'App type',
-        choices: ['backend', 'frontend'],
-      })
-    ).type as AppType);
-
+  const credentials = await Auth.login();
+  Config.setTokenOptions(credentials);
+  const projectDetails = await Config.resolve({ namespace, project, version, system }, [
+    'system',
+    'namespace',
+    'project',
+    'version',
+  ]);
   const appSystemName = name
     ? name
     : (
@@ -42,13 +40,16 @@ export const CommandBootstrap = async ({
           type: 'input',
           name: 'name',
           message: 'project name',
+          default: projectDetails.project,
         })
       ).name;
   const projectPath = path.join(cwd, appSystemName);
   fs.mkdirSync(projectPath);
   const writeProjectJSONFile = (file: any, fileName: string) =>
     fs.writeFileSync(path.join(projectPath, fileName), jsonFile(file));
-  if (appSystemType === 'backend') {
+  writeProjectJSONFile(credentials, Configuration.AUTH_NAME);
+
+  if (projectDetails.system === 'backend') {
     const { type }: { type: 'js' | 'ts' } = await inquirer.prompt({
       type: 'list',
       name: 'type',
@@ -78,21 +79,81 @@ export const CommandBootstrap = async ({
     });
     loadingInstall.succeed();
     const loggingIn = ora('Logging in...').start();
-    const credentials = await Auth.login();
-    writeProjectJSONFile(credentials, Configuration.AUTH_NAME);
     loggingIn.succeed();
-    const projectDetails = await Config.resolve({ namespace, project, version });
-    writeProjectJSONFile(projectDetails, Configuration.CONFIG_NAME);
+    const srcDir = './src';
+    const libDir = './lib';
+
+    const fetchingSchema = ora('Fetching compiled schema...').start();
+    const schema = await Editor.getCompiledSchema({
+      ...projectDetails,
+    });
+    fs.writeFileSync(path.join(projectPath, 'schema.graphql'), schema);
+    fetchingSchema.succeed();
+    const typingsDetails: Required<Pick<
+      ConfigurationOptions,
+      'typingsDir' | 'typingsEnv' | 'typingsGen' | 'typingsHost'
+    >> = {
+      typingsEnv: 'node',
+      typingsGen: type === 'ts' ? 'TypeScript' : 'Javascript',
+      typingsHost: 'http://localhost:8080/',
+      typingsDir: srcDir,
+    };
+    if (type === 'js') {
+      Javacript({
+        env: typingsDetails.typingsEnv,
+        host: typingsDetails.typingsHost,
+        path: path.join(projectPath, 'src'),
+        schema,
+      });
+    }
+    if (type === 'ts') {
+      TypeScript({
+        env: typingsDetails.typingsEnv,
+        host: typingsDetails.typingsHost,
+        path: path.join(projectPath, 'src'),
+        schema,
+      });
+    }
+    writeProjectJSONFile(
+      {
+        ...projectDetails,
+        ...typingsDetails,
+        backendSrc: srcDir,
+        backendLib: libDir,
+        schemaDir: './',
+      } as Partial<ConfigurationOptions>,
+      Configuration.CONFIG_NAME,
+    );
     console.log(`\n\nSuccessfully created backend project in path: ${projectPath}.`);
   }
-  if (type === 'frontend') {
-    writeProjectJSONFile((await import('./commands/frontend/files/.graphql-ssg.json')).default, '.graphql-ssg.json');
-    console.log(`Successfully created frontend project in path: ${projectPath}. 
-Install graphql-ssg cli:
-npm i -g graphql-ssg
+  if (projectDetails.system === 'frontend') {
+    writeProjectJSONFile(
+      {
+        ...projectDetails,
+      } as Partial<ConfigurationOptions>,
+      Configuration.CONFIG_NAME,
+    );
+    const graphqlSSGConf = (await import('./commands/frontend/files/graphql-ssg.json')).default;
+    graphqlSSGConf.url = await Config.getUnknownString('typingsHost', {
+      message: 'Provide GraphQL host',
+      default: Editor.getFakerURL(`${projectDetails.namespace}/${projectDetails.project}`),
+    });
+    writeProjectJSONFile(graphqlSSGConf, 'graphql-ssg.json');
+    fs.mkdirSync(path.join(projectPath, 'pages'));
+    fs.writeFileSync(
+      path.join(projectPath, 'pages', 'index.zeus.js'),
+      (await import('./commands/frontend/files/index.zeus.js')).default,
+    );
+    fs.writeFileSync(
+      path.join(projectPath, 'pages', 'index.css'),
+      (await import('./commands/frontend/files/index.css')).default,
+    );
 
-or instal locally
-npm i graphql-ssg
+    console.log(`
+Successfully created frontend project in path: ${projectPath}. 
+
+Install graphql-ssg cli if you dont have it already:
+npm i -g graphql-ssg
 
 Then start creating js esmodules with ".zeus.js" extension in pages directory. Each file must return string containing html and can use top level await
   `);
