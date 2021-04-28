@@ -1,6 +1,7 @@
 import { Config } from '@/Configuration';
 import { HandleTemplates } from '@/common';
 import { Editor } from '@/Editor';
+import path from 'path';
 
 export const CommandSchema = async ({
   schemaDir,
@@ -20,9 +21,12 @@ export const CommandSchema = async ({
     'schemaDir',
   ]);
   const schema = await Editor.getCompiledSchema(resolve);
+
+  const isFile = resolve.schemaDir.match(/.*\.(graphql|gql|sdl)$/);
+
   HandleTemplates.action({
     content: schema,
-    path: resolve.schemaDir,
+    path: isFile ? resolve.schemaDir : path.join(resolve.schemaDir, 'schema.graphql'),
     type: 'add',
   });
 };
