@@ -10,11 +10,15 @@ Translate GraphQL to Anything and make it your one and only source of truth. Sch
     - [Global](#global)
     - [Inside Repo](#inside-repo)
   - [Usage](#usage)
+  - [Commmon Options](#commmon-options)
   - [Commands](#commands)
     - [Schema](#schema)
+      - [Additional options](#additional-options)
     - [Typings](#typings)
+      - [Additional options](#additional-options-1)
     - [Backend](#backend)
       - [Bootstrap](#bootstrap)
+      - [Additional options](#additional-options-2)
       - [Models](#models)
         - [MongoDB](#mongodb)
       - [Resolvers](#resolvers)
@@ -32,24 +36,46 @@ npm i -g graphql-editor-cli
 ### Inside Repo
 
 ```sh
-npm i graphql-editor-cli
+npm i -D graphql-editor-cli
 ```
 
 then use with npx for example or as a `package.json` script.
 
 ## Usage
 
-All comands work in 3 ways. You can provide all arguments with flags, you can get them from local config file or complete them in interactive modes
+All comands work in 3 ways.
+
+- You can provide all arguments with flags
+- you can get them from local config file
+- complete them in interactive modes
+
+In this order CLI will try to get argument.
+
+## Commmon Options
+
+All commands also take these options which refer to your GraphQL Editor project
+
+| Option    | type   | description         |
+| --------- | ------ | ------------------- |
+| namespace | string | Your namespace name |
+| project   | string | Project name        |
+| version   | string | version name        |
 
 ## Commands
 
 ### Schema
 
-Generate schema from GraphQL Editor project.
+Fetch schema from GraphQL Editor project. Schema will be compiled with GraphQL libraries you are using for this project
 
 ```sh
 $ gecli schema
 ```
+
+#### Additional options
+
+| Option    | type   | description                       |
+| --------- | ------ | --------------------------------- |
+| schemaDir | string | Directory to generate schema file |
 
 ### Typings
 
@@ -59,6 +85,15 @@ Generate TypeScript or Javascript typings from GraphQL Editor project.
 $ gecli typings
 ```
 
+#### Additional options
+
+| Option      | type                         | description                                 |
+| ----------- | ---------------------------- | ------------------------------------------- |
+| typingsDir  | string                       | Path where to store generated typings files |
+| typingsGen  | "Javascript" or "TypeScript" | Generation language                         |
+| typingsEnv  | "browser" or "node           | Environment for typings to work with        |
+| typingsHost | string                       | GraphQL Server URL                          |
+
 ### Backend
 
 #### Bootstrap
@@ -67,7 +102,13 @@ $ gecli typings
 $ gecli bootstrap
 ```
 
-Bootstrap a backend stucco project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration.
+Bootstrap a backend stucco project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration. It is an interactive command. It will create a folder with project name you will provide
+
+#### Additional options
+
+| Option | type                    | description          |
+| ------ | ----------------------- | -------------------- |
+| system | "backend" or "frontend" | Type of your project |
 
 #### Models
 
