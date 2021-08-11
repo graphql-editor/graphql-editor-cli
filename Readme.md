@@ -219,3 +219,4 @@ $ gecli bootstrap
 - [ ] Deployment of microservices
 - [ ] Add colours
 - [ ] Push files to editor
+- [ ] Generation of ejected microservices CI

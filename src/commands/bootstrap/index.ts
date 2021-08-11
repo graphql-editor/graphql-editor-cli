@@ -8,6 +8,7 @@ import { AppType, Config, Configuration, ConfigurationOptions } from '@/Configur
 import { Editor } from '@/Editor';
 import { Javacript } from '@/commands/typings/generators';
 import { TypeScript } from '@/commands/typings/generators';
+import { getInitialConfig } from 'graphql-ssg';
 
 const cwd = process.cwd();
 const jsonFile = (json: any) => JSON.stringify(json, null, 4);
@@ -133,29 +134,26 @@ export const CommandBootstrap = async ({
       } as Partial<ConfigurationOptions>,
       Configuration.CONFIG_NAME,
     );
-    const graphqlSSGConf = (await import('./commands/frontend/files/graphql-ssg.json')).default;
-    graphqlSSGConf.url = await Config.getUnknownString('typingsHost', {
-      message: 'Provide GraphQL host',
-      default: Editor.getFakerURL(`${projectDetails.namespace}/${projectDetails.project}`),
+    const graphqlSSGConf = getInitialConfig({
+      graphql: {
+        main: {
+          url: await Config.getUnknownString('typingsHost', {
+            message: 'Provide GraphQL host',
+            default: Editor.getFakerURL(`${projectDetails.namespace}/${projectDetails.project}`),
+          }),
+        },
+      },
     });
     writeProjectJSONFile(graphqlSSGConf, 'graphql-ssg.json');
-    fs.mkdirSync(path.join(projectPath, 'pages'));
-    fs.writeFileSync(
-      path.join(projectPath, 'pages', 'index.zeus.js'),
-      (await import('./commands/frontend/files/index.zeus.js')).default,
-    );
-    fs.writeFileSync(
-      path.join(projectPath, 'pages', 'index.css'),
-      (await import('./commands/frontend/files/index.css')).default,
-    );
-
+    fs.mkdirSync(path.join(projectPath, graphqlSSGConf.in));
     console.log(`
-Successfully created frontend project in path: ${projectPath}. 
+Successfully created graphql-ssg project in path: ${projectPath}. 
 
 Install graphql-ssg cli if you dont have it already:
 npm i -g graphql-ssg
 
-Then start creating js esmodules with ".zeus.js" extension in pages directory. Each file must return string containing html and can use top level await
+For further documentation visit:
+https://graphqlssg.com/
   `);
   }
 };

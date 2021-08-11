@@ -1,6 +1,12 @@
-import { Chain } from './zeus';
+import { Chain, GraphQLTypes } from './zeus';
 import { Config } from './Configuration';
 import fetch from 'node-fetch';
+
+export interface FileArray {
+  name: string;
+  content: string | File | Buffer | ArrayBuffer;
+  type: string;
+}
 
 const jolt = () => {
   const token = Config.getTokenOptions('token');
@@ -134,5 +140,107 @@ export class Editor {
 
     const schema = await Editor.getSource(schemaSource.getUrl);
     return schema;
+  };
+
+  public static removeFiles = async (teamId: string, projectId: string, files: string[]) => {
+    const response = await jolt().mutation({
+      team: [
+        {
+          id: teamId,
+        },
+        {
+          project: [
+            {
+              id: projectId,
+            },
+            {
+              removeSources: [
+                {
+                  files,
+                },
+                true,
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    return response.team!.project?.removeSources;
+  };
+
+  public static renameFiles = async (teamId: string, projectId: string, files: Array<{ src: string; dst: string }>) => {
+    const response = await jolt().mutation({
+      team: [
+        {
+          id: teamId,
+        },
+        {
+          project: [
+            {
+              id: projectId,
+            },
+            {
+              renameSources: [
+                {
+                  files,
+                },
+                true,
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    return response.team!.project?.renameSources;
+  };
+  public static saveFilesToCloud = async (projectId: string, fileArray: FileArray[]) => {
+    const files = fileArray.map((f) => new File([new Blob([f.content], { type: f.type })], f.name));
+    const sources: Array<{
+      file: File;
+      source: GraphQLTypes['NewSource'];
+    }> = fileArray.map((f, i) => ({
+      file: files[i]!,
+      source: {
+        filename: f.name,
+        contentLength: files[i].size,
+        contentType: f.type,
+      },
+    }));
+
+    const response = await jolt().mutation({
+      updateSources: [
+        {
+          project: projectId,
+          sources: sources.map((s) => s.source),
+        },
+        {
+          filename: true,
+          headers: {
+            key: true,
+            value: true,
+          },
+          putUrl: true,
+        },
+      ],
+    });
+
+    if (!response.updateSources) {
+      throw new Error(`Cannot update sources, try logging in again`);
+    }
+    return Promise.all(
+      response.updateSources
+        .map((s) => s!)
+        .map(({ putUrl, headers, filename }) =>
+          fetch(putUrl!, {
+            method: 'PUT',
+            headers: headers!.reduce((a, b) => {
+              a![b!.key! as any] = b!.value!;
+              return a!;
+            }, {} as any),
+            body: sources.find((s) => s.source.filename! === filename)!.file as any,
+          }),
+        ),
+    );
   };
 }
