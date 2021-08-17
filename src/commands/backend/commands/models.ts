@@ -1,4 +1,4 @@
-import { Parser, ParserField, TypeDefinition } from 'graphql-zeus';
+import { Parser, ParserField, TypeDefinition } from 'graphql-js-tree';
 import { HandleTemplates } from '@/common';
 import { Config } from '@/Configuration';
 import path from 'path';

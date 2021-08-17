@@ -1,6 +1,6 @@
-import { ParserField, ParserTree, TypeDefinition, TypeSystemDefinition } from 'graphql-zeus';
-import inquirer, { DistinctQuestion } from 'inquirer';
-import { AutocompleteInput, AutocompleteInputPrompt } from '@/utils';
+import { DistinctQuestion } from 'inquirer';
+import { AutocompleteInputPrompt } from '@/utils';
+import { ParserField, ParserTree, TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
 export interface TypeResolverReturns {
   resolver: ParserField;
   parentResolver: string;

@@ -1,7 +1,7 @@
 import { TypeResolver } from '@/common/selectors';
 import { addStucco, getPaths, HandleTemplates } from '@/common';
 import { Config } from '@/Configuration';
-import { Parser, ParserField } from 'graphql-zeus';
+import { Parser, ParserField } from 'graphql-js-tree';
 import { Editor } from '@/Editor';
 
 interface BasicResolverProps {
