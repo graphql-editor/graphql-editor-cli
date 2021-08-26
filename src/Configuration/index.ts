@@ -7,6 +7,7 @@ import { AutocompleteInputPrompt } from '@/utils';
 
 export type AppType = 'backend' | 'frontend';
 export type TypingsGen = 'Javascript' | 'TypeScript';
+export type DeploymentType = 'editor' | 'azure';
 
 export interface TokenConf {
   token?: string;
@@ -29,6 +30,7 @@ export interface EditorConf {
 export interface BackendConf {
   backendSrc?: string;
   backendLib?: string;
+  backendZip?: string;
 }
 
 export interface ConfigurationOptions extends TypingsConf, EditorConf, BackendConf {

@@ -147,6 +147,26 @@ welcome().then(() => {
         await CommandModels(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
       },
     )
+    .command(
+      'deploy',
+      'Deploy GraphQL backend to GraphQL Editor shared worker',
+      async (yargs) => {
+        yargs.options(
+          confOptions({
+            namespace: projectOptions.namespace,
+            project: projectOptions.project,
+            backendZip: {
+              type: 'string',
+              describe:
+                'Paste your repo zip url, for github it will be https://github.com/account_name/repository/archive/refs/heads/main.zip',
+            },
+          }),
+        );
+      },
+      async (argv) => {
+        await CommandModels(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip'>);
+      },
+    )
     .showHelpOnFail(true)
     .demandCommand()
     .epilog('Bye!').argv;

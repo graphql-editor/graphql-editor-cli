@@ -1,4 +1,4 @@
-import { Chain, GraphQLTypes } from './zeus';
+import { Chain, DeployCodeToCloudEnv, DeployCodeToCloudURIKind, GraphQLTypes } from './zeus';
 import { Config } from './Configuration';
 import fetch from 'node-fetch';
 
@@ -68,7 +68,11 @@ export class Editor {
         },
       ],
     });
-    return Query.getNamespace!.projects!.projects!;
+    const namespace = Query.getNamespace;
+    if (!namespace) {
+      throw new Error(`Namespace "${accountName}" does not exist.`);
+    }
+    return namespace.projects?.projects || [];
   };
   public static fetchProject = async ({ accountName, projectName }: { accountName: string; projectName: string }) => {
     const Query = await jolt().query({
@@ -79,6 +83,7 @@ export class Editor {
             { name: projectName },
             {
               name: true,
+              id: true,
               description: true,
               mocked: true,
               sources: [
@@ -98,7 +103,11 @@ export class Editor {
         },
       ],
     });
-    return Query.getNamespace?.project;
+    const project = Query.getNamespace?.project;
+    if (!project) {
+      throw new Error(`Project "${projectName}" does not exist in "${accountName}" namespace`);
+    }
+    return project;
   };
   public static getFakerURL = (endpointUri: string) => `https://faker.graphqleditor.com/${endpointUri}/graphql`;
   public static getCompiledSchema = async ({
@@ -114,9 +123,6 @@ export class Editor {
       accountName: namespace,
       projectName: project,
     });
-    if (!p) {
-      throw new Error("Project doesn't exist");
-    }
     const graphqlURL = p.sources!.sources!.find((s) => s.filename === `schema-${version}.graphql`)!;
     const libraryURL = p.sources!.sources!.find((s) => s.filename === `stitch-${version}.graphql`)!;
     const [graphqlFile, libraryFile] = await Promise.all([
@@ -128,9 +134,6 @@ export class Editor {
 
   public static getSchema = async (resolve: { namespace: string; project: string; version: string }) => {
     const p = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
-    if (!p) {
-      throw new Error(`Project "${resolve.project}" does not exist in "${resolve.namespace}" namespace`);
-    }
 
     const schemaSource = p.sources?.sources?.find((s) => s.filename === `schema-${resolve.version}.graphql`);
 
@@ -242,5 +245,29 @@ export class Editor {
           }),
         ),
     );
+  };
+  public static deployRepoToSharedWorker = async (projectId: string, zipURI: string) => {
+    const response = await jolt().mutation({
+      deployCodeToCloud: [
+        {
+          id: projectId,
+          opts: {
+            codeURI: zipURI,
+            env: DeployCodeToCloudEnv.NODE14,
+            kind: DeployCodeToCloudURIKind.ZIP,
+            node14Opts: {
+              buildScript: 'build',
+            },
+            secrets: [],
+          },
+        },
+        true,
+      ],
+    });
+    const deploymentId = response.deployCodeToCloud;
+    if (!deploymentId) {
+      throw new Error('Cannot deploy project');
+    }
+    return deploymentId;
   };
 }
