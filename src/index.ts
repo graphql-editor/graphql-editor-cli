@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import yargs, { Options } from 'yargs';
+import yargs, { argv, Options } from 'yargs';
 import { welcome } from './welcome';
 import { Auth } from '@/Auth';
 import { initConfiguration } from '@/commands/init';
@@ -10,6 +10,8 @@ import { CommandBootstrap } from '@/commands/bootstrap';
 import { Config, Configuration, ConfigurationOptions } from '@/Configuration';
 import { CommandResolver } from '@/commands/backend/commands/resolver';
 import { CommandModels } from '@/commands/backend/commands/models';
+import { CommandDeploy } from '@/commands/backend/commands/deploy';
+import { ValueTypes } from '@/zeus';
 
 type ConfOptions = {
   [P in keyof ConfigurationOptions]: Options;
@@ -151,8 +153,8 @@ welcome().then(() => {
       'deploy',
       'Deploy GraphQL backend to GraphQL Editor shared worker',
       async (yargs) => {
-        yargs.options(
-          confOptions({
+        yargs.options({
+          ...confOptions({
             namespace: projectOptions.namespace,
             project: projectOptions.project,
             backendZip: {
@@ -161,10 +163,23 @@ welcome().then(() => {
                 'Paste your repo zip url, for github it will be https://github.com/account_name/repository/archive/refs/heads/main.zip',
             },
           }),
-        );
+          env: {
+            alias: 'e',
+            array: true,
+            coerce: (v: Array<string>) => {
+              console.log('coerce', v);
+              return v.map((e: string) => e.split('=')).map(([name, value]) => ({ name, value }));
+            },
+            describe: 'Set environment variables for example "-e URL=$URL" or "-e URL=example.com"',
+          },
+        });
       },
       async (argv) => {
-        await CommandModels(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip'>);
+        await CommandDeploy(
+          argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip'> & {
+            env?: ValueTypes['Secret'][];
+          },
+        );
       },
     )
     .showHelpOnFail(true)

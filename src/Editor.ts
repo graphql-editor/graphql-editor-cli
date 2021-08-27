@@ -1,4 +1,4 @@
-import { Chain, DeployCodeToCloudEnv, DeployCodeToCloudURIKind, GraphQLTypes } from './zeus';
+import { Chain, DeployCodeToCloudEnv, DeployCodeToCloudURIKind, GraphQLTypes, ValueTypes } from './zeus';
 import { Config } from './Configuration';
 import fetch from 'node-fetch';
 
@@ -246,7 +246,11 @@ export class Editor {
         ),
     );
   };
-  public static deployRepoToSharedWorker = async (projectId: string, zipURI: string) => {
+  public static deployRepoToSharedWorker = async (
+    projectId: string,
+    zipURI: string,
+    opts: Pick<ValueTypes['DeployCodeToCloudInput'], 'node14Opts' | 'secrets'>,
+  ) => {
     const response = await jolt().mutation({
       deployCodeToCloud: [
         {
@@ -255,10 +259,7 @@ export class Editor {
             codeURI: zipURI,
             env: DeployCodeToCloudEnv.NODE14,
             kind: DeployCodeToCloudURIKind.ZIP,
-            node14Opts: {
-              buildScript: 'build',
-            },
-            secrets: [],
+            ...opts,
           },
         },
         true,

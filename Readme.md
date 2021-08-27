@@ -22,6 +22,8 @@ Translate GraphQL to Anything and make it your one and only source of truth. Sch
       - [Models](#models)
         - [MongoDB](#mongodb)
       - [Resolvers](#resolvers)
+      - [Deploy to GraphQL Editor Shared Worker](#deploy-to-graphql-editor-shared-worker)
+        - [Environment inside shared worker](#environment-inside-shared-worker)
   - [Frontend pages](#frontend-pages)
   - [Roadmap](#roadmap)
 
@@ -203,6 +205,22 @@ and append correct entries to `stucco.json` file.
 
 and after running `stucco` your resolver should work out of the box.
 Some resolver types however need little code to make them work the way you want.
+
+#### Deploy to GraphQL Editor Shared Worker
+
+Shared workers are really powerful. With one command you can deploy stucco based backend to them.
+
+```
+gecli deploy --backendZip=https://github.com/aexol-studio/monospace-backend/archive/refs/heads/main.zip
+```
+
+##### Environment inside shared worker
+
+To pass environment variables use `-e flag` for deploys. For example
+
+```sh
+gecli deploy -e DB_URL=https://exampledb.com -e HOME=$HOME
+```
 
 ## Frontend pages
 
