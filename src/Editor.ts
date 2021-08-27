@@ -15,7 +15,7 @@ const jolt = () => {
         Authorization: `Bearer ${token}`,
       }
     : {};
-  return Chain('https://project-api.graphqleditor.com/graphql', {
+  return Chain('https://api.staging.project.graphqleditor.com/graphql', {
     headers,
   });
 };
@@ -50,6 +50,7 @@ export class Editor {
                 name: true,
                 description: true,
                 mocked: true,
+                inCloud: true,
                 sources: [
                   {},
                   {
@@ -86,6 +87,7 @@ export class Editor {
               id: true,
               description: true,
               mocked: true,
+              inCloud: true,
               sources: [
                 {},
                 {
@@ -245,6 +247,12 @@ export class Editor {
           }),
         ),
     );
+  };
+  public static deployProjectToCloud = async (projectId: string) => {
+    const response = await jolt().mutation({
+      createCloudDeployment: [{ id: projectId }, true],
+    });
+    return response.createCloudDeployment;
   };
   public static deployRepoToSharedWorker = async (
     projectId: string,

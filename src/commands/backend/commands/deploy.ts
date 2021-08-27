@@ -16,12 +16,15 @@ export const CommandDeploy = async ({
 }) => {
   const resolve = await Config.configure({ namespace, project, backendZip }, ['namespace', 'project', 'backendZip']);
   const p = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
+  if (!p.inCloud) {
+    await Editor.deployProjectToCloud(p.id);
+  }
   const deploymentId = await Editor.deployRepoToSharedWorker(p.id, resolve.backendZip, {
     secrets: env,
     node14Opts: {
       buildScript,
     },
   });
-  console.log(`Successfully deployed ${backendZip} to shared worker with deployment id: ${deploymentId}`);
+  console.log(`Successfully deployed ${resolve.backendZip} to shared worker with deployment id: ${deploymentId}`);
   return;
 };
