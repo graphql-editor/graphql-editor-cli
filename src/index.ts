@@ -167,8 +167,7 @@ welcome().then(() => {
             alias: 'e',
             array: true,
             coerce: (v: Array<string>) => {
-              console.log('coerce', v);
-              return v.map((e: string) => e.split('=')).map(([name, value]) => ({ name, value }));
+              return v.map((e: string) => e.split('=')).map(([name, ...value]) => ({ name, value: value.join('=') }));
             },
             describe: 'Set environment variables for example "-e URL=$URL" or "-e URL=example.com"',
           },
