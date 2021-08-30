@@ -25,6 +25,11 @@ export const CommandDeploy = async ({
       buildScript,
     },
   });
-  console.log(`Successfully deployed ${resolve.backendZip} to shared worker with deployment id: ${deploymentId}`);
+
+  const socket = await Editor.showDeploymentLogs(deploymentId);
+  console.log('Starting deployment...');
+  socket.on(({ watchLogs }) => {
+    console.log(watchLogs);
+  });
   return;
 };

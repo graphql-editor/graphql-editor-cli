@@ -279,4 +279,10 @@ export class Editor {
     }
     return deploymentId;
   };
+  public static showDeploymentLogs = async (streamID: string) => {
+    const response = await jolt().subscription({
+      watchLogs: [{ streamID }, true],
+    });
+    return response;
+  };
 }

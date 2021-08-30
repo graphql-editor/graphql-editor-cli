@@ -126,6 +126,7 @@ welcome().then(() => {
         );
       },
       async (argv) => {
+        await Auth.login().then(Config.setTokenOptions);
         await CommandBootstrap(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version' | 'system'>);
       },
     )
@@ -136,6 +137,7 @@ welcome().then(() => {
         yargs.options(confOptions({ ...projectOptions }));
       },
       async (argv) => {
+        await Auth.login().then(Config.setTokenOptions);
         await CommandResolver(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
       },
     )
@@ -146,6 +148,7 @@ welcome().then(() => {
         yargs.options(confOptions({ ...projectOptions }));
       },
       async (argv) => {
+        await Auth.login().then(Config.setTokenOptions);
         await CommandModels(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
       },
     )
@@ -174,6 +177,7 @@ welcome().then(() => {
         });
       },
       async (argv) => {
+        await Auth.login().then(Config.setTokenOptions);
         await CommandDeploy(
           argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip'> & {
             env?: ValueTypes['Secret'][];
