@@ -12,6 +12,7 @@ import { CommandResolver } from '@/commands/backend/commands/resolver';
 import { CommandModels } from '@/commands/backend/commands/models';
 import { CommandDeploy } from '@/commands/backend/commands/deploy';
 import { ValueTypes } from '@/zeus';
+import { CommandDeployRemote } from '@/commands/backend/commands/deployFromRemote';
 
 type ConfOptions = {
   [P in keyof ConfigurationOptions]: Options;
@@ -154,7 +155,35 @@ welcome().then(() => {
     )
     .command(
       'deploy',
-      'Deploy GraphQL backend to GraphQL Editor shared worker',
+      'Deploy GraphQL backend to GraphQL Editor shared worker from current repository',
+      async (yargs) => {
+        yargs.options({
+          ...confOptions({
+            namespace: projectOptions.namespace,
+            project: projectOptions.project,
+          }),
+          env: {
+            alias: 'e',
+            array: true,
+            coerce: (v: Array<string>) => {
+              return v.map((e: string) => e.split('=')).map(([name, ...value]) => ({ name, value: value.join('=') }));
+            },
+            describe: 'Set environment variables for example "-e URL=$URL" or "-e URL=example.com"',
+          },
+        });
+      },
+      async (argv) => {
+        await Auth.login().then(Config.setTokenOptions);
+        await CommandDeploy(
+          argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip'> & {
+            env?: ValueTypes['Secret'][];
+          },
+        );
+      },
+    )
+    .command(
+      'deploy:zip',
+      'Deploy GraphQL backend to GraphQL Editor shared worker from remote zip',
       async (yargs) => {
         yargs.options({
           ...confOptions({
@@ -178,7 +207,7 @@ welcome().then(() => {
       },
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
-        await CommandDeploy(
+        await CommandDeployRemote(
           argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip'> & {
             env?: ValueTypes['Secret'][];
           },
