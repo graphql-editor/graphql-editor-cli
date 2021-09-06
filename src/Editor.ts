@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 
 export interface FileArray {
   name: string;
-  content: string | File | Buffer | ArrayBuffer;
+  content: Buffer;
   type: string;
 }
 
@@ -200,15 +200,14 @@ export class Editor {
     return response.team!.project?.renameSources;
   };
   public static saveFilesToCloud = async (projectId: string, fileArray: FileArray[]) => {
-    const files = fileArray.map((f) => new File([new Blob([f.content], { type: f.type })], f.name));
     const sources: Array<{
-      file: File;
+      file: Buffer;
       source: GraphQLTypes['NewSource'];
     }> = fileArray.map((f, i) => ({
-      file: files[i]!,
+      file: fileArray[i].content,
       source: {
         filename: f.name,
-        contentLength: files[i].size,
+        contentLength: fileArray[i].content.byteLength,
         contentType: f.type,
       },
     }));
@@ -236,16 +235,19 @@ export class Editor {
     return Promise.all(
       response.updateSources
         .map((s) => s!)
-        .map(({ putUrl, headers, filename }) =>
-          fetch(putUrl!, {
+        .map(({ putUrl, headers, filename }) => {
+          if (!headers) {
+            throw new Error(`Headers required for "${putUrl}" `);
+          }
+          return fetch(putUrl, {
             method: 'PUT',
-            headers: headers!.reduce((a, b) => {
-              a![b!.key! as any] = b!.value!;
-              return a!;
-            }, {} as any),
-            body: sources.find((s) => s.source.filename! === filename)!.file as any,
-          }),
-        ),
+            headers: headers.reduce<Record<string, any>>((a, b) => {
+              a[b.key] = b.value;
+              return a;
+            }, {}),
+            body: sources.find((s) => s.source.filename! === filename)!.file,
+          });
+        }),
     );
   };
   public static deployProjectToCloud = async (projectId: string) => {
