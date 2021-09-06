@@ -13,6 +13,7 @@ import { CommandModels } from '@/commands/backend/commands/models';
 import { CommandDeploy } from '@/commands/backend/commands/deploy';
 import { ValueTypes } from '@/zeus';
 import { CommandDeployRemote } from '@/commands/backend/commands/deployFromRemote';
+import { CommandGetCIToken } from '@/commands/editor/getCIToken';
 
 type ConfOptions = {
   [P in keyof ConfigurationOptions]: Options;
@@ -214,6 +215,9 @@ welcome().then(() => {
         );
       },
     )
+    .command('token', 'Get CI token', async (argv) => {
+      await CommandGetCIToken();
+    })
     .showHelpOnFail(true)
     .demandCommand()
     .epilog('Bye!').argv;

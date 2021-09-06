@@ -287,4 +287,48 @@ export class Editor {
     });
     return response;
   };
+  public static getDeviceCode = async () => {
+    const response = await fetch('https://auth.graphqleditor.com/oauth/device/code', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: 'pNh9rJhjO2qnD1gAlfKtQFnlxN88LCil',
+        scope: 'profile offline_access openid email write:cloud_deployment',
+        audience: 'https://auth.graphqleditor.com',
+      }),
+    });
+    const result: {
+      device_code: string;
+      user_code: string;
+      verification_uri: string;
+      expires_in: number;
+      interval: number;
+      verification_uri_complete: string;
+    } = await response.json();
+    return result;
+  };
+  public static getDeviceToken = async (deviceCode: string) => {
+    const response = await fetch('https://auth.graphqleditor.com/oauth/token', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: 'pNh9rJhjO2qnD1gAlfKtQFnlxN88LCil',
+        grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+        device_code: deviceCode,
+      }),
+    });
+    const result: {
+      access_token: string;
+      refresh_token: string;
+      id_token: string;
+      scope: string;
+      expires_in: number;
+      token_type: string;
+    } = await response.json();
+    return result;
+  };
 }

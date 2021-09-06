@@ -44,6 +44,31 @@ export class Auth {
           }
         }
       }
+      if (process.env.GRAPHQL_EDITOR_TOKEN) {
+        const response = await fetch('https://api.staging.project.graphqleditor.com/oauth/token', {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            refresh_token: process.env.GRAPHQL_EDITOR_TOKEN,
+            client_id: 'pNh9rJhjO2qnD1gAlfKtQFnlxN88LCil',
+            grant_type: 'refresh_token',
+          }),
+        });
+        const result: {
+          access_token: string;
+          id_token: string;
+          scope: string;
+          expires_in: number;
+          token_type: string;
+        } = await response.json();
+        resolve({
+          token: result.access_token,
+          tokenLastSet: new Date().toISOString(),
+        });
+        return;
+      }
       const code_verifier = base64URLEncode(crypto.randomBytes(32));
       const code_challenge = base64URLEncode(sha256(Buffer.from(code_verifier)));
       const url = `https://auth.graphqleditor.com`;
