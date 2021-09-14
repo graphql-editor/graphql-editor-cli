@@ -162,6 +162,11 @@ welcome().then(() => {
           ...confOptions({
             namespace: projectOptions.namespace,
             project: projectOptions.project,
+            buildScript: {
+              type: 'string',
+              describe: 'Build script as in your package.json',
+              default: 'build',
+            },
           }),
           env: {
             alias: 'e',
@@ -176,7 +181,7 @@ welcome().then(() => {
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
         await CommandDeploy(
-          argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip'> & {
+          argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip' | 'buildScript'> & {
             env?: ValueTypes['Secret'][];
           },
         );

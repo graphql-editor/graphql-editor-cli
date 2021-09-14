@@ -31,6 +31,7 @@ export interface BackendConf {
   backendSrc?: string;
   backendLib?: string;
   backendZip?: string;
+  buildScript?: string;
 }
 
 export interface ConfigurationOptions extends TypingsConf, EditorConf, BackendConf {

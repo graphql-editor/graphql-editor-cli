@@ -14,7 +14,7 @@ export const CommandDeploy = async ({
   env?: ValueTypes['Secret'][];
   buildScript?: string;
 }) => {
-  const resolve = await Config.configure({ namespace, project }, ['namespace', 'project']);
+  const resolve = await Config.configure({ namespace, project, buildScript }, ['namespace', 'project', 'buildScript']);
   const p = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
   if (!p.inCloud) {
     await Editor.deployProjectToCloud(p.id);
@@ -32,7 +32,7 @@ export const CommandDeploy = async ({
   const deploymentId = await Editor.deployRepoToSharedWorker(p.id, backendZip, {
     secrets: env,
     node14Opts: {
-      buildScript,
+      buildScript: resolve.buildScript,
     },
   });
 
