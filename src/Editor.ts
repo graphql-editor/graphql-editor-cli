@@ -1,6 +1,7 @@
 import { Chain, DeployCodeToCloudEnv, DeployCodeToCloudURIKind, GraphQLTypes, ValueTypes } from './zeus';
 import { Config } from './Configuration';
 import fetch from 'node-fetch';
+import { VERSION_SCHEMA_FILE, VERSION_STITCH_FILE } from '@/gshared/constants';
 
 export interface FileArray {
   name: string;
@@ -88,6 +89,9 @@ export class Editor {
               description: true,
               mocked: true,
               inCloud: true,
+              team: {
+                id: true,
+              },
               sources: [
                 {},
                 {
@@ -125,8 +129,8 @@ export class Editor {
       accountName: namespace,
       projectName: project,
     });
-    const graphqlURL = p.sources!.sources!.find((s) => s.filename === `schema-${version}.graphql`)!;
-    const libraryURL = p.sources!.sources!.find((s) => s.filename === `stitch-${version}.graphql`)!;
+    const graphqlURL = p.sources!.sources!.find((s) => s.filename === VERSION_SCHEMA_FILE(version))!;
+    const libraryURL = p.sources!.sources!.find((s) => s.filename === VERSION_STITCH_FILE(version))!;
     const [graphqlFile, libraryFile] = await Promise.all([
       (await fetch(graphqlURL.getUrl!)).text(),
       libraryURL ? (await fetch(libraryURL.getUrl!)).text() : new Promise<string>((resolve) => resolve('')),
@@ -137,7 +141,7 @@ export class Editor {
   public static getSchema = async (resolve: { namespace: string; project: string; version: string }) => {
     const p = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
 
-    const schemaSource = p.sources?.sources?.find((s) => s.filename === `schema-${resolve.version}.graphql`);
+    const schemaSource = p.sources?.sources?.find((s) => s.filename === VERSION_SCHEMA_FILE(resolve.version));
 
     if (!schemaSource?.getUrl) {
       throw new Error(`Project "${resolve.project}" does not have a version "${resolve.version}"`);

@@ -2,6 +2,8 @@ import { Config } from '@/Configuration';
 import { Editor } from '@/Editor';
 import { ValueTypes } from '@/zeus';
 import { zipCWD } from '@/utils/ZipUtils';
+import { fileInCloudFolder, MICROSERVICE_DEPLOYMENT_FILE } from '@/gshared/constants';
+import { logger } from '@/common/log';
 
 export const CommandDeploy = async ({
   namespace,
@@ -19,16 +21,14 @@ export const CommandDeploy = async ({
   if (!p.inCloud) {
     await Editor.deployProjectToCloud(p.id);
   }
-  await Editor.saveFilesToCloud(p.id, [
-    { content: await zipCWD(), name: 'microservices_deployment/function.zip', type: 'application/zip' },
-  ]);
+  const deploymentFile = fileInCloudFolder('microservices_deployment')(MICROSERVICE_DEPLOYMENT_FILE);
+  await Editor.saveFilesToCloud(p.id, [{ content: await zipCWD(), name: deploymentFile, type: 'application/zip' }]);
   const pWithSource = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
-  const backendZip = pWithSource.sources?.sources?.find((f) => f.filename === 'microservices_deployment/function.zip')
-    ?.getUrl;
+  const backendZip = pWithSource.sources?.sources?.find((f) => f.filename === deploymentFile)?.getUrl;
   if (!backendZip) {
     throw new Error('Cannot get backend zip source');
   }
-  console.log(`Successfully created deployment zip ${backendZip}`);
+  logger(`Successfully created deployment zip ${backendZip}`, 'success');
   const deploymentId = await Editor.deployRepoToSharedWorker(p.id, backendZip, {
     secrets: env,
     node14Opts: {

@@ -24,6 +24,8 @@ Translate GraphQL to Anything and make it your one and only source of truth. Sch
       - [Resolvers](#resolvers)
       - [Deploy to GraphQL Editor Shared Worker](#deploy-to-graphql-editor-shared-worker)
         - [Environment inside shared worker](#environment-inside-shared-worker)
+      - [Push to cloud](#push-to-cloud)
+      - [Pull from cloud](#pull-from-cloud)
   - [Frontend pages](#frontend-pages)
   - [Roadmap](#roadmap)
 
@@ -221,6 +223,26 @@ To pass environment variables use `-e flag` for deploys. For example
 ```sh
 gecli deploy -e DB_URL=https://exampledb.com -e HOME=$HOME
 ```
+
+#### Push to cloud
+
+Sometimes you will want to push to cloud GraphQL Editor back from repo. So editor users can see/test the changes in Editor browser IDE. To do it
+
+```sh
+$ gecli push
+```
+
+This will clean cloud folder and push cwd to the editor cloud.
+
+#### Pull from cloud
+
+When you want to move from cloud folder as your service is getting bigger and put the project inside repository. You can use pull command
+
+```sh
+$ gecli pull
+```
+
+It will pull the project to the project name folder
 
 ## Frontend pages
 

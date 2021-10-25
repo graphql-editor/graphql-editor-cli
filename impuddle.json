@@ -1,0 +1,9 @@
+{
+  "repos": {
+    "https://github.com/graphql-editor/shared": {
+      "main": {
+        "gshared/constants": "./src/gshared/constants"
+      }
+    }
+  }
+}

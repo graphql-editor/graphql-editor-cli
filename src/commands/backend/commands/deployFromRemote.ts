@@ -1,3 +1,4 @@
+import { logger } from '@/common/log';
 import { Config } from '@/Configuration';
 import { Editor } from '@/Editor';
 import { ValueTypes } from '@/zeus';
@@ -27,7 +28,7 @@ export const CommandDeployRemote = async ({
   });
 
   const socket = await Editor.showDeploymentLogs(deploymentId);
-  console.log('Starting deployment...');
+  logger('Starting deployment...', 'info');
   socket.on(({ watchLogs }) => {
     console.log(watchLogs);
   });

@@ -4,6 +4,7 @@ import inquirer from 'inquirer';
 import { Environment } from 'graphql-zeus';
 import { Editor } from '@/Editor';
 import { AutocompleteInputPrompt } from '@/utils';
+import { IS_VERSION_SCHEMA_FILE_REGEX } from '@/gshared/constants';
 
 export type AppType = 'backend' | 'frontend';
 export type TypingsGen = 'Javascript' | 'TypeScript';
@@ -121,8 +122,8 @@ export class Configuration {
         throw new Error('Invalid project - no graphql version available');
       }
       const files = project.sources.sources
-        .filter((s) => s.filename!.match(/schema-(.*).graphql/))
-        .map((s) => s.filename!.match(/schema-(.*).graphql/)![1]);
+        .filter((s) => IS_VERSION_SCHEMA_FILE_REGEX.exec(s.filename!))
+        .map((s) => IS_VERSION_SCHEMA_FILE_REGEX.exec(s.filename!)![1]);
       const versionName = await AutocompleteInputPrompt(files, { message: 'Select a version', name: 'version' });
       return versionName;
     }

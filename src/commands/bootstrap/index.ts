@@ -9,6 +9,7 @@ import { Editor } from '@/Editor';
 import { Javacript } from '@/commands/typings/generators';
 import { TypeScript } from '@/commands/typings/generators';
 import { getInitialConfig } from 'graphql-ssg';
+import { logger } from '@/common/log';
 
 const cwd = process.cwd();
 const jsonFile = (json: any) => JSON.stringify(json, null, 4);
@@ -64,11 +65,19 @@ export const CommandBootstrap = async ({
         writeProjectJSONFile((await import('./commands/backend/files/eslintrc.ts.json')).default, '.eslintrc.json');
         writeProjectJSONFile((await import('./commands/backend/files/prettierrc.json')).default, '.prettierrc.json');
         writeProjectJSONFile((await import('./commands/backend/files/tsconfig.json')).default, 'tsconfig.json');
+        fs.writeFileSync(
+          path.join(projectPath, '.gitignore'),
+          await (await import('./commands/backend/files/,gitignore')).default,
+        );
       },
       js: async () => {
         writeProjectJSONFile((await import('./commands/backend/files/package.js.json')).default, 'package.json');
         writeProjectJSONFile((await import('./commands/backend/files/eslintrc.js.json')).default, '.eslintrc.json');
         writeProjectJSONFile((await import('./commands/backend/files/prettierrc.json')).default, '.prettierrc.json');
+        fs.writeFileSync(
+          path.join(projectPath, '.gitignore'),
+          await (await import('./commands/backend/files/,gitignore')).default,
+        );
       },
     };
     const loading = ora('Copying files').start();
@@ -125,7 +134,7 @@ export const CommandBootstrap = async ({
       } as Partial<ConfigurationOptions>,
       Configuration.CONFIG_NAME,
     );
-    console.log(`\n\nSuccessfully created backend project in path: ${projectPath}.`);
+    logger(`\n\nSuccessfully created backend project in path: ${projectPath}.`, 'success');
   }
   if (projectDetails.system === 'frontend') {
     writeProjectJSONFile(
@@ -146,14 +155,17 @@ export const CommandBootstrap = async ({
     });
     writeProjectJSONFile(graphqlSSGConf, 'graphql-ssg.json');
     fs.mkdirSync(path.join(projectPath, graphqlSSGConf.in));
-    console.log(`
-Successfully created graphql-ssg project in path: ${projectPath}. 
+    logger(
+      `
+Successfully acreated graphql-ssg project in path: ${projectPath}. 
 
 Install graphql-ssg cli if you dont have it already:
 npm i -g graphql-ssg
 
 For further documentation visit:
 https://graphqlssg.com/
-  `);
+  `,
+      'success',
+    );
   }
 };

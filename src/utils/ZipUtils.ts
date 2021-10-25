@@ -2,11 +2,15 @@ import archiver from 'archiver';
 import fs from 'fs';
 import fg from 'fast-glob';
 import { Stream } from 'stream';
-
+import ADMZip from 'adm-zip';
 interface IFile {
   name: string;
   content: fs.ReadStream;
 }
+export const unZipFiles = async (buffer: Buffer, basePath: string) => {
+  const zip = new ADMZip(buffer);
+  return zip.extractAllToAsync(basePath);
+};
 
 export const zipFiles = (files: IFile[]): Promise<Buffer> =>
   new Promise((resolve, reject) => {
@@ -42,7 +46,7 @@ export const zipFiles = (files: IFile[]): Promise<Buffer> =>
 
 export const getDirWithIgnoredGlobs = () => {
   const hasGitignore = fs.existsSync('.gitignore');
-  const ignore: string[] = [];
+  const ignore: string[] = ['.git/**'];
   if (hasGitignore) {
     const gi = fs.readFileSync('.gitignore').toString('utf-8');
     ignore.push(...gi.split('\n').map((e) => (e.startsWith('/') ? e.substr(1) : e)));
@@ -50,6 +54,7 @@ export const getDirWithIgnoredGlobs = () => {
 
   const dirs = fg.sync('**/*.*', {
     ignore,
+    dot: true,
   });
   return dirs;
 };

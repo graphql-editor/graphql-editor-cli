@@ -14,6 +14,8 @@ import { CommandDeploy } from '@/commands/backend/commands/deploy';
 import { ValueTypes } from '@/zeus';
 import { CommandDeployRemote } from '@/commands/backend/commands/deployFromRemote';
 import { CommandGetCIToken } from '@/commands/editor/getCIToken';
+import { CommandPull } from '@/commands/backend/commands/pull';
+import { CommandPush } from '@/commands/backend/commands/push';
 
 type ConfOptions = {
   [P in keyof ConfigurationOptions]: Options;
@@ -223,6 +225,28 @@ welcome().then(() => {
     .command('token', 'Get CI token', async (argv) => {
       await CommandGetCIToken();
     })
+    .command(
+      'pull',
+      'Pull current deployment and extract it to CWD',
+      async (yargs) => {
+        yargs.options(confOptions({ ...projectOptions }));
+      },
+      async (argv) => {
+        await Auth.login().then(Config.setTokenOptions);
+        await CommandPull(argv as Pick<ConfigurationOptions, 'project' | 'namespace'>);
+      },
+    )
+    .command(
+      'push',
+      'Push current working directory to cloud',
+      async (yargs) => {
+        yargs.options(confOptions({ ...projectOptions }));
+      },
+      async (argv) => {
+        await Auth.login().then(Config.setTokenOptions);
+        await CommandPush(argv as Pick<ConfigurationOptions, 'project' | 'namespace'>);
+      },
+    )
     .showHelpOnFail(true)
     .demandCommand()
     .epilog('Bye!').argv;

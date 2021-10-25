@@ -1,95 +1,97 @@
 /* eslint-disable */
 
 export const AllTypesProps: Record<string,any> = {
-	CheckoutDataInput:{
-		vat:{
-			type:"VatInput",
-			array:false,
-			arrayRequired:false,
-			required:false
+	Team:{
+		member:{
+			username:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
 		},
-		coupon:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
+		members:{
+			last:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:false
+			},
+			limit:{
+				type:"Int",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
+		}
+	},
+	Project:{
+		cloudDeploymentStatus:{
+			streamID:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
 		},
-		successURL:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		cancelURL:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		planID:{
-			type:"ID",
-			array:false,
+		sources:{
+			last:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:false
+			},
+			limit:{
+				type:"Int",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
+		}
+	},
+	Role: "enum",
+	SetCloudDeploymentConfigInput:{
+		secrets:{
+			type:"Secret",
+			array:true,
 			arrayRequired:false,
 			required:true
 		},
-		quantity:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		customer:{
-			type:"CustomerInput",
+		cors:{
+			type:"SetCloudDeploymentConfigCorsInput",
 			array:false,
 			arrayRequired:false,
 			required:false
 		}
 	},
-	VatInput:{
-		street:{
+	UpdateProject:{
+		project:{
+			type:"ID",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		description:{
 			type:"String",
 			array:false,
 			arrayRequired:false,
 			required:false
 		},
-		city:{
+		tags:{
 			type:"String",
-			array:false,
+			array:true,
 			arrayRequired:false,
-			required:false
+			required:true
 		},
-		state:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		country:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		postCode:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		number:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		companyName:{
-			type:"String",
+		public:{
+			type:"Boolean",
 			array:false,
 			arrayRequired:false,
 			required:false
 		}
 	},
-	PaymentDate: "String",
+	AccountType: "enum",
+	DeployCodeToCloudURIKind: "enum",
 	Query:{
 		checkoutData:{
 			data:{
@@ -180,18 +182,6 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		},
 		listProjects:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
 			sort:{
 				type:"ProjectsSortInput",
 				array:true,
@@ -203,9 +193,7 @@ export const AllTypesProps: Record<string,any> = {
 				array:false,
 				arrayRequired:false,
 				required:false
-			}
-		},
-		myTeams:{
+			},
 			last:{
 				type:"String",
 				array:false,
@@ -214,6 +202,20 @@ export const AllTypesProps: Record<string,any> = {
 			},
 			limit:{
 				type:"Int",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
+		},
+		myTeams:{
+			limit:{
+				type:"Int",
+				array:false,
+				arrayRequired:false,
+				required:false
+			},
+			last:{
+				type:"String",
 				array:false,
 				arrayRequired:false,
 				required:false
@@ -228,7 +230,200 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		}
 	},
-	AccountType: "enum",
+	PaymentDate: "String",
+	DeployCodeToCloudEnv: "enum",
+	MemberOps:{
+		update:{
+			role:{
+				type:"Role",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
+		}
+	},
+	Secret:{
+		name:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:true
+		},
+		value:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		}
+	},
+	FileServerCredentials: "String",
+	VatInput:{
+		number:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		companyName:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		street:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		city:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		state:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		country:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		postCode:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		}
+	},
+	Decimal: "String",
+	CloudDeploymentStatus: "enum",
+	Namespace:{
+		project:{
+			name:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
+		},
+		projects:{
+			limit:{
+				type:"Int",
+				array:false,
+				arrayRequired:false,
+				required:false
+			},
+			last:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:false
+			}
+		}
+	},
+	CheckoutDataInput:{
+		coupon:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		successURL:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		cancelURL:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		planID:{
+			type:"ID",
+			array:false,
+			arrayRequired:false,
+			required:true
+		},
+		quantity:{
+			type:"Int",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		customer:{
+			type:"CustomerInput",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		vat:{
+			type:"VatInput",
+			array:false,
+			arrayRequired:false,
+			required:false
+		}
+	},
+	PredictCheckoutInput:{
+		planID:{
+			type:"ID",
+			array:false,
+			arrayRequired:false,
+			required:true
+		},
+		quantity:{
+			type:"Int",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		coupon:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		}
+	},
+	RFC3339Date: "String",
+	DeployCodeToCloudInput:{
+		env:{
+			type:"DeployCodeToCloudEnv",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		secrets:{
+			type:"Secret",
+			array:true,
+			arrayRequired:false,
+			required:true
+		},
+		node14Opts:{
+			type:"DeployCodeToCloudNode14Opts",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		codeURI:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:true
+		},
+		kind:{
+			type:"DeployCodeToCloudURIKind",
+			array:false,
+			arrayRequired:false,
+			required:false
+		}
+	},
 	ProjectOps:{
 		deployCodeToCloud:{
 			input:{
@@ -254,6 +449,14 @@ export const AllTypesProps: Record<string,any> = {
 				required:true
 			}
 		},
+		setCloudDeploymentConfig:{
+			input:{
+				type:"SetCloudDeploymentConfigInput",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
+		},
 		update:{
 			in:{
 				type:"UpdateProject",
@@ -263,73 +466,7 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		}
 	},
-	RFC3339Date: "String",
-	DeployCodeToCloudEnv: "enum",
-	UpdateProject:{
-		public:{
-			type:"Boolean",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		project:{
-			type:"ID",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		description:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		tags:{
-			type:"String",
-			array:true,
-			arrayRequired:false,
-			required:true
-		}
-	},
-	ChangeSubscriptionInput:{
-		subscriptionPlanID:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		subscriptionID:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:true
-		}
-	},
-	Role: "enum",
-	Namespace:{
-		project:{
-			name:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
-		},
-		projects:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
-		}
-	},
+	SortOrder: "enum",
 	TeamOps:{
 		addMember:{
 			username:{
@@ -352,17 +489,17 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		},
 		createProject:{
-			name:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
 			public:{
 				type:"Boolean",
 				array:false,
 				arrayRequired:false,
 				required:false
+			},
+			name:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:true
 			}
 		},
 		member:{
@@ -374,14 +511,14 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		},
 		members:{
-			limit:{
-				type:"Int",
+			last:{
+				type:"String",
 				array:false,
 				arrayRequired:false,
 				required:false
 			},
-			last:{
-				type:"String",
+			limit:{
+				type:"Int",
 				array:false,
 				arrayRequired:false,
 				required:false
@@ -396,47 +533,36 @@ export const AllTypesProps: Record<string,any> = {
 			}
 		}
 	},
-	DeployCodeToCloudNode14Opts:{
-		buildScript:{
-			type:"String",
+	ChangeSubscriptionInput:{
+		subscriptionPlanID:{
+			type:"Int",
 			array:false,
 			arrayRequired:false,
 			required:false
+		},
+		subscriptionID:{
+			type:"Int",
+			array:false,
+			arrayRequired:false,
+			required:true
 		}
 	},
-	DeployCodeToCloudURIKind: "enum",
-	FileServerCredentials: "String",
-	SortOrder: "enum",
-	DeployCodeToCloudInput:{
-		secrets:{
-			type:"Secret",
-			array:true,
-			arrayRequired:false,
-			required:true
+	SchemaSubscription:{
+		watchJobStatus:{
+			streamID:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
 		},
-		node14Opts:{
-			type:"DeployCodeToCloudNode14Opts",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		codeURI:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		kind:{
-			type:"DeployCodeToCloudURIKind",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		env:{
-			type:"DeployCodeToCloudEnv",
-			array:false,
-			arrayRequired:false,
-			required:false
+		watchLogs:{
+			streamID:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
 		}
 	},
 	RenameFileInput:{
@@ -451,67 +577,6 @@ export const AllTypesProps: Record<string,any> = {
 			array:false,
 			arrayRequired:false,
 			required:true
-		}
-	},
-	SchemaSubscription:{
-		watchLogs:{
-			streamID:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
-		}
-	},
-	Decimal: "String",
-	Secret:{
-		name:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		value:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	MemberOps:{
-		update:{
-			role:{
-				type:"Role",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
-		}
-	},
-	NewSource:{
-		contentType:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		checksum:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		filename:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		contentLength:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
 		}
 	},
 	CustomerInput:{
@@ -540,64 +605,12 @@ export const AllTypesProps: Record<string,any> = {
 			required:false
 		}
 	},
-	PredictCheckoutInput:{
-		coupon:{
+	DeployCodeToCloudNode14Opts:{
+		buildScript:{
 			type:"String",
 			array:false,
 			arrayRequired:false,
 			required:false
-		},
-		planID:{
-			type:"ID",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		quantity:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	Team:{
-		member:{
-			username:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
-		},
-		members:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
-		}
-	},
-	Project:{
-		sources:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
 		}
 	},
 	ProjectsSortInput:{
@@ -650,7 +663,47 @@ export const AllTypesProps: Record<string,any> = {
 			required:false
 		}
 	},
+	NewSource:{
+		contentType:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		checksum:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		filename:{
+			type:"String",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		contentLength:{
+			type:"Int",
+			array:false,
+			arrayRequired:false,
+			required:false
+		}
+	},
 	Mutation:{
+		changePassword:{
+			oldPassword:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:true
+			},
+			newPassword:{
+				type:"String",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
+		},
 		changeSubscription:{
 			in:{
 				type:"ChangeSubscriptionInput",
@@ -739,14 +792,36 @@ export const AllTypesProps: Record<string,any> = {
 				required:true
 			}
 		},
-		sync:{
-			target:{
+		runtimeLogs:{
+			id:{
+				type:"ID",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
+		},
+		setCloudDeploymentConfig:{
+			id:{
 				type:"ID",
 				array:false,
 				arrayRequired:false,
 				required:true
 			},
+			input:{
+				type:"SetCloudDeploymentConfigInput",
+				array:false,
+				arrayRequired:false,
+				required:true
+			}
+		},
+		sync:{
 			source:{
+				type:"ID",
+				array:false,
+				arrayRequired:false,
+				required:true
+			},
+			target:{
 				type:"ID",
 				array:false,
 				arrayRequired:false,
@@ -783,10 +858,77 @@ export const AllTypesProps: Record<string,any> = {
 				required:true
 			}
 		}
+	},
+	SetCloudDeploymentConfigCorsInput:{
+		allowedMethods:{
+			type:"String",
+			array:true,
+			arrayRequired:false,
+			required:true
+		},
+		allowCredentials:{
+			type:"Boolean",
+			array:false,
+			arrayRequired:false,
+			required:false
+		},
+		allowedOrigins:{
+			type:"String",
+			array:true,
+			arrayRequired:false,
+			required:true
+		},
+		allowedHeaders:{
+			type:"String",
+			array:true,
+			arrayRequired:false,
+			required:true
+		}
 	}
 }
 
 export const ReturnTypes: Record<string,any> = {
+	Team:{
+		id:"ID",
+		member:"Member",
+		members:"MemberConnection",
+		name:"String",
+		namespace:"Namespace",
+		planID:"Int"
+	},
+	Project:{
+		cloudDeploymentConfig:"CloudDeploymentConfig",
+		cloudDeploymentStatus:"CloudDeploymentStatus",
+		createdAt:"RFC3339Date",
+		description:"String",
+		enabled:"Boolean",
+		endpoint:"Endpoint",
+		id:"ID",
+		inCloud:"Boolean",
+		mocked:"Boolean",
+		name:"String",
+		owner:"User",
+		public:"Boolean",
+		slug:"String",
+		sources:"FakerSourceConnection",
+		tags:"String",
+		team:"Team"
+	},
+	PredictCheckout:{
+		price:"Float",
+		trialDays:"Int"
+	},
+	SecretOutput:{
+		name:"String",
+		value:"String"
+	},
+	User:{
+		accountType:"AccountType",
+		id:"ID",
+		namespace:"Namespace",
+		subscriptions:"SubscriptionConnection",
+		username:"String"
+	},
 	Query:{
 		checkoutData:"String",
 		emailVerified:"Boolean",
@@ -807,9 +949,69 @@ export const ReturnTypes: Record<string,any> = {
 		role:"Role",
 		username:"String"
 	},
+	MemberOps:{
+		delete:"Boolean",
+		update:"Boolean"
+	},
+	FakerSourceConnection:{
+		pageInfo:"PageInfo",
+		sources:"FakerSource"
+	},
+	Payment:{
+		amount:"Decimal",
+		currency:"String",
+		date:"PaymentDate",
+		receiptURL:"String",
+		subscriptionID:"Int"
+	},
+	CloudCorsSetting:{
+		allowCredentials:"Boolean",
+		allowedHeaders:"String",
+		allowedMethod:"String",
+		allowedOrigins:"String"
+	},
+	Namespace:{
+		project:"Project",
+		projects:"ProjectConnection",
+		public:"Boolean",
+		slug:"String"
+	},
+	SourceUploadInfo:{
+		filename:"String",
+		headers:"Header",
+		putUrl:"String"
+	},
+	SubscriptionConnection:{
+		pageInfo:"PageInfo",
+		subscriptions:"Subscription"
+	},
+	PageInfo:{
+		last:"String",
+		limit:"Int",
+		next:"Boolean"
+	},
+	TeamConnection:{
+		pageInfo:"PageInfo",
+		teams:"Team"
+	},
 	ProjectConnection:{
 		pageInfo:"PageInfo",
 		projects:"Project"
+	},
+	MemberConnection:{
+		members:"Member",
+		pageInfo:"PageInfo"
+	},
+	ProjectOps:{
+		createCloudDeployment:"String",
+		delete:"Boolean",
+		deployCodeToCloud:"String",
+		deployToFaker:"Boolean",
+		removeSources:"Boolean",
+		renameSources:"Boolean",
+		runtimeLogs:"String",
+		setCloudDeploymentConfig:"Boolean",
+		update:"Boolean"
 	},
 	Subscription:{
 		cancelURL:"String",
@@ -820,24 +1022,6 @@ export const ReturnTypes: Record<string,any> = {
 		subscriptionID:"Int",
 		subscriptionPlanID:"Int",
 		updateURL:"String"
-	},
-	ProjectOps:{
-		createCloudDeployment:"String",
-		delete:"Boolean",
-		deployCodeToCloud:"String",
-		deployToFaker:"Boolean",
-		removeSources:"Boolean",
-		renameSources:"Boolean",
-		update:"Boolean"
-	},
-	Endpoint:{
-		uri:"String"
-	},
-	Namespace:{
-		project:"Project",
-		projects:"ProjectConnection",
-		public:"Boolean",
-		slug:"String"
 	},
 	TeamOps:{
 		addMember:"Member",
@@ -851,24 +1035,9 @@ export const ReturnTypes: Record<string,any> = {
 		planID:"Int",
 		project:"ProjectOps"
 	},
-	SourceUploadInfo:{
-		filename:"String",
-		headers:"Header",
-		putUrl:"String"
-	},
-	Payment:{
-		amount:"Decimal",
-		currency:"String",
-		date:"PaymentDate",
-		receiptURL:"String",
-		subscriptionID:"Int"
-	},
 	SchemaSubscription:{
+		watchJobStatus:"CloudDeploymentStatus",
 		watchLogs:"String"
-	},
-	FakerSourceConnection:{
-		pageInfo:"PageInfo",
-		sources:"FakerSource"
 	},
 	FakerSource:{
 		checksum:"String",
@@ -876,67 +1045,23 @@ export const ReturnTypes: Record<string,any> = {
 		filename:"String",
 		getUrl:"String"
 	},
-	Header:{
-		key:"String",
-		value:"String"
-	},
-	SubscriptionConnection:{
-		pageInfo:"PageInfo",
-		subscriptions:"Subscription"
-	},
-	MemberOps:{
-		delete:"Boolean",
-		update:"Boolean"
-	},
-	PredictCheckout:{
-		price:"Float",
-		trialDays:"Int"
-	},
-	Team:{
-		id:"ID",
-		member:"Member",
-		members:"MemberConnection",
-		name:"String",
-		namespace:"Namespace",
-		planID:"Int"
-	},
-	PageInfo:{
-		last:"String",
-		limit:"Int",
-		next:"Boolean"
-	},
-	User:{
-		accountType:"AccountType",
-		id:"ID",
-		namespace:"Namespace",
-		subscriptions:"SubscriptionConnection",
-		username:"String"
+	CloudDeploymentConfig:{
+		cors:"CloudCorsSetting",
+		secrets:"SecretOutput"
 	},
 	UserConnection:{
 		pageInfo:"PageInfo",
 		users:"User"
 	},
-	MemberConnection:{
-		members:"Member",
-		pageInfo:"PageInfo"
+	Header:{
+		key:"String",
+		value:"String"
 	},
-	Project:{
-		createdAt:"RFC3339Date",
-		description:"String",
-		enabled:"Boolean",
-		endpoint:"Endpoint",
-		id:"ID",
-		inCloud:"Boolean",
-		mocked:"Boolean",
-		name:"String",
-		owner:"User",
-		public:"Boolean",
-		slug:"String",
-		sources:"FakerSourceConnection",
-		tags:"String",
-		team:"Team"
+	Endpoint:{
+		uri:"String"
 	},
 	Mutation:{
+		changePassword:"Boolean",
 		changeSubscription:"Boolean",
 		createCloudDeployment:"String",
 		createProject:"Project",
@@ -946,13 +1071,12 @@ export const ReturnTypes: Record<string,any> = {
 		deployCodeToCloud:"String",
 		deployToFaker:"Boolean",
 		removeProject:"Boolean",
+		resendVerificationEmail:"Boolean",
+		runtimeLogs:"String",
+		setCloudDeploymentConfig:"Boolean",
 		sync:"Boolean",
 		team:"TeamOps",
 		updateProject:"Boolean",
 		updateSources:"SourceUploadInfo"
-	},
-	TeamConnection:{
-		pageInfo:"PageInfo",
-		teams:"Team"
 	}
 }
