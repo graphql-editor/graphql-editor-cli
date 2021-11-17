@@ -4,6 +4,7 @@ import open from 'open';
 import express from 'express';
 import fetch from 'node-fetch';
 import { Config, TokenConf } from '../Configuration';
+import { logger } from '../common/log';
 
 function base64URLEncode(str: Buffer) {
   return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
@@ -81,6 +82,9 @@ export class Auth {
         code_challenge_method: 'S256',
         response_type: 'code',
       });
+      const loginUrl = `${url}/authorize?${params}`;
+      logger(`Please login inside browser. If you were not redirected please open\n`, 'loading');
+      logger(`${loginUrl}\n`, 'info');
       await open(`${url}/authorize?${params}`);
       const app = express();
       const server = app.listen(1569);
@@ -106,6 +110,10 @@ export class Auth {
         res.send(`You are logged in with GraphQL Editor account. You can go back to CLI`);
         if (jsonResponse.access_token) {
           server.close();
+          logger(
+            `You have successfully logged in. Your auth config is stored at "${Config.getAuthPath()}""`,
+            'success',
+          );
           resolve({ token: jsonResponse.access_token, tokenLastSet: new Date().toISOString() });
         } else {
           reject('Cannot get access token');

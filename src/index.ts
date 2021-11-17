@@ -60,6 +60,14 @@ welcome().then(() => {
       },
     )
     .command(
+      'login',
+      'Login to GraphQL Editor',
+      async (yargs) => {},
+      async (argv) => {
+        await Auth.login().then(Config.setTokenOptions);
+      },
+    )
+    .command(
       'schema',
       'Generate GraphQL schema from project at given path',
       async (yargs) => {

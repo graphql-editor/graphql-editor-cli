@@ -5,6 +5,7 @@ import { Environment } from 'graphql-zeus';
 import { Editor } from '@/Editor';
 import { AutocompleteInputPrompt } from '@/utils';
 import { IS_VERSION_SCHEMA_FILE_REGEX } from '@/gshared/constants';
+import Conf from 'conf';
 
 export type AppType = 'backend' | 'frontend';
 export type TypingsGen = 'Javascript' | 'TypeScript';
@@ -56,23 +57,18 @@ const ConfigurationSpecialPrompts: { [P in keyof ConfigurationOptions]?: inquire
 
 export class Configuration {
   private options: ConfigurationOptions = {};
-  private tokenOptions: TokenConf = {};
+  private authConfig = new Conf<TokenConf>({ projectName: 'graphql-editor', projectSuffix: 'auth' });
   constructor(public projectPath = process.cwd()) {
     Config = this;
     this.init();
   }
-  private tokenConfigPath = () => path.join(this.projectPath, Configuration.AUTH_NAME);
   private configPath = () => path.join(this.projectPath, Configuration.CONFIG_NAME);
   static CONFIG_NAME = '.graphql-editor.json';
-  static AUTH_NAME = '.graphql-editor-auth.json';
   init = () => {
     const cliConfig = fs.existsSync(this.configPath()) && require(this.configPath());
-    const authConfig = fs.existsSync(this.tokenConfigPath()) && require(this.tokenConfigPath());
+    // const authConfig = this.authConfig.get()
     if (cliConfig) {
       this.options = { ...cliConfig };
-    }
-    if (authConfig) {
-      this.tokenOptions = { ...authConfig };
     }
   };
 
@@ -87,16 +83,14 @@ export class Configuration {
   };
   setTokenOptions = (opts?: Partial<TokenConf>) => {
     if (opts) {
-      this.tokenOptions = {
-        ...this.tokenOptions,
-        ...opts,
-      };
-      fs.writeFileSync(this.tokenConfigPath(), `${JSON.stringify(this.tokenOptions, null, 4)}`);
+      this.authConfig.set({ ...opts });
     }
   };
+  getAuthPath = () => this.authConfig.path;
 
   get = <T extends keyof ConfigurationOptions>(k: T) => this.options[k]!;
-  getTokenOptions = <T extends keyof TokenConf>(k: T) => this.tokenOptions[k]!;
+  getTokenOptions = <T extends keyof TokenConf>(k: T) => this.authConfig.get(k);
+  logout = () => this.authConfig.clear();
 
   getUnknownString = async <T extends keyof ConfigurationOptions>(
     k: T,

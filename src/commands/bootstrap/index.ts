@@ -27,8 +27,6 @@ export const CommandBootstrap = async ({
   namespace?: string;
   version?: string;
 }) => {
-  const credentials = await Auth.login();
-  Config.setTokenOptions(credentials);
   const projectDetails = await Config.resolve({ namespace, project, version, system }, [
     'system',
     'namespace',
@@ -49,7 +47,6 @@ export const CommandBootstrap = async ({
   fs.mkdirSync(projectPath);
   const writeProjectJSONFile = (file: any, fileName: string) =>
     fs.writeFileSync(path.join(projectPath, fileName), jsonFile(file));
-  writeProjectJSONFile(credentials, Configuration.AUTH_NAME);
 
   if (projectDetails.system === 'backend') {
     const { type }: { type: 'js' | 'ts' } = await inquirer.prompt({
