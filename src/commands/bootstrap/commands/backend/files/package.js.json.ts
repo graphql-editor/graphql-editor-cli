@@ -5,6 +5,7 @@ export default {
   main: 'src/index.js',
   scripts: {
     start: 'stucco',
+    update: 'gecli models && gecli schema && gecli typings',
   },
   author: 'GraphQL Editor Centaur Generator',
   license: 'ISC',

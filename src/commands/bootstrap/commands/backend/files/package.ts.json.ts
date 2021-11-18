@@ -7,6 +7,7 @@ export default {
     start: 'stucco',
     build: 'tsc',
     watch: 'tsc --watch',
+    update: 'gecli models && gecli schema && gecli typings',
   },
   author: 'GraphQL Editor Centaur Generator',
   license: 'ISC',
