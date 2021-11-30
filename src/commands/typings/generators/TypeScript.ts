@@ -2,6 +2,7 @@ import * as templates from '@/commands/typings/templates';
 import { HandleTemplates } from '@/common';
 import { Environment } from 'graphql-zeus';
 import p from 'path';
+import { TreeToTS } from 'graphql-zeus';
 export const TypeScript = async ({
   schema,
   env,
@@ -15,12 +16,12 @@ export const TypeScript = async ({
 }) => {
   const ts = templates.TypeScript(schema, env, host);
   HandleTemplates.action({
-    content: ts.const,
+    content: TreeToTS.resolveBasisHeader().concat(ts.const),
     path: p.join(path, 'zeus', 'const.ts'),
     type: 'add',
   });
   HandleTemplates.action({
-    content: [ts.indexImports, ts.index].join('\n'),
+    content: [TreeToTS.resolveBasisHeader(), ts.indexImports, ts.index].join('\n'),
     path: p.join(path, 'zeus', 'index.ts'),
     type: 'add',
   });
