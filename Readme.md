@@ -18,7 +18,6 @@ Translate GraphQL to Anything and make it your one and only source of truth. Sch
       - [Additional options](#additional-options-1)
     - [Backend](#backend)
       - [Bootstrap](#bootstrap)
-      - [Additional options](#additional-options-2)
       - [Models](#models)
         - [MongoDB](#mongodb)
       - [Resolvers](#resolvers)
@@ -26,7 +25,6 @@ Translate GraphQL to Anything and make it your one and only source of truth. Sch
         - [Environment inside shared worker](#environment-inside-shared-worker)
       - [Push to cloud](#push-to-cloud)
       - [Pull from cloud](#pull-from-cloud)
-  - [Frontend pages](#frontend-pages)
   - [Roadmap](#roadmap)
 
 ## Installation
@@ -83,7 +81,7 @@ $ gecli schema
 
 ### Typings
 
-Generate TypeScript or Javascript typings from GraphQL Editor project.
+Generate TypeScript typings from GraphQL Editor project.
 
 ```sh
 $ gecli typings
@@ -91,12 +89,11 @@ $ gecli typings
 
 #### Additional options
 
-| Option      | type                         | description                                 |
-| ----------- | ---------------------------- | ------------------------------------------- |
-| typingsDir  | string                       | Path where to store generated typings files |
-| typingsGen  | "Javascript" or "TypeScript" | Generation language                         |
-| typingsEnv  | "browser" or "node           | Environment for typings to work with        |
-| typingsHost | string                       | GraphQL Server URL                          |
+| Option      | type               | description                                 |
+| ----------- | ------------------ | ------------------------------------------- |
+| typingsDir  | string             | Path where to store generated typings files |
+| typingsEnv  | "browser" or "node | Environment for typings to work with        |
+| typingsHost | string             | GraphQL Server URL                          |
 
 ### Backend
 
@@ -107,12 +104,6 @@ $ gecli bootstrap
 ```
 
 Bootstrap a backend stucco project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration. It is an interactive command. It will create a folder with project name you will provide
-
-#### Additional options
-
-| Option | type                    | description          |
-| ------ | ----------------------- | -------------------- |
-| system | "backend" or "frontend" | Type of your project |
 
 #### Models
 
@@ -244,19 +235,11 @@ $ gecli pull
 
 It will pull the project to the project name folder
 
-## Frontend pages
-
-CLI tool to generate [GraphQL SSG](https://graphqlssg.com) Frontend Pages.
-
-```sh
-$ gecli bootstrap
-```
-
 ## Roadmap
 
 - [ ] Prisma models from GraphQL types interactive CLI
 - [ ] More use cases with other databases and ORMs
 - [ ] Deployment of microservices
 - [ ] Add colours
-- [ ] Push files to editor
-- [ ] Generation of ejected microservices CI
+- [x] Push files to editor
+- [x] Generation of ejected microservices CI

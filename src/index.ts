@@ -88,15 +88,11 @@ welcome().then(() => {
     )
     .command(
       'typings',
-      'Generate GraphQL typings for TypeScript or Javascript',
+      'Generate GraphQL typings for TypeScript',
       async (yargs) => {
         yargs.options(
           confOptions({
             ...projectOptions,
-            typingsGen: {
-              describe: 'Generation language',
-              choices: ['Javascript', 'TypeScript'],
-            },
             typingsHost: {
               describe: 'GraphQL Server address',
               type: 'string',
@@ -117,29 +113,24 @@ welcome().then(() => {
         await CommandTypings(
           argv as Pick<
             ConfigurationOptions,
-            'project' | 'namespace' | 'version' | 'typingsDir' | 'typingsEnv' | 'typingsGen' | 'typingsHost'
+            'project' | 'namespace' | 'version' | 'typingsDir' | 'typingsEnv' | 'typingsHost'
           >,
         );
       },
     )
     .command(
       'bootstrap',
-      'Bootstrap a new frontend or backend project',
+      'Bootstrap a backend project',
       async (yargs) => {
         yargs.options(
           confOptions({
             ...projectOptions,
-            system: {
-              type: 'string',
-              choices: ['backend', 'frontend'],
-              describe: 'Choose the type of app you want to bootstrap',
-            },
           }),
         );
       },
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
-        await CommandBootstrap(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version' | 'system'>);
+        await CommandBootstrap(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
       },
     )
     .command(

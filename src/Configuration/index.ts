@@ -7,8 +7,6 @@ import { AutocompleteInputPrompt } from '@/utils';
 import { IS_VERSION_SCHEMA_FILE_REGEX } from '@/gshared/constants';
 import Conf from 'conf';
 
-export type AppType = 'backend' | 'frontend';
-export type TypingsGen = 'Javascript' | 'TypeScript';
 export type DeploymentType = 'editor' | 'azure';
 
 export interface TokenConf {
@@ -19,7 +17,6 @@ export interface TokenConf {
 export interface TypingsConf {
   typingsDir?: string;
   typingsEnv?: Environment;
-  typingsGen?: TypingsGen;
   typingsHost?: string;
 }
 
@@ -37,22 +34,14 @@ export interface BackendConf {
 }
 
 export interface ConfigurationOptions extends TypingsConf, EditorConf, BackendConf {
-  system?: AppType;
   schemaDir?: string;
 }
 
 export let Config: Configuration;
 
 const ConfigurationSpecialPrompts: { [P in keyof ConfigurationOptions]?: inquirer.QuestionCollection } = {
-  typingsGen: {
-    choices: ['TypeScript', 'Javascript'],
-    message: 'Generation language',
-    name: 'typingsGen',
-    type: 'list',
-  },
   typingsEnv: { choices: ['browser', 'node'], message: 'Select environment', name: 'typingsEnv', type: 'list' },
   version: { message: 'Project version', default: 'latest', type: 'input' },
-  system: { type: 'list', choices: ['backend', 'frontend'], message: 'Select project type', name: 'system' },
 };
 
 export class Configuration {

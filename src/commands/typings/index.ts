@@ -1,4 +1,4 @@
-import { Config, TypingsGen } from '@/Configuration';
+import { Config } from '@/Configuration';
 import { Editor } from '@/Editor';
 import { Environment } from 'graphql-zeus';
 import * as generators from './generators';
@@ -10,7 +10,6 @@ export const CommandTypings = async ({
   namespace,
   project,
   version,
-  typingsGen,
   typingsEnv,
   typingsHost,
 }: {
@@ -18,7 +17,6 @@ export const CommandTypings = async ({
   namespace?: string;
   project?: string;
   version?: string;
-  typingsGen?: TypingsGen;
   typingsEnv?: Environment;
   typingsHost?: string;
 }) => {
@@ -29,26 +27,15 @@ export const CommandTypings = async ({
       project,
       version,
       typingsEnv,
-      typingsGen,
       typingsHost,
     },
-    ['namespace', 'project', 'version', 'typingsDir', 'typingsEnv', 'typingsHost', 'typingsGen'],
+    ['namespace', 'project', 'version', 'typingsDir', 'typingsEnv', 'typingsHost'],
   );
   const schema = await Editor.getCompiledSchema(cfg);
-  if (cfg.typingsGen === 'Javascript') {
-    generators.Javacript({
-      env: cfg.typingsEnv,
-      host: cfg.typingsHost,
-      path: cfg.typingsDir,
-      schema,
-    });
-  }
-  if (cfg.typingsGen === 'TypeScript') {
-    generators.TypeScript({
-      env: cfg.typingsEnv,
-      host: cfg.typingsHost,
-      path: cfg.typingsDir,
-      schema,
-    });
-  }
+  generators.TypeScript({
+    env: cfg.typingsEnv,
+    host: cfg.typingsHost,
+    path: cfg.typingsDir,
+    schema,
+  });
 };
