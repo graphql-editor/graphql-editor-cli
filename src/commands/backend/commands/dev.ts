@@ -11,7 +11,7 @@ const terminate = async (ch?: ChildProcess): Promise<void | number> => {
   const ret = new Promise<number>((resolve) => ch.on('close', (code: number) => resolve(code)));
   ch.kill(SIGINT);
   return ret;
-}
+};
 
 const spawnPromise = async (cmd: string, args: string[]): Promise<ChildProcess> => {
   const child = spawn(cmd, args, {
@@ -24,7 +24,7 @@ const spawnPromise = async (cmd: string, args: string[]): Promise<ChildProcess> 
       resolve(child);
     });
   });
-}
+};
 
 export const CommandDev = async ({ namespace, project }: { namespace?: string; project?: string }) => {
   const bin = await stucco();
@@ -44,7 +44,7 @@ export const CommandDev = async ({ namespace, project }: { namespace?: string; p
       child = undefined;
       const code = await terminate(ch);
       logger(`${code}`, 'info');
-      if (code) logger( `child terminated with non 0 status`, 'info');
+      if (code) logger(`child terminated with non 0 status`, 'info');
       if (child) return;
       child = await spawnPromise(bin.path(), args);
       logger('tsc success', 'success');
