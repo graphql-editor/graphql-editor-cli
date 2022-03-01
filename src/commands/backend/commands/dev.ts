@@ -30,25 +30,25 @@ export const CommandDev = async ({ namespace, project }: { namespace?: string; p
   const bin = await stucco();
   const args = ['local', 'start'];
   let child: ChildProcess | undefined;
-  let delay: NodeJS.Timeout | undefined;
+  let taskRunning = false;
   process.on('SIGTERM', () => {
     child?.kill(SIGINT);
   });
   process.on('SIGINT', () => {
     child?.kill(SIGINT);
   });
-  client.on('success', () => {
-    if (delay) clearTimeout(delay);
-    delay = setTimeout(async () => {
-      const ch = child;
-      child = undefined;
-      const code = await terminate(ch);
-      logger(`${code}`, 'info');
-      if (code) logger( `child terminated with non 0 status`, 'info');
-      if (child) return;
+  client.on('success', async () => {
+    // Only one restart at once
+    if (taskRunning)  return;
+    taskRunning = true;
+    try {
+      const code = await terminate(child);
+      if (code) logger( `child terminated with non 0 status: ${code}`, 'error');
       child = await spawnPromise(bin.path(), args);
       logger('tsc success', 'success');
-    }, 1000);
+    } finally {
+      taskRunning = false;
+    }
   });
   client.on('compile_errors', () => {
     logger('tsc error', 'error');
