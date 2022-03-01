@@ -1,6 +1,6 @@
-import { Config } from '@/Configuration';
-import { HandleTemplates } from '@/common';
-import { Editor } from '@/Editor';
+import { Config } from '@/Configuration/index.js';
+import { HandleTemplates } from '@/common/index.js';
+import { Editor } from '@/Editor.js';
 import path from 'path';
 
 export const CommandSchema = async ({

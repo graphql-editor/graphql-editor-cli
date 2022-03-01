@@ -1,7 +1,7 @@
-import { logger } from '@/common/log';
-import { Config } from '@/Configuration';
-import { Editor } from '@/Editor';
-import { ValueTypes } from '@/zeus';
+import { logger } from '@/common/log/index.js';
+import { Config } from '@/Configuration/index.js';
+import { Editor } from '@/Editor.js';
+import { ValueTypes } from '@/zeus/index.js';
 export const CommandDeployRemote = async ({
   namespace,
   project,

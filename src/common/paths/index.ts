@@ -1,5 +1,5 @@
 import path from 'path';
-import { Config } from '@/Configuration';
+import { Config } from '@/Configuration/index.js';
 import { ParserField } from 'graphql-js-tree';
 
 export const getPaths = async ({

@@ -2,9 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import inquirer from 'inquirer';
 import { Environment } from 'graphql-zeus';
-import { Editor } from '@/Editor';
-import { AutocompleteInputPrompt } from '@/utils';
-import { IS_VERSION_SCHEMA_FILE_REGEX } from '@/gshared/constants';
+import { Editor } from '@/Editor.js';
+import { AutocompleteInputPrompt } from '@/utils/index.js';
+import { IS_VERSION_SCHEMA_FILE_REGEX } from '@/gshared/constants/index.js';
 import Conf from 'conf';
 
 export type DeploymentType = 'editor' | 'azure';
@@ -54,7 +54,8 @@ export class Configuration {
   private configPath = () => path.join(this.projectPath, Configuration.CONFIG_NAME);
   static CONFIG_NAME = '.graphql-editor.json';
   init = () => {
-    const cliConfig = fs.existsSync(this.configPath()) && require(this.configPath());
+    const cliConfig =
+      fs.existsSync(this.configPath()) && JSON.parse(fs.readFileSync(this.configPath()).toString('utf8'));
     // const authConfig = this.authConfig.get()
     if (cliConfig) {
       this.options = { ...cliConfig };

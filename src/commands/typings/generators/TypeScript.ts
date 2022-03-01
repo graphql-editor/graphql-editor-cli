@@ -1,5 +1,5 @@
-import * as templates from '@/commands/typings/templates';
-import { HandleTemplates } from '@/common';
+import * as templates from '@/commands/typings/templates/TypeScript.js';
+import { HandleTemplates } from '@/common/index.js';
 import { Environment } from 'graphql-zeus';
 import p from 'path';
 import { TreeToTS } from 'graphql-zeus';

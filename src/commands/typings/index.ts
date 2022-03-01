@@ -1,8 +1,8 @@
-import { Config } from '@/Configuration';
-import { Editor } from '@/Editor';
+import { Config } from '@/Configuration/index.js';
+import { Editor } from '@/Editor.js';
 import { Environment } from 'graphql-zeus';
-import * as generators from './generators';
-import * as templates from './templates';
+import * as generators from '@/commands/typings/generators/TypeScript.js';
+import * as templates from '@/commands/typings/templates/TypeScript.js';
 export { generators, templates };
 
 export const CommandTypings = async ({
