@@ -1,8 +1,8 @@
-import { Editor } from '@/Editor';
+import { Editor } from '@/Editor.js';
 import inquirer from 'inquirer';
-import { writeSync } from 'clipboardy';
+import clipboardy from 'clipboardy';
 import open from 'open';
-import { logger } from '@/common/log';
+import { logger } from '@/common/log/index.js';
 
 export const CommandGetCIToken = async () => {
   const { device_code, verification_uri_complete } = await Editor.getDeviceCode();
@@ -13,7 +13,7 @@ export const CommandGetCIToken = async () => {
     name: 'ready',
   });
   const result = await Editor.getDeviceToken(device_code);
-  writeSync(result.refresh_token);
+  clipboardy.writeSync(result.refresh_token);
   logger('CI token copied to clipoard. Put it to GRAPHQL_EDITOR_TOKEN variable in your CI.', 'info');
   return;
 };

@@ -1,4 +1,4 @@
-import { Config } from '@/Configuration';
+import { Config } from '@/Configuration/index.js';
 
 export const initConfiguration = async ({
   namespace,

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { Action } from './models';
+import { Action } from '@/common/handleTemplates/models.js';
 const unifyString = (s: string) => s.replace(/\s/g, '').replace(/\n/g, '').replace(/\"/g, `'`);
 export class HandleTemplates {
   public static action = (a: Action) => {

@@ -18,6 +18,7 @@ Translate GraphQL to Anything and make it your one and only source of truth. Sch
       - [Additional options](#additional-options-1)
     - [Backend](#backend)
       - [Bootstrap](#bootstrap)
+      - [Development](#development)
       - [Models](#models)
         - [MongoDB](#mongodb)
       - [Resolvers](#resolvers)
@@ -104,6 +105,14 @@ $ gecli bootstrap
 ```
 
 Bootstrap a backend stucco project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration. It is an interactive command. It will create a folder with project name you will provide
+
+#### Development
+
+```sh
+$ gecli dev
+```
+
+To start stucco development server reacting to your code changes,
 
 #### Models
 

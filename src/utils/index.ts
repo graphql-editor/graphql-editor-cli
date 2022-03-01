@@ -1,1 +1,1 @@
-export * from './AutoCompleteInput';
+export * from './AutoCompleteInput.js';

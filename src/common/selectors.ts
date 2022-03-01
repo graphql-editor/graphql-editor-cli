@@ -1,5 +1,5 @@
 import { DistinctQuestion } from 'inquirer';
-import { AutocompleteInputPrompt } from '@/utils';
+import { AutocompleteInputPrompt } from '@/utils/index.js';
 import { ParserField, ParserTree, TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
 export interface TypeResolverReturns {
   resolver: ParserField;

@@ -1,7 +1,7 @@
-import { Config } from '@/Configuration';
-import { Editor } from '@/Editor';
-import { unZipFiles } from '@/utils/ZipUtils';
-import { fileInCloudFolder, MICROSERVICE_DEPLOYMENT_FILE } from '@/gshared/constants';
+import { Config } from '@/Configuration/index.js';
+import { Editor } from '@/Editor.js';
+import { unZipFiles } from '@/utils/ZipUtils.js';
+import { fileInCloudFolder, MICROSERVICE_DEPLOYMENT_FILE } from '@/gshared/constants/index.js';
 import fetch from 'node-fetch';
 import path from 'path';
 

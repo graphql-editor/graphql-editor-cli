@@ -1,8 +1,8 @@
 import { Parser, ParserField, TypeDefinition } from 'graphql-js-tree';
-import { HandleTemplates } from '@/common';
-import { Config } from '@/Configuration';
+import { HandleTemplates } from '@/common/index.js';
+import { Config } from '@/Configuration/index.js';
 import path from 'path';
-import { Editor } from '@/Editor';
+import { Editor } from '@/Editor.js';
 
 export const getModel = async (modelsPath: string, field: ParserField) => {
   const modelName = `${field.name}Model`;

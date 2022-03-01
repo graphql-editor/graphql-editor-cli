@@ -1,21 +1,22 @@
 #!/usr/bin/env node
 
 import yargs, { argv, Options } from 'yargs';
-import { welcome } from './welcome';
-import { Auth } from '@/Auth';
-import { initConfiguration } from '@/commands/init';
-import { CommandSchema } from '@/commands/schema';
-import { CommandTypings } from '@/commands/typings';
-import { CommandBootstrap } from '@/commands/bootstrap';
-import { Config, Configuration, ConfigurationOptions } from '@/Configuration';
-import { CommandResolver } from '@/commands/backend/commands/resolver';
-import { CommandModels } from '@/commands/backend/commands/models';
-import { CommandDeploy } from '@/commands/backend/commands/deploy';
-import { ValueTypes } from '@/zeus';
-import { CommandDeployRemote } from '@/commands/backend/commands/deployFromRemote';
-import { CommandGetCIToken } from '@/commands/editor/getCIToken';
-import { CommandPull } from '@/commands/backend/commands/pull';
-import { CommandPush } from '@/commands/backend/commands/push';
+import { welcome } from '@/welcome.js';
+import { Auth } from '@/Auth/index.js';
+import { initConfiguration } from '@/commands/init/index.js';
+import { CommandSchema } from '@/commands/schema/index.js';
+import { CommandTypings } from '@/commands/typings/index.js';
+import { CommandBootstrap } from '@/commands/bootstrap/index.js';
+import { Config, Configuration, ConfigurationOptions } from '@/Configuration/index.js';
+import { CommandResolver } from '@/commands/backend/commands/resolver.js';
+import { CommandModels } from '@/commands/backend/commands/models.js';
+import { CommandDeploy } from '@/commands/backend/commands/deploy.js';
+import { ValueTypes } from '@/zeus/index.js';
+import { CommandDeployRemote } from '@/commands/backend/commands/deployFromRemote.js';
+import { CommandGetCIToken } from '@/commands/editor/getCIToken.js';
+import { CommandPull } from '@/commands/backend/commands/pull.js';
+import { CommandPush } from '@/commands/backend/commands/push.js';
+import { CommandDev } from '@/commands/backend/commands/dev.js';
 
 type ConfOptions = {
   [P in keyof ConfigurationOptions]: Options;
@@ -40,8 +41,9 @@ const projectOptions: ConfOptions = {
 
 welcome().then(() => {
   new Configuration();
-  return yargs
+  return yargs(process.argv.slice(2))
     .usage('Usage: $0 <command> [options]')
+    .version(false)
     .help('h')
     .alias('h', 'help')
     .command(
@@ -153,6 +155,16 @@ welcome().then(() => {
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
         await CommandModels(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
+      },
+    )
+    .command(
+      'dev',
+      'Start development Typescript server and stucco server with hot reload.',
+      async (yargs) => {
+        yargs.options(confOptions({ ...projectOptions }));
+      },
+      async (argv) => {
+        CommandDev(argv as Pick<ConfigurationOptions, 'project' | 'namespace'>);
       },
     )
     .command(

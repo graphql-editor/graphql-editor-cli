@@ -1,8 +1,8 @@
-import { logger } from '@/common/log';
-import { Config } from '@/Configuration';
-import { Editor } from '@/Editor';
-import { CLOUD_FOLDERS, microservicesLanguagesExtensions } from '@/gshared/constants';
-import { getDirWithIgnoredGlobs } from '@/utils/ZipUtils';
+import { logger } from '@/common/log/index.js';
+import { Config } from '@/Configuration/index.js';
+import { Editor } from '@/Editor.js';
+import { CLOUD_FOLDERS, microservicesLanguagesExtensions } from '@/gshared/constants/index.js';
+import { getDirWithIgnoredGlobs } from '@/utils/ZipUtils.js';
 import path from 'path';
 import fs from 'fs';
 import mime from 'mime';
@@ -33,7 +33,7 @@ export const CommandPush = async ({ namespace, project }: { namespace?: string; 
     files.map((f) => ({
       name: path.join(CLOUD_FOLDERS.microservice, microservicesLanguagesExtensions.JAVASCRIPT_EXT, f),
       content: fs.readFileSync(f),
-      type: mime.getType(f) || 'text/plain',
+      type: mime.extension(f) || 'text/plain',
     })),
   );
   logger('Successfully uploaded files to GraphQL Editor Cloud', 'success');

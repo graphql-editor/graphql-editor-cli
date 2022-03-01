@@ -1,9 +1,9 @@
-import { Config } from '@/Configuration';
-import { Editor } from '@/Editor';
-import { ValueTypes } from '@/zeus';
-import { zipCWD } from '@/utils/ZipUtils';
-import { fileInCloudFolder, MICROSERVICE_DEPLOYMENT_FILE } from '@/gshared/constants';
-import { logger } from '@/common/log';
+import { Config } from '@/Configuration/index.js';
+import { Editor } from '@/Editor.js';
+import { ValueTypes } from '@/zeus/index.js';
+import { zipCWD } from '@/utils/ZipUtils.js';
+import { fileInCloudFolder, MICROSERVICE_DEPLOYMENT_FILE } from '@/gshared/constants/index.js';
+import { logger } from '@/common/log/index.js';
 
 export const CommandDeploy = async ({
   namespace,

@@ -1,7 +1,14 @@
-import { Chain, DeployCodeToCloudEnv, DeployCodeToCloudURIKind, GraphQLTypes, ValueTypes } from './zeus';
-import { Config } from './Configuration';
+import {
+  Subscription,
+  Chain,
+  DeployCodeToCloudEnv,
+  DeployCodeToCloudURIKind,
+  GraphQLTypes,
+  ValueTypes,
+} from '@/zeus/index.js';
+import { Config } from '@/Configuration/index.js';
 import fetch from 'node-fetch';
-import { VERSION_SCHEMA_FILE, VERSION_STITCH_FILE } from '@/gshared/constants';
+import { VERSION_SCHEMA_FILE, VERSION_STITCH_FILE } from '@/gshared/constants/index.js';
 
 export interface FileArray {
   name: string;
@@ -21,12 +28,24 @@ const jolt = () => {
   });
 };
 
+const joltSubscription = () => {
+  const token = Config.getTokenOptions('token');
+  const headers: Record<string, string> = token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
+  return Subscription('https://api.staging.project.graphqleditor.com/graphql', {
+    headers,
+  });
+};
+
 /**
  * Provides connection to GraphQL Editor
  */
 export class Editor {
   public static nameSpaceExists = async (accountName: string) => {
-    const Query = await jolt().query({
+    const Query = await jolt()('query')({
       getNamespace: [
         { slug: accountName },
         {
@@ -40,7 +59,7 @@ export class Editor {
     return (await fetch(url)).text();
   };
   public static fetchProjects = async (accountName: string) => {
-    const Query = await jolt().query({
+    const Query = await jolt()('query')({
       getNamespace: [
         { slug: accountName },
         {
@@ -77,7 +96,7 @@ export class Editor {
     return namespace.projects?.projects || [];
   };
   public static fetchProject = async ({ accountName, projectName }: { accountName: string; projectName: string }) => {
-    const Query = await jolt().query({
+    const Query = await jolt()('query')({
       getNamespace: [
         { slug: accountName },
         {
@@ -152,7 +171,7 @@ export class Editor {
   };
 
   public static removeFiles = async (teamId: string, projectId: string, files: string[]) => {
-    const response = await jolt().mutation({
+    const response = await jolt()('mutation')({
       team: [
         {
           id: teamId,
@@ -179,7 +198,7 @@ export class Editor {
   };
 
   public static renameFiles = async (teamId: string, projectId: string, files: Array<{ src: string; dst: string }>) => {
-    const response = await jolt().mutation({
+    const response = await jolt()('mutation')({
       team: [
         {
           id: teamId,
@@ -216,7 +235,7 @@ export class Editor {
       },
     }));
 
-    const response = await jolt().mutation({
+    const response = await jolt()('mutation')({
       updateSources: [
         {
           project: projectId,
@@ -255,7 +274,7 @@ export class Editor {
     );
   };
   public static deployProjectToCloud = async (projectId: string) => {
-    const response = await jolt().mutation({
+    const response = await jolt()('mutation')({
       createCloudDeployment: [{ id: projectId }, true],
     });
     return response.createCloudDeployment;
@@ -265,7 +284,7 @@ export class Editor {
     zipURI: string,
     opts: Pick<ValueTypes['DeployCodeToCloudInput'], 'node14Opts' | 'secrets'>,
   ) => {
-    const response = await jolt().mutation({
+    const response = await jolt()('mutation')({
       deployCodeToCloud: [
         {
           id: projectId,
@@ -286,7 +305,7 @@ export class Editor {
     return deploymentId;
   };
   public static showDeploymentLogs = async (streamID: string) => {
-    const response = await jolt().subscription({
+    const response = await joltSubscription()('subscription')({
       watchLogs: [{ streamID }, true],
     });
     return response;

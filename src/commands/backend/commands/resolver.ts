@@ -1,8 +1,8 @@
-import { TypeResolver } from '@/common/selectors';
-import { addStucco, getPaths, HandleTemplates } from '@/common';
-import { Config } from '@/Configuration';
+import { TypeResolver } from '@/common/selectors.js';
+import { addStucco, getPaths, HandleTemplates } from '@/common/index.js';
+import { Config } from '@/Configuration/index.js';
 import { Parser, ParserField } from 'graphql-js-tree';
-import { Editor } from '@/Editor';
+import { Editor } from '@/Editor.js';
 
 interface BasicResolverProps {
   resolverParent: string;

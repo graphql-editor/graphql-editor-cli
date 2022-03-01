@@ -3,8 +3,8 @@ import qs from 'qs';
 import open from 'open';
 import express from 'express';
 import fetch from 'node-fetch';
-import { Config, TokenConf } from '../Configuration';
-import { logger } from '../common/log';
+import { Config, TokenConf } from '@/Configuration/index.js';
+import { logger } from '@/common/log/index.js';
 
 function base64URLEncode(str: Buffer) {
   return str.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
