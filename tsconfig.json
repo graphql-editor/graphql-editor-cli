@@ -10,6 +10,7 @@
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
+    "resolveJsonModule": true,
     "typeRoots": [
       "./node_modules/@types",
       "./src/typings",
