@@ -18,6 +18,8 @@ import { CommandPull } from '@/commands/backend/commands/pull.js';
 import { CommandPush } from '@/commands/backend/commands/push.js';
 import { CommandDev } from '@/commands/backend/commands/dev.js';
 import { integrateStuccoJson } from '@/commands/gei/integrate.js';
+import { bootstrapIntegrationFile } from '@/commands/gei/bootstrapIntegrationFile.js';
+import { bootstrapGeiFile } from '@/commands/gei/bootstrapGeiFile.js';
 
 type ConfOptions = {
   [P in keyof ConfigurationOptions]: Options;
@@ -160,21 +162,47 @@ welcome().then(() => {
     )
     .command(
       'gei:integrate',
-      'Generate integration.json from ./src/integration.ts',
+      'Generate integration.json from integration.ts file',
       async (yargs) => {
         yargs.options({
           integrationPath: {
             type: 'string',
             describe: 'Path to integration.ts file',
           },
-          stuccoPath: {
-            type: 'string',
-            describe: 'Path to stucco.json file',
-          },
         });
       },
       async (argv) => {
         integrateStuccoJson(argv as Parameters<typeof integrateStuccoJson>[0]);
+      },
+    )
+    .command(
+      'gei:generate',
+      'Generate integration.ts file',
+      async (yargs) => {
+        yargs.options({
+          integrationFilePath: {
+            type: 'string',
+            describe: 'Path to generate integration.ts file',
+          },
+        });
+      },
+      async (argv) => {
+        bootstrapIntegrationFile(argv as Parameters<typeof bootstrapIntegrationFile>[0]);
+      },
+    )
+    .command(
+      'gei:gei',
+      'Generate gei.ts file',
+      async (yargs) => {
+        yargs.options({
+          geiFilePath: {
+            type: 'string',
+            describe: 'Path to generate gei.ts file',
+          },
+        });
+      },
+      async (argv) => {
+        bootstrapGeiFile(argv as Parameters<typeof bootstrapGeiFile>[0]);
       },
     )
     .command(
