@@ -17,6 +17,7 @@ import { CommandGetCIToken } from '@/commands/editor/getCIToken.js';
 import { CommandPull } from '@/commands/backend/commands/pull.js';
 import { CommandPush } from '@/commands/backend/commands/push.js';
 import { CommandDev } from '@/commands/backend/commands/dev.js';
+import { integrateStuccoJson } from '@/commands/gei/integrate.js';
 
 type ConfOptions = {
   [P in keyof ConfigurationOptions]: Options;
@@ -155,6 +156,25 @@ welcome().then(() => {
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
         await CommandModels(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
+      },
+    )
+    .command(
+      'gei:integrate',
+      'Generate integration.json from ./src/integration.ts',
+      async (yargs) => {
+        yargs.options({
+          integrationPath: {
+            type: 'string',
+            describe: 'Path to integration.ts file',
+          },
+          stuccoPath: {
+            type: 'string',
+            describe: 'Path to stucco.json file',
+          },
+        });
+      },
+      async (argv) => {
+        integrateStuccoJson(argv as Parameters<typeof integrateStuccoJson>[0]);
       },
     )
     .command(
