@@ -1,12 +1,12 @@
 import { DistinctQuestion } from 'inquirer';
-import { AutocompleteInputPrompt } from '@/utils/index.js';
 import { ParserField, ParserTree, TypeDefinition, TypeSystemDefinition } from 'graphql-js-tree';
+import AutoCompleteInputPrompt from '@/utils/AutoCompleteInputPrompt.js';
 export interface TypeResolverReturns {
   resolver: ParserField;
   parentResolver: string;
 }
 const selectSubType = (types: ParserField[], options: Partial<DistinctQuestion> = {}) =>
-  AutocompleteInputPrompt(
+  AutoCompleteInputPrompt(
     types.map((t) => t.name),
     {
       name: 'type',

@@ -20,6 +20,7 @@ import { CommandDev } from '@/commands/backend/commands/dev.js';
 import { integrateStuccoJson } from '@/commands/gei/integrate.js';
 import { bootstrapIntegrationFile } from '@/commands/gei/bootstrapIntegrationFile.js';
 import { bootstrapGeiFile } from '@/commands/gei/bootstrapGeiFile.js';
+import { CommandPublishIntegration, CommandRemoveIntegration } from '@/commands/gei/integration.js';
 
 type ConfOptions = {
   [P in keyof ConfigurationOptions]: Options;
@@ -42,6 +43,17 @@ const projectOptions: ConfOptions = {
   },
 };
 
+const integrationOptions: ConfOptions = {
+  registry: {
+    describe: 'Package npm registry',
+    type: 'string',
+    default: 'https://registry.npmjs.org/',
+  },
+  npmPackage: {
+    describe: 'npm package name',
+    type: 'string',
+  },
+};
 welcome().then(() => {
   new Configuration();
   return yargs(process.argv.slice(2))
@@ -162,7 +174,7 @@ welcome().then(() => {
     )
     .command(
       'gei:integrate',
-      'Generate integration.json from integration.ts file',
+      'Update stucco.json from integration.ts file',
       async (yargs) => {
         yargs.options({
           integrationPath: {
@@ -203,6 +215,31 @@ welcome().then(() => {
       },
       async (argv) => {
         bootstrapGeiFile(argv as Parameters<typeof bootstrapGeiFile>[0]);
+      },
+    )
+    .command(
+      'gei:publish',
+      'Publish a GraphQL Editor integration to use in no-code',
+      async (yargs) => {
+        yargs.options({
+          ...projectOptions,
+          ...integrationOptions,
+        });
+      },
+      async (argv) => {
+        CommandPublishIntegration(argv as Parameters<typeof CommandPublishIntegration>[0]);
+      },
+    )
+    .command(
+      'gei:unpublish',
+      'Publish a GraphQL Editor integration to use in no-code',
+      async (yargs) => {
+        yargs.options({
+          ...projectOptions,
+        });
+      },
+      async (argv) => {
+        CommandRemoveIntegration(argv as Parameters<typeof CommandRemoveIntegration>[0]);
       },
     )
     .command(

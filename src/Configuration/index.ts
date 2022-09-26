@@ -1,11 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import inquirer from 'inquirer';
+import inquirer, { QuestionCollection } from 'inquirer';
 import { Environment } from 'graphql-zeus';
 import { Editor } from '@/Editor.js';
-import { AutocompleteInputPrompt } from '@/utils/index.js';
 import { IS_VERSION_SCHEMA_FILE_REGEX } from '@/gshared/constants/index.js';
 import Conf from 'conf';
+import AutoCompleteInputPrompt from '@/utils/AutoCompleteInputPrompt.js';
 
 export type DeploymentType = 'editor' | 'azure';
 
@@ -32,14 +32,17 @@ export interface BackendConf {
   backendZip?: string;
   buildScript?: string;
 }
-
-export interface ConfigurationOptions extends TypingsConf, EditorConf, BackendConf {
+export interface IntegrationConf {
+  npmPackage?: string;
+  registry?: string;
+}
+export interface ConfigurationOptions extends TypingsConf, EditorConf, BackendConf, IntegrationConf {
   schemaDir?: string;
 }
 
 export let Config: Configuration;
 
-const ConfigurationSpecialPrompts: { [P in keyof ConfigurationOptions]?: inquirer.QuestionCollection } = {
+const ConfigurationSpecialPrompts: { [P in keyof ConfigurationOptions]?: QuestionCollection } = {
   typingsEnv: { choices: ['browser', 'node'], message: 'Select environment', name: 'typingsEnv', type: 'list' },
   version: { message: 'Project version', default: 'latest', type: 'input' },
 };
@@ -91,7 +94,7 @@ export class Configuration {
     }
     if (k === 'project' && this.options.namespace) {
       const projects = await Editor.fetchProjects(this.options.namespace);
-      const projectName = await AutocompleteInputPrompt(
+      const projectName = await AutoCompleteInputPrompt(
         projects.map((p) => p.name),
         { message: 'Select a project', name: 'project' },
       );
@@ -108,10 +111,10 @@ export class Configuration {
       const files = project.sources.sources
         .filter((s) => IS_VERSION_SCHEMA_FILE_REGEX.exec(s.filename!))
         .map((s) => IS_VERSION_SCHEMA_FILE_REGEX.exec(s.filename!)![1]);
-      const versionName = await AutocompleteInputPrompt(files, { message: 'Select a version', name: 'version' });
+      const versionName = await AutoCompleteInputPrompt(files, { message: 'Select a version', name: 'version' });
       return versionName;
     }
-    const inqProps: inquirer.QuestionCollection = ConfigurationSpecialPrompts[k]
+    const inqProps: QuestionCollection = ConfigurationSpecialPrompts[k]
       ? (ConfigurationSpecialPrompts[k] as any)
       : {
           name: k,

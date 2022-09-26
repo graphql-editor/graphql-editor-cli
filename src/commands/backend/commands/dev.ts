@@ -39,12 +39,12 @@ export const CommandDev = async ({ namespace, project }: { namespace?: string; p
   });
   client.on('success', async () => {
     // Only one restart at once
-    if (taskRunning)  return;
+    if (taskRunning) return;
     taskRunning = true;
     try {
       const code = await terminate(child);
-      if (code) logger( `child terminated with non 0 status: ${code}`, 'error');
-      child = await spawnPromise(bin.path(), args);
+      if (code) logger(`child terminated with non 0 status: ${code}`, 'error');
+      child = await spawnPromise(bin, args);
       logger('tsc success', 'success');
     } finally {
       taskRunning = false;

@@ -1,976 +1,317 @@
 /* eslint-disable */
 
 export const AllTypesProps: Record<string,any> = {
-	MemberOps:{
-		update:{
-			role:{
-				type:"Role",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
-		}
+	DeployCodeToCloudNode14Opts:{
+
 	},
-	ProjectOps:{
-		deployCodeToCloud:{
-			opts:{
-				type:"DeployCodeToCloudInput",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
-		},
-		removeSources:{
-			files:{
-				type:"String",
-				array:true,
-				arrayRequired:false,
-				required:true
-			}
-		},
-		renameSources:{
-			files:{
-				type:"RenameFileInput",
-				array:true,
-				arrayRequired:false,
-				required:true
-			}
-		},
-		setCloudDeploymentConfig:{
-			input:{
-				type:"SetCloudDeploymentConfigInput",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
-		},
-		update:{
-			in:{
-				type:"UpdateProject",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
-		}
+	AccountType: "enum" as const,
+	ChangeSubscriptionInput:{
+
 	},
-	DeployCodeToCloudInput:{
-		env:{
-			type:"DeployCodeToCloudEnv",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		secrets:{
-			type:"Secret",
-			array:true,
-			arrayRequired:false,
-			required:true
-		},
-		node14Opts:{
-			type:"DeployCodeToCloudNode14Opts",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		codeURI:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		kind:{
-			type:"DeployCodeToCloudURIKind",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	SetCloudDeploymentConfigCorsInput:{
-		allowedOrigins:{
-			type:"String",
-			array:true,
-			arrayRequired:false,
-			required:true
-		},
-		allowedHeaders:{
-			type:"String",
-			array:true,
-			arrayRequired:false,
-			required:true
-		},
-		allowedMethods:{
-			type:"String",
-			array:true,
-			arrayRequired:false,
-			required:true
-		},
-		allowCredentials:{
-			type:"Boolean",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	AccountType: "enum",
-	Team:{
-		member:{
-			username:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+	Project:{
+		cloudDeploymentStatus:{
+
 		},
 		members:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+
+		},
+		sources:{
+
 		}
 	},
-	SetCloudDeploymentConfigInput:{
-		secrets:{
-			type:"Secret",
-			array:true,
-			arrayRequired:false,
-			required:true
+	ProjectsSortInput:{
+		owner:"SortOrder",
+		public:"SortOrder",
+		slug:"SortOrder",
+		tags:"SortOrder",
+		team:"SortOrder",
+		createdAt:"SortOrder",
+		name:"SortOrder",
+		id:"SortOrder"
+	},
+	RFC3339Date: `scalar.RFC3339Date` as const,
+	PredictCheckoutInput:{
+
+	},
+	CustomerInput:{
+
+	},
+	Team:{
+		member:{
+
 		},
-		cors:{
-			type:"SetCloudDeploymentConfigCorsInput",
-			array:false,
-			arrayRequired:false,
-			required:false
+		members:{
+
+		},
+		serviceAccounts:{
+
+		}
+	},
+	DeployCodeToCloudURIKind: "enum" as const,
+	MarketplaceOps:{
+		addProject:{
+			opts:"AddProjectInput"
+		},
+		removeProject:{
+
+		}
+	},
+	VatInput:{
+
+	},
+	Secret:{
+
+	},
+	CloudDeploymentStatus: "enum" as const,
+	Decimal: `scalar.Decimal` as const,
+	UpdateProject:{
+
+	},
+	CreateServiceAccountInput:{
+
+	},
+	SortOrder: "enum" as const,
+	AddProjectInput:{
+		npmRegistryPackage:"NpmRegistryPackageInput"
+	},
+	NewSource:{
+
+	},
+	SchemaSubscription:{
+		watchJobStatus:{
+
+		},
+		watchLogs:{
+
 		}
 	},
 	Query:{
 		checkoutData:{
-			data:{
-				type:"CheckoutDataInput",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+			data:"CheckoutDataInput"
+		},
+		exchangeServiceAccountKey:{
+
 		},
 		fileServerCredentials:{
-			project:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+
 		},
 		findProjects:{
-			query:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+
 		},
 		findProjectsByTag:{
-			tag:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+
 		},
 		getNamespace:{
-			slug:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		getProject:{
-			project:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		getTeam:{
-			name:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		getUser:{
-			username:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		listProjects:{
-			owned:{
-				type:"Boolean",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			sort:{
-				type:"ProjectsSortInput",
-				array:true,
-				arrayRequired:false,
-				required:false
-			}
+			sort:"ProjectsSortInput"
 		},
 		myTeams:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+
 		},
 		predictCheckout:{
-			data:{
-				type:"PredictCheckoutInput",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+			data:"PredictCheckoutInput"
 		}
 	},
-	FileServerCredentials: "String",
-	SortOrder: "enum",
-	Project:{
-		cloudDeploymentStatus:{
-			streamID:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
-		},
-		sources:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+	RenameFileInput:{
+
+	},
+	FileServerCredentials: `scalar.FileServerCredentials` as const,
+	Marketplace:{
+		projects:{
+			sort:"MarketplaceProjectsSortInput"
 		}
 	},
-	CustomerInput:{
-		marketingConsent:{
-			type:"Boolean",
-			array:false,
-			arrayRequired:false,
-			required:false
+	CheckoutDataInput:{
+		customer:"CustomerInput",
+		vat:"VatInput"
+	},
+	PaymentDate: `scalar.PaymentDate` as const,
+	TeamOps:{
+		addMember:{
+			role:"Role"
 		},
-		email:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
+		createProject:{
+
 		},
-		country:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
+		createServiceAccount:{
+			input:"CreateServiceAccountInput"
 		},
-		postCode:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
+		createServiceAccountApiKey:{
+
+		},
+		inviteToken:{
+			role:"Role"
+		},
+		member:{
+
+		},
+		members:{
+
+		},
+		project:{
+
+		},
+		removeServiceAccount:{
+
+		},
+		removeServiceAccountApiKey:{
+
+		},
+		removeToken:{
+
+		}
+	},
+	MemberOps:{
+		update:{
+			role:"Role"
 		}
 	},
 	Mutation:{
 		changePassword:{
-			oldPassword:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			newPassword:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		changeSubscription:{
-			in:{
-				type:"ChangeSubscriptionInput",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+			in:"ChangeSubscriptionInput"
+		},
+		consumeInviteToken:{
+
 		},
 		createCloudDeployment:{
-			id:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		createProject:{
-			public:{
-				type:"Boolean",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			name:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		createTeam:{
-			namespace:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			name:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		createUser:{
-			namespace:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			public:{
-				type:"Boolean",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+
 		},
 		deployCodeToCloud:{
-			id:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			opts:{
-				type:"DeployCodeToCloudInput",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+			opts:"DeployCodeToCloudInput"
 		},
 		deployToFaker:{
-			id:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		removeCloudDeployment:{
-			id:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		removeProject:{
-			project:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		runtimeLogs:{
-			id:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		setCloudDeploymentConfig:{
-			id:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			input:{
-				type:"SetCloudDeploymentConfigInput",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+			input:"SetCloudDeploymentConfigInput"
 		},
 		sync:{
-			source:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			target:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		team:{
-			id:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		updateProject:{
-			in:{
-				type:"UpdateProject",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+			in:"UpdateProject"
 		},
 		updateSources:{
-			project:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			sources:{
-				type:"NewSource",
-				array:true,
-				arrayRequired:false,
-				required:true
-			}
+			sources:"NewSource"
 		}
 	},
-	TeamOps:{
+	SetCloudDeploymentConfigCorsInput:{
+
+	},
+	DeployCodeToCloudInput:{
+		kind:"DeployCodeToCloudURIKind",
+		env:"DeployCodeToCloudEnv",
+		secrets:"Secret",
+		node14Opts:"DeployCodeToCloudNode14Opts"
+	},
+	ProjectOps:{
 		addMember:{
-			username:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			role:{
-				type:"Role",
-				array:false,
-				arrayRequired:false,
-				required:true
-			},
-			loginCallback:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+			role:"Role"
 		},
-		createProject:{
-			public:{
-				type:"Boolean",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			name:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+		createTemporaryFile:{
+
 		},
-		member:{
-			username:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+		deployCodeToCloud:{
+			opts:"DeployCodeToCloudInput"
 		},
-		members:{
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+		removeSources:{
+
 		},
-		project:{
-			id:{
-				type:"ID",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+		renameSources:{
+			files:"RenameFileInput"
+		},
+		setCloudDeploymentConfig:{
+			input:"SetCloudDeploymentConfigInput"
+		},
+		update:{
+			in:"UpdateProject"
 		}
 	},
-	Decimal: "String",
-	PredictCheckoutInput:{
-		planID:{
-			type:"ID",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		quantity:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		coupon:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
+	SetCloudDeploymentConfigInput:{
+		secrets:"Secret",
+		cors:"SetCloudDeploymentConfigCorsInput"
 	},
-	CloudDeploymentStatus: "enum",
-	ChangeSubscriptionInput:{
-		subscriptionID:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		subscriptionPlanID:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	Role: "enum",
-	ProjectsSortInput:{
-		name:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		id:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		owner:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		public:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		slug:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		tags:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		team:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		createdAt:{
-			type:"SortOrder",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	PaymentDate: "String",
+	DeployCodeToCloudEnv: "enum" as const,
 	Namespace:{
 		project:{
-			name:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
+
 		},
 		projects:{
-			limit:{
-				type:"Int",
-				array:false,
-				arrayRequired:false,
-				required:false
-			},
-			last:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:false
-			}
+
 		}
 	},
-	NewSource:{
-		contentLength:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		contentType:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		checksum:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		filename:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
+	MarketplaceProjectsSortInput:{
+		owner:"SortOrder",
+		public:"SortOrder",
+		slug:"SortOrder",
+		tags:"SortOrder",
+		team:"SortOrder",
+		createdAt:"SortOrder",
+		name:"SortOrder",
+		id:"SortOrder"
 	},
-	RenameFileInput:{
-		src:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		dst:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:true
-		}
-	},
-	DeployCodeToCloudNode14Opts:{
-		buildScript:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	UpdateProject:{
-		project:{
-			type:"ID",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		description:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		tags:{
-			type:"String",
-			array:true,
-			arrayRequired:false,
-			required:true
-		},
-		public:{
-			type:"Boolean",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	DeployCodeToCloudEnv: "enum",
-	DeployCodeToCloudURIKind: "enum",
-	Secret:{
-		name:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		value:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	SchemaSubscription:{
-		watchJobStatus:{
-			streamID:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
-		},
-		watchLogs:{
-			streamID:{
-				type:"String",
-				array:false,
-				arrayRequired:false,
-				required:true
-			}
-		}
-	},
-	RFC3339Date: "String",
-	CheckoutDataInput:{
-		successURL:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		cancelURL:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		planID:{
-			type:"ID",
-			array:false,
-			arrayRequired:false,
-			required:true
-		},
-		quantity:{
-			type:"Int",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		customer:{
-			type:"CustomerInput",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		vat:{
-			type:"VatInput",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		coupon:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
-	},
-	VatInput:{
-		state:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		country:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		postCode:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		number:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		companyName:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		street:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		},
-		city:{
-			type:"String",
-			array:false,
-			arrayRequired:false,
-			required:false
-		}
+	Role: "enum" as const,
+	NpmRegistryPackageInput:{
+
 	}
 }
 
 export const ReturnTypes: Record<string,any> = {
-	PredictCheckout:{
-		price:"Float",
-		trialDays:"Int"
-	},
-	MemberOps:{
-		delete:"Boolean",
-		update:"Boolean"
-	},
-	ProjectOps:{
-		createCloudDeployment:"String",
-		delete:"Boolean",
-		deployCodeToCloud:"String",
-		deployToFaker:"Boolean",
-		removeCloudDeployment:"String",
-		removeSources:"Boolean",
-		renameSources:"Boolean",
-		runtimeLogs:"String",
-		setCloudDeploymentConfig:"Boolean",
-		update:"Boolean"
-	},
-	Header:{
+	ServiceAccountApiKey:{
+		id:"String",
 		key:"String",
-		value:"String"
+		name:"String"
 	},
-	MemberConnection:{
-		members:"Member",
-		pageInfo:"PageInfo"
-	},
-	Team:{
-		id:"ID",
-		member:"Member",
-		members:"MemberConnection",
-		name:"String",
-		namespace:"Namespace",
-		planID:"Int"
-	},
-	SecretOutput:{
-		name:"String",
-		value:"String"
-	},
-	Query:{
-		checkoutData:"String",
-		emailVerified:"Boolean",
-		fileServerCredentials:"FileServerCredentials",
-		findProjects:"ProjectConnection",
-		findProjectsByTag:"ProjectConnection",
-		getNamespace:"Namespace",
-		getProject:"Project",
-		getTeam:"Team",
-		getUser:"User",
-		listProjects:"ProjectConnection",
-		myTeams:"TeamConnection",
-		payments:"Payment",
-		predictCheckout:"PredictCheckout"
-	},
-	FakerSource:{
-		checksum:"String",
-		contents:"String",
-		filename:"String",
-		getUrl:"String",
-		updatedAt:"String"
-	},
-	UserConnection:{
+	MarketplaceItemConnection:{
 		pageInfo:"PageInfo",
-		users:"User"
+		projects:"MarketplaceItem"
 	},
 	Project:{
 		cloudDeploymentConfig:"CloudDeploymentConfig",
 		cloudDeploymentStatus:"CloudDeploymentStatus",
 		createdAt:"RFC3339Date",
+		dbConnection:"String",
 		description:"String",
 		enabled:"Boolean",
 		endpoint:"Endpoint",
 		id:"ID",
 		inCloud:"Boolean",
+		members:"MemberConnection",
 		mocked:"Boolean",
 		name:"String",
 		owner:"User",
@@ -979,81 +320,161 @@ export const ReturnTypes: Record<string,any> = {
 		sources:"FakerSourceConnection",
 		tags:"String",
 		team:"Team",
-		updatedAt:"RFC3339Date"
+		updatedAt:"RFC3339Date",
+		upstream:"String"
+	},
+	PredictCheckout:{
+		price:"Float",
+		trialDays:"Int"
+	},
+	RFC3339Date: `scalar.RFC3339Date` as const,
+	SubscriptionConnection:{
+		pageInfo:"PageInfo",
+		subscriptions:"Subscription"
+	},
+	FakerSource:{
+		checksum:"String",
+		contents:"String",
+		filename:"String",
+		getUrl:"String",
+		updatedAt:"String"
+	},
+	User:{
+		accountType:"AccountType",
+		consentGiven:"Boolean",
+		consentTimestamp:"Int",
+		id:"ID",
+		namespace:"Namespace",
+		subscriptions:"SubscriptionConnection",
+		username:"String"
+	},
+	Team:{
+		id:"ID",
+		member:"Member",
+		members:"MemberConnection",
+		name:"String",
+		namespace:"Namespace",
+		planID:"Int",
+		serviceAccounts:"ServiceAccountConnection",
+		tokens:"InviteToken"
+	},
+	NpmRegistryPackage:{
+		package:"String",
+		registry:"String"
+	},
+	TemporaryFile:{
+		getUrl:"String",
+		putUrl:"String"
+	},
+	MarketplaceOps:{
+		addProject:"Boolean",
+		removeProject:"Boolean"
+	},
+	TeamConnection:{
+		pageInfo:"PageInfo",
+		teams:"Team"
+	},
+	MarketplaceUpstream:{
+		"...on NpmRegistryPackage":"NpmRegistryPackage"
+	},
+	CloudCorsSetting:{
+		allowCredentials:"Boolean",
+		allowedHeaders:"String",
+		allowedMethod:"String",
+		allowedOrigins:"String"
+	},
+	Member:{
+		email:"String",
+		role:"Role",
+		serviceAccount:"Boolean",
+		username:"String"
+	},
+	Decimal: `scalar.Decimal` as const,
+	Header:{
+		key:"String",
+		value:"String"
+	},
+	ServiceAccount:{
+		description:"String",
+		keys:"ServiceAccountApiKey",
+		name:"String",
+		tags:"String"
+	},
+	SchemaSubscription:{
+		watchJobStatus:"CloudDeploymentStatus",
+		watchLogs:"String"
+	},
+	Query:{
+		checkoutData:"String",
+		emailVerified:"Boolean",
+		exchangeServiceAccountKey:"String",
+		fileServerCredentials:"FileServerCredentials",
+		findProjects:"ProjectConnection",
+		findProjectsByTag:"ProjectConnection",
+		getNamespace:"Namespace",
+		getProject:"Project",
+		getTeam:"Team",
+		getUser:"User",
+		listProjects:"ProjectConnection",
+		marketplace:"Marketplace",
+		myTeams:"TeamConnection",
+		payments:"Payment",
+		predictCheckout:"PredictCheckout"
 	},
 	PageInfo:{
 		last:"String",
 		limit:"Int",
 		next:"Boolean"
 	},
-	TeamConnection:{
+	ProjectConnection:{
 		pageInfo:"PageInfo",
-		teams:"Team"
-	},
-	Mutation:{
-		changePassword:"Boolean",
-		changeSubscription:"Boolean",
-		createCloudDeployment:"String",
-		createProject:"Project",
-		createTeam:"TeamOps",
-		createUser:"User",
-		deleteAccount:"Boolean",
-		deployCodeToCloud:"String",
-		deployToFaker:"Boolean",
-		removeCloudDeployment:"String",
-		removeProject:"Boolean",
-		resendVerificationEmail:"Boolean",
-		runtimeLogs:"String",
-		setCloudDeploymentConfig:"Boolean",
-		sync:"Boolean",
-		team:"TeamOps",
-		updateProject:"Boolean",
-		updateSources:"SourceUploadInfo"
-	},
-	TeamOps:{
-		addMember:"Member",
-		createProject:"Project",
-		delete:"Boolean",
-		id:"ID",
-		member:"MemberOps",
-		members:"MemberConnection",
-		name:"String",
-		namespace:"Namespace",
-		planID:"Int",
-		project:"ProjectOps"
-	},
-	Payment:{
-		amount:"Decimal",
-		currency:"String",
-		date:"PaymentDate",
-		receiptURL:"String",
-		subscriptionID:"Int"
-	},
-	SubscriptionConnection:{
-		pageInfo:"PageInfo",
-		subscriptions:"Subscription"
+		projects:"Project"
 	},
 	FakerSourceConnection:{
 		pageInfo:"PageInfo",
 		sources:"FakerSource"
 	},
+	UserConnection:{
+		pageInfo:"PageInfo",
+		users:"User"
+	},
+	FileServerCredentials: `scalar.FileServerCredentials` as const,
+	Marketplace:{
+		projects:"MarketplaceItemConnection"
+	},
+	PaymentDate: `scalar.PaymentDate` as const,
+	TeamOps:{
+		addMember:"Member",
+		createProject:"Project",
+		createServiceAccount:"ServiceAccount",
+		createServiceAccountApiKey:"ServiceAccountApiKey",
+		delete:"Boolean",
+		id:"ID",
+		inviteToken:"String",
+		member:"MemberOps",
+		members:"MemberConnection",
+		name:"String",
+		namespace:"Namespace",
+		planID:"Int",
+		project:"ProjectOps",
+		removeServiceAccount:"Boolean",
+		removeServiceAccountApiKey:"Boolean",
+		removeToken:"String"
+	},
+	ServiceAccountConnection:{
+		pageInfo:"PageInfo",
+		serviceAccounts:"ServiceAccount"
+	},
+	MemberOps:{
+		delete:"Boolean",
+		update:"Boolean"
+	},
+	CloudDeploymentConfig:{
+		cors:"CloudCorsSetting",
+		secrets:"SecretOutput"
+	},
 	Endpoint:{
 		uri:"String"
-	},
-	ProjectConnection:{
-		pageInfo:"PageInfo",
-		projects:"Project"
-	},
-	SourceUploadInfo:{
-		filename:"String",
-		headers:"Header",
-		putUrl:"String"
-	},
-	Namespace:{
-		project:"Project",
-		projects:"ProjectConnection",
-		public:"Boolean",
-		slug:"String"
 	},
 	Subscription:{
 		cancelURL:"String",
@@ -1065,32 +486,82 @@ export const ReturnTypes: Record<string,any> = {
 		subscriptionPlanID:"Int",
 		updateURL:"String"
 	},
-	Member:{
-		email:"String",
-		role:"Role",
-		username:"String"
+	Mutation:{
+		changePassword:"Boolean",
+		changeSubscription:"Boolean",
+		consumeInviteToken:"Boolean",
+		createCloudDeployment:"String",
+		createProject:"Project",
+		createTeam:"TeamOps",
+		createUser:"User",
+		deleteAccount:"Boolean",
+		deployCodeToCloud:"String",
+		deployToFaker:"Boolean",
+		marketplace:"MarketplaceOps",
+		removeCloudDeployment:"String",
+		removeProject:"Boolean",
+		resendVerificationEmail:"Boolean",
+		runtimeLogs:"String",
+		setCloudDeploymentConfig:"Boolean",
+		sync:"Boolean",
+		team:"TeamOps",
+		updateProject:"Boolean",
+		updateSources:"SourceUploadInfo"
 	},
-	CloudCorsSetting:{
-		allowCredentials:"Boolean",
-		allowedHeaders:"String",
-		allowedMethod:"String",
-		allowedOrigins:"String"
+	ProjectOps:{
+		addMember:"Member",
+		createCloudDeployment:"String",
+		createTemporaryFile:"TemporaryFile",
+		delete:"Boolean",
+		deployCodeToCloud:"String",
+		deployToFaker:"Boolean",
+		removeCloudDeployment:"String",
+		removeSources:"Boolean",
+		renameSources:"Boolean",
+		runtimeLogs:"String",
+		setCloudDeploymentConfig:"Boolean",
+		update:"Boolean"
 	},
-	SchemaSubscription:{
-		watchJobStatus:"CloudDeploymentStatus",
-		watchLogs:"String"
+	SecretOutput:{
+		name:"String",
+		value:"String"
 	},
-	CloudDeploymentConfig:{
-		cors:"CloudCorsSetting",
-		secrets:"SecretOutput"
+	Namespace:{
+		project:"Project",
+		projects:"ProjectConnection",
+		public:"Boolean",
+		slug:"String"
 	},
-	User:{
-		accountType:"AccountType",
-		consentGiven:"Boolean",
-		consentTimestamp:"Int",
-		id:"ID",
-		namespace:"Namespace",
-		subscriptions:"SubscriptionConnection",
-		username:"String"
+	MarketplaceItem:{
+		project:"Project",
+		upstream:"MarketplaceUpstream"
+	},
+	Payment:{
+		amount:"Decimal",
+		currency:"String",
+		date:"PaymentDate",
+		receiptURL:"String",
+		subscriptionID:"Int"
+	},
+	MemberConnection:{
+		members:"Member",
+		pageInfo:"PageInfo"
+	},
+	InviteToken:{
+		domain:"String",
+		name:"String",
+		removed:"Boolean",
+		token:"String"
+	},
+	SourceUploadInfo:{
+		filename:"String",
+		headers:"Header",
+		putUrl:"String"
 	}
+}
+
+export const Ops = {
+subscription: "SchemaSubscription" as const,
+	query: "Query" as const,
+	mutation: "Mutation" as const
 }

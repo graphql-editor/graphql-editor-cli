@@ -1,13 +1,12 @@
+import AwfulAutocompletePrompt from '@/utils/AwfulAutoCompletePrompt.js';
 import inquirer, { DistinctQuestion } from 'inquirer';
-// @ts-ignore
-import AutocompletePrompt from 'inquirer-autocomplete-prompt';
 
-inquirer.registerPrompt('autocomplete', AutocompletePrompt);
+inquirer.registerPrompt('autocomplete', AwfulAutocompletePrompt);
 
 export type AutocompleteOptions = Omit<DistinctQuestion, 'type' | 'source'> &
   Required<Pick<DistinctQuestion, 'name' | 'message'>>;
 
-export const AutocompleteInput = (choices: string[], options: AutocompleteOptions): DistinctQuestion =>
+const AutoCompleteInput = (choices: string[], options: AutocompleteOptions): DistinctQuestion =>
   ({
     type: 'autocomplete',
     source: async (answersSoFar: string[], input: string) => {
@@ -20,7 +19,7 @@ export const AutocompleteInput = (choices: string[], options: AutocompleteOption
     ...options,
   } as any);
 
-export const AutocompleteInputPrompt = async (choices: string[], options: AutocompleteOptions): Promise<string> => {
-  const answers = await inquirer.prompt(AutocompleteInput(choices, options));
+export default async (choices: string[], options: AutocompleteOptions): Promise<string> => {
+  const answers = await inquirer.prompt(AutoCompleteInput(choices, options));
   return answers[options.name];
 };

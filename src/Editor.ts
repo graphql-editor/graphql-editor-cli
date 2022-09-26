@@ -304,6 +304,22 @@ export class Editor {
     }
     return deploymentId;
   };
+  public static publishIntegration = async (projectId: string, integration: ValueTypes['AddProjectInput']) => {
+    const response = await jolt()('mutation')({
+      marketplace: {
+        addProject: [{ id: projectId, opts: integration }, true],
+      },
+    });
+    return response.marketplace?.addProject;
+  };
+  public static removeIntegration = async (projectId: string) => {
+    const response = await jolt()('mutation')({
+      marketplace: {
+        removeProject: [{ id: projectId }, true],
+      },
+    });
+    return response.marketplace?.removeProject;
+  };
   public static showDeploymentLogs = async (streamID: string) => {
     const response = await joltSubscription()('subscription')({
       watchLogs: [{ streamID }, true],
@@ -322,14 +338,14 @@ export class Editor {
         audience: 'https://auth.graphqleditor.com',
       }),
     });
-    const result: {
+    const result = (await response.json()) as {
       device_code: string;
       user_code: string;
       verification_uri: string;
       expires_in: number;
       interval: number;
       verification_uri_complete: string;
-    } = await response.json();
+    };
     return result;
   };
   public static getDeviceToken = async (deviceCode: string) => {
@@ -344,14 +360,14 @@ export class Editor {
         device_code: deviceCode,
       }),
     });
-    const result: {
+    const result = (await response.json()) as {
       access_token: string;
       refresh_token: string;
       id_token: string;
       scope: string;
       expires_in: number;
       token_type: string;
-    } = await response.json();
+    };
     return result;
   };
 }

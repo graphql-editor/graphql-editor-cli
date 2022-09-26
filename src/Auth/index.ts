@@ -57,13 +57,13 @@ export class Auth {
             grant_type: 'refresh_token',
           }),
         });
-        const result: {
+        const result = (await response.json()) as {
           access_token: string;
           id_token: string;
           scope: string;
           expires_in: number;
           token_type: string;
-        } = await response.json();
+        };
         resolve({
           token: result.access_token,
           tokenLastSet: new Date().toISOString(),
@@ -106,7 +106,7 @@ export class Auth {
           headers: options.headers,
           body: qs.stringify(options.form),
         });
-        const jsonResponse = await rawResponse.json();
+        const jsonResponse = (await rawResponse.json()) as { access_token?: string };
         res.send(`You are logged in with GraphQL Editor account. You can go back to CLI`);
         if (jsonResponse.access_token) {
           server.close();
