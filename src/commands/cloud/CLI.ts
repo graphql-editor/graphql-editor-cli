@@ -114,7 +114,4 @@ export default {
         },
       );
   },
-  handler: (args) => {
-    console.log('handler foo!');
-  },
 } as CommandModule;

@@ -94,7 +94,6 @@ welcome().then(() => {
     .command('token', 'Get CI token', async (argv) => {
       await CommandGetCIToken();
     })
-    .version()
     .showHelpOnFail(true)
     .demandCommand()
     .epilog('Bye!').argv;

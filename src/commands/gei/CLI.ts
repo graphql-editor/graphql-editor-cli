@@ -82,5 +82,4 @@ export default {
         },
       );
   },
-  handler: (args) => {},
 } as CommandModule;
