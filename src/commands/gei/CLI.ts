@@ -42,7 +42,7 @@ export default {
         },
       )
       .command(
-        'gei:gei',
+        'gei',
         'Generate gei.ts file',
         async (yargs) => {
           yargs.options({
@@ -57,7 +57,7 @@ export default {
         },
       )
       .command(
-        'gei:publish',
+        'publish',
         'Publish a GraphQL Editor integration to use in no-code',
         async (yargs) => {
           yargs.options({
@@ -66,11 +66,11 @@ export default {
           });
         },
         async (argv) => {
-          CommandPublishIntegration(argv as Parameters<typeof CommandPublishIntegration>[0]);
+          await CommandPublishIntegration(argv as Parameters<typeof CommandPublishIntegration>[0]);
         },
       )
       .command(
-        'gei:unpublish',
+        'unpublish',
         'Publish a GraphQL Editor integration to use in no-code',
         async (yargs) => {
           yargs.options({
@@ -78,7 +78,7 @@ export default {
           });
         },
         async (argv) => {
-          CommandRemoveIntegration(argv as Parameters<typeof CommandRemoveIntegration>[0]);
+          await CommandRemoveIntegration(argv as Parameters<typeof CommandRemoveIntegration>[0]);
         },
       );
   },
