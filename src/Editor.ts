@@ -8,7 +8,7 @@ import {
 } from '@/zeus/index.js';
 import { Config } from '@/Configuration/index.js';
 import fetch from 'node-fetch';
-import { VERSION_SCHEMA_FILE, VERSION_STITCH_FILE } from '@/gshared/constants/index.js';
+import { COMMON_FILES } from '@/gshared/constants/index.js';
 
 export interface FileArray {
   name: string;
@@ -148,8 +148,9 @@ export class Editor {
       accountName: namespace,
       projectName: project,
     });
-    const graphqlURL = p.sources!.sources!.find((s) => s.filename === VERSION_SCHEMA_FILE(version))!;
-    const libraryURL = p.sources!.sources!.find((s) => s.filename === VERSION_STITCH_FILE(version))!;
+    const cmnFiles = COMMON_FILES(version);
+    const graphqlURL = p.sources!.sources!.find((s) => s.filename === cmnFiles.code)!;
+    const libraryURL = p.sources!.sources!.find((s) => s.filename === cmnFiles.libraries)!;
     const [graphqlFile, libraryFile] = await Promise.all([
       (await fetch(graphqlURL.getUrl!)).text(),
       libraryURL ? (await fetch(libraryURL.getUrl!)).text() : new Promise<string>((resolve) => resolve('')),
@@ -160,7 +161,8 @@ export class Editor {
   public static getSchema = async (resolve: { namespace: string; project: string; version: string }) => {
     const p = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
 
-    const schemaSource = p.sources?.sources?.find((s) => s.filename === VERSION_SCHEMA_FILE(resolve.version));
+    const cmnFiles = COMMON_FILES(resolve.version);
+    const schemaSource = p.sources?.sources?.find((s) => s.filename === cmnFiles.code);
 
     if (!schemaSource?.getUrl) {
       throw new Error(`Project "${resolve.project}" does not have a version "${resolve.version}"`);

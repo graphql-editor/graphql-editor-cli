@@ -1,7 +1,7 @@
 import { logger } from '@/common/log/index.js';
 import { Config } from '@/Configuration/index.js';
 import { Editor } from '@/Editor.js';
-import { CLOUD_FOLDERS, microservicesLanguagesExtensions } from '@/gshared/constants/index.js';
+import { CLOUD_FOLDERS } from '@/gshared/constants/index.js';
 import { getDirWithIgnoredGlobs } from '@/utils/ZipUtils.js';
 import path from 'path';
 import fs from 'fs';
@@ -19,11 +19,7 @@ export const CommandPush = async ({ namespace, project }: { namespace?: string; 
     p.team.id,
     p.id,
     p.sources?.sources
-      ?.filter((s) =>
-        s.filename?.startsWith(
-          path.join(CLOUD_FOLDERS.microservice, microservicesLanguagesExtensions.JAVASCRIPT_EXT) + '/',
-        ),
-      )
+      ?.filter((s) => s.filename?.startsWith(CLOUD_FOLDERS.microserviceJs + '/'))
       .map((s) => s.filename!) || [],
   );
   logger('Files successfully removed', 'success');
@@ -31,7 +27,7 @@ export const CommandPush = async ({ namespace, project }: { namespace?: string; 
   await Editor.saveFilesToCloud(
     p.id,
     files.map((f) => ({
-      name: path.join(CLOUD_FOLDERS.microservice, microservicesLanguagesExtensions.JAVASCRIPT_EXT, f),
+      name: path.join(CLOUD_FOLDERS.microserviceJs, f),
       content: fs.readFileSync(f),
       type: mime.extension(f) || 'text/plain',
     })),

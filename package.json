@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-cli",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/index.js",
   "author": "Artur Czemiel",
@@ -65,6 +65,7 @@
     "ora": "^6.1.2",
     "picocolors": "^1.0.0",
     "pkg-install": "^1.0.0",
+    "pusher-js": "^7.4.0",
     "qs": "^6.11.0",
     "run-async": "^2.4.1",
     "stucco-js": "^0.10.4",

@@ -3,7 +3,7 @@ import Tscwatch from 'tsc-watch/client.js';
 import { stucco } from 'stucco-js/lib/stucco/run.js';
 import { ChildProcess, spawn } from 'child_process';
 import { SIGINT } from 'constants';
-
+import path from 'path';
 const client = new Tscwatch();
 
 const terminate = async (ch?: ChildProcess): Promise<void | number> => {
@@ -16,6 +16,9 @@ const terminate = async (ch?: ChildProcess): Promise<void | number> => {
 const spawnPromise = async (cmd: string, args: string[]): Promise<ChildProcess> => {
   const child = spawn(cmd, args, {
     stdio: [process.stdin, process.stdout, process.stderr],
+    env: {
+      ['PATH']: `${path.join(process.cwd(), 'node_modules', '.bin')}:${process.env.PATH}`,
+    },
   });
   return new Promise<ChildProcess>((resolve, reject) => {
     child.on('error', reject);
