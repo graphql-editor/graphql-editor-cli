@@ -58,6 +58,15 @@ export class Editor {
   public static getSource = async (url: string) => {
     return (await fetch(url)).text();
   };
+  public static fetchWorkspaces = async () => {
+    const Query = await jolt()('query')({
+      myTeams: [
+        { limit: 100 },
+        { teams: { namespace: { slug: true }, name: true } },
+      ],
+    });
+    return Query.myTeams?.teams;
+  };
   public static fetchProjects = async (accountName: string) => {
     const Query = await jolt()('query')({
       getNamespace: [
@@ -95,7 +104,13 @@ export class Editor {
     }
     return namespace.projects?.projects || [];
   };
-  public static fetchProject = async ({ accountName, projectName }: { accountName: string; projectName: string }) => {
+  public static fetchProject = async ({
+    accountName,
+    projectName,
+  }: {
+    accountName: string;
+    projectName: string;
+  }) => {
     const Query = await jolt()('query')({
       getNamespace: [
         { slug: accountName },
@@ -130,11 +145,14 @@ export class Editor {
     });
     const project = Query.getNamespace?.project;
     if (!project) {
-      throw new Error(`Project "${projectName}" does not exist in "${accountName}" namespace`);
+      throw new Error(
+        `Project "${projectName}" does not exist in "${accountName}" namespace`,
+      );
     }
     return project;
   };
-  public static getFakerURL = (endpointUri: string) => `https://faker.graphqleditor.com/${endpointUri}/graphql`;
+  public static getFakerURL = (endpointUri: string) =>
+    `https://faker.graphqleditor.com/${endpointUri}/graphql`;
   public static getCompiledSchema = async ({
     namespace,
     project,
@@ -149,30 +167,51 @@ export class Editor {
       projectName: project,
     });
     const cmnFiles = COMMON_FILES(version);
-    const graphqlURL = p.sources!.sources!.find((s) => s.filename === cmnFiles.code)!;
-    const libraryURL = p.sources!.sources!.find((s) => s.filename === cmnFiles.libraries)!;
+    const graphqlURL = p.sources!.sources!.find(
+      (s) => s.filename === cmnFiles.code,
+    )!;
+    const libraryURL = p.sources!.sources!.find(
+      (s) => s.filename === cmnFiles.libraries,
+    )!;
     const [graphqlFile, libraryFile] = await Promise.all([
       (await fetch(graphqlURL.getUrl!)).text(),
-      libraryURL ? (await fetch(libraryURL.getUrl!)).text() : new Promise<string>((resolve) => resolve('')),
+      libraryURL
+        ? (await fetch(libraryURL.getUrl!)).text()
+        : new Promise<string>((resolve) => resolve('')),
     ]);
     return [libraryFile, graphqlFile].join('\n\n');
   };
 
-  public static getSchema = async (resolve: { namespace: string; project: string; version: string }) => {
-    const p = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
+  public static getSchema = async (resolve: {
+    namespace: string;
+    project: string;
+    version: string;
+  }) => {
+    const p = await Editor.fetchProject({
+      accountName: resolve.namespace,
+      projectName: resolve.project,
+    });
 
     const cmnFiles = COMMON_FILES(resolve.version);
-    const schemaSource = p.sources?.sources?.find((s) => s.filename === cmnFiles.code);
+    const schemaSource = p.sources?.sources?.find(
+      (s) => s.filename === cmnFiles.code,
+    );
 
     if (!schemaSource?.getUrl) {
-      throw new Error(`Project "${resolve.project}" does not have a version "${resolve.version}"`);
+      throw new Error(
+        `Project "${resolve.project}" does not have a version "${resolve.version}"`,
+      );
     }
 
     const schema = await Editor.getSource(schemaSource.getUrl);
     return schema;
   };
 
-  public static removeFiles = async (teamId: string, projectId: string, files: string[]) => {
+  public static removeFiles = async (
+    teamId: string,
+    projectId: string,
+    files: string[],
+  ) => {
     const response = await jolt()('mutation')({
       team: [
         {
@@ -199,7 +238,11 @@ export class Editor {
     return response.team!.project?.removeSources;
   };
 
-  public static renameFiles = async (teamId: string, projectId: string, files: Array<{ src: string; dst: string }>) => {
+  public static renameFiles = async (
+    teamId: string,
+    projectId: string,
+    files: Array<{ src: string; dst: string }>,
+  ) => {
     const response = await jolt()('mutation')({
       team: [
         {
@@ -224,7 +267,10 @@ export class Editor {
     });
     return response.team!.project?.renameSources;
   };
-  public static saveFilesToCloud = async (projectId: string, fileArray: FileArray[]) => {
+  public static saveFilesToCloud = async (
+    projectId: string,
+    fileArray: FileArray[],
+  ) => {
     const sources: Array<{
       file: Buffer;
       source: GraphQLTypes['NewSource'];
@@ -306,7 +352,10 @@ export class Editor {
     }
     return deploymentId;
   };
-  public static publishIntegration = async (projectId: string, integration: ValueTypes['AddProjectInput']) => {
+  public static publishIntegration = async (
+    projectId: string,
+    integration: ValueTypes['AddProjectInput'],
+  ) => {
     const response = await jolt()('mutation')({
       marketplace: {
         addProject: [{ id: projectId, opts: integration }, true],
@@ -329,17 +378,20 @@ export class Editor {
     return response;
   };
   public static getDeviceCode = async () => {
-    const response = await fetch('https://auth.graphqleditor.com/oauth/device/code', {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
+    const response = await fetch(
+      'https://auth.graphqleditor.com/oauth/device/code',
+      {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          client_id: 'pNh9rJhjO2qnD1gAlfKtQFnlxN88LCil',
+          scope: 'profile offline_access openid email write:cloud_deployment',
+          audience: 'https://auth.graphqleditor.com',
+        }),
       },
-      body: JSON.stringify({
-        client_id: 'pNh9rJhjO2qnD1gAlfKtQFnlxN88LCil',
-        scope: 'profile offline_access openid email write:cloud_deployment',
-        audience: 'https://auth.graphqleditor.com',
-      }),
-    });
+    );
     const result = (await response.json()) as {
       device_code: string;
       user_code: string;

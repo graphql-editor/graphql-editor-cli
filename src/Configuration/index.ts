@@ -36,29 +36,45 @@ export interface IntegrationConf {
   npmPackage?: string;
   registry?: string;
 }
-export interface ConfigurationOptions extends TypingsConf, EditorConf, BackendConf, IntegrationConf {
+export interface ConfigurationOptions
+  extends TypingsConf,
+    EditorConf,
+    BackendConf,
+    IntegrationConf {
   schemaDir?: string;
 }
 
 export let Config: Configuration;
 
-const ConfigurationSpecialPrompts: { [P in keyof ConfigurationOptions]?: QuestionCollection } = {
-  typingsEnv: { choices: ['browser', 'node'], message: 'Select environment', name: 'typingsEnv', type: 'list' },
+const ConfigurationSpecialPrompts: {
+  [P in keyof ConfigurationOptions]?: QuestionCollection;
+} = {
+  typingsEnv: {
+    choices: ['browser', 'node'],
+    message: 'Select environment',
+    name: 'typingsEnv',
+    type: 'list',
+  },
   version: { message: 'Project version', default: 'latest', type: 'input' },
 };
 
 export class Configuration {
   private options: ConfigurationOptions = {};
-  private authConfig = new Conf<TokenConf>({ projectName: 'graphql-editor', projectSuffix: 'auth' });
+  private authConfig = new Conf<TokenConf>({
+    projectName: 'graphql-editor',
+    projectSuffix: 'auth',
+  });
   constructor(public projectPath = process.cwd()) {
     Config = this;
     this.init();
   }
-  private configPath = () => path.join(this.projectPath, Configuration.CONFIG_NAME);
+  private configPath = () =>
+    path.join(this.projectPath, Configuration.CONFIG_NAME);
   static CONFIG_NAME = '.graphql-editor.json';
   init = () => {
     const cliConfig =
-      fs.existsSync(this.configPath()) && JSON.parse(fs.readFileSync(this.configPath()).toString('utf8'));
+      fs.existsSync(this.configPath()) &&
+      JSON.parse(fs.readFileSync(this.configPath()).toString('utf8'));
     // const authConfig = this.authConfig.get()
     if (cliConfig) {
       this.options = { ...cliConfig };
@@ -71,7 +87,10 @@ export class Configuration {
         ...this.options,
         ...opts,
       };
-      fs.writeFileSync(this.configPath(), `${JSON.stringify(this.options, null, 4)}`);
+      fs.writeFileSync(
+        this.configPath(),
+        `${JSON.stringify(this.options, null, 4)}`,
+      );
     }
   };
   setTokenOptions = (opts?: Partial<TokenConf>) => {
@@ -92,6 +111,14 @@ export class Configuration {
     if (this.options[k]) {
       return this.options[k];
     }
+    if (k === 'namespace') {
+      const projects = await Editor.fetchWorkspaces();
+      const workspaceName = await AutoCompleteInputPrompt(
+        projects?.map((p) => p.namespace.slug || '') || [],
+        { message: 'Select a workspace', name: 'namespace' },
+      );
+      return workspaceName;
+    }
     if (k === 'project' && this.options.namespace) {
       const projects = await Editor.fetchProjects(this.options.namespace);
       const projectName = await AutoCompleteInputPrompt(
@@ -111,7 +138,10 @@ export class Configuration {
       const files = project.sources.sources
         .filter((s) => IS_VERSION_FILE_REGEX.exec(s.filename!))
         .map((s) => IS_VERSION_FILE_REGEX.exec(s.filename!)![1]);
-      const versionName = await AutoCompleteInputPrompt(files, { message: 'Select a version', name: 'version' });
+      const versionName = await AutoCompleteInputPrompt(files, {
+        message: 'Select a version',
+        name: 'version',
+      });
       return versionName;
     }
     const inqProps: QuestionCollection = ConfigurationSpecialPrompts[k]
@@ -126,12 +156,17 @@ export class Configuration {
     return answer;
   };
 
-  resolve = async <T, Z extends Array<keyof T>>(props: T | ConfigurationOptions, order: Z) => {
+  resolve = async <T, Z extends Array<keyof T>>(
+    props: T | ConfigurationOptions,
+    order: Z,
+  ) => {
     const dict: Record<string, any> = {};
     for (const key of order) {
       dict[key as string] =
         props[key as keyof typeof props] ||
-        ((await Config.getUnknownString(key as keyof ConfigurationOptions)) as string);
+        ((await Config.getUnknownString(
+          key as keyof ConfigurationOptions,
+        )) as string);
       this.options[key as keyof ConfigurationOptions] = dict[key as string];
     }
     const updatedOptions = dict as ConfigurationOptions extends TypingsConf
@@ -139,10 +174,16 @@ export class Configuration {
           [P in keyof T]: T[P] extends infer R | undefined ? R : T[P];
         }
       : never;
-    return updatedOptions as Pick<typeof updatedOptions, Z extends Array<infer R> ? R : {}>;
+    return updatedOptions as Pick<
+      typeof updatedOptions,
+      Z extends Array<infer R> ? R : {}
+    >;
   };
 
-  configure = async <T, Z extends Array<keyof T>>(props: T | ConfigurationOptions, order: Z) => {
+  configure = async <T, Z extends Array<keyof T>>(
+    props: T | ConfigurationOptions,
+    order: Z,
+  ) => {
     const reconfigured = await this.resolve(props, order);
     this.set(reconfigured);
     return reconfigured;

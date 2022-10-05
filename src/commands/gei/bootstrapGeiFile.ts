@@ -1,9 +1,10 @@
-import fs from 'fs';
+import { DEFAULT_GEI_PATH } from '@/commands/gei/shared/consts.js';
+import { writeSafe } from '@/utils/FileUtils.js';
 import path from 'path';
 
 export const bootstrapGeiFile = ({ filesPath }: { filesPath?: string }) => {
-  const p = path.join(process.cwd(), filesPath || 'src', 'gei', 'gei.ts');
-  fs.writeFileSync(p, fileContent);
+  const p = path.join(process.cwd(), filesPath || DEFAULT_GEI_PATH);
+  writeSafe(p, fileContent);
 };
 
 const fileContent = `import fs from 'fs';

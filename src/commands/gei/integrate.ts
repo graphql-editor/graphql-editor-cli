@@ -2,17 +2,23 @@ import fs from 'fs';
 import path from 'path';
 import typescript from 'typescript';
 import nodeVM from 'node:vm';
+import { DEFAULT_INTEGRATION_PATH } from '@/commands/gei/shared/consts.js';
 
 export const integrateStuccoJson = (props?: { integrationPath?: string }) => {
   const { integrationPath = './src/integration.ts' } = props || {};
   const stuccoPath = './stucco.json';
-  const integrationFile = path.join(process.cwd(), integrationPath);
+  const integrationFile = path.join(
+    process.cwd(),
+    integrationPath || DEFAULT_INTEGRATION_PATH,
+  );
   const stuccoFile = path.join(process.cwd(), stuccoPath);
 
   const existsStucco = fs.existsSync(stuccoFile);
   const existIntegrationFile = fs.existsSync(integrationFile);
   if (!existsStucco) {
-    throw new Error('stucco.json does not exist. Please create stucco.json file in root integration folder');
+    throw new Error(
+      'stucco.json does not exist. Please create stucco.json file in root integration folder',
+    );
   }
   if (!existIntegrationFile) {
     throw new Error(
@@ -21,13 +27,16 @@ export const integrateStuccoJson = (props?: { integrationPath?: string }) => {
   }
 
   try {
-    const out = typescript.transpileModule(fs.readFileSync(integrationFile, 'utf-8'), {
-      compilerOptions: {
-        target: 1,
-        module: 1,
-        moduleResolution: 2,
+    const out = typescript.transpileModule(
+      fs.readFileSync(integrationFile, 'utf-8'),
+      {
+        compilerOptions: {
+          target: 1,
+          module: 1,
+          moduleResolution: 2,
+        },
       },
-    });
+    );
     const context = nodeVM.createContext({ exports: {} });
     const objectOut = nodeVM.runInContext(out.outputText, context);
     const stuccoFileOut = JSON.parse(fs.readFileSync(stuccoFile, 'utf-8'));

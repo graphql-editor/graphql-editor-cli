@@ -1,9 +1,14 @@
-import fs from 'fs';
+import { DEFAULT_INTEGRATION_PATH } from '@/commands/gei/shared/consts.js';
+import { writeSafe } from '@/utils/FileUtils.js';
 import path from 'path';
 
-export const bootstrapIntegrationFile = ({ filesPath }: { filesPath?: string }) => {
-  const p = path.join(process.cwd(), filesPath || 'src', 'gei', 'integration.ts');
-  fs.writeFileSync(p, fileContent);
+export const bootstrapIntegrationFile = ({
+  filesPath,
+}: {
+  filesPath?: string;
+}) => {
+  const p = path.join(process.cwd(), filesPath || DEFAULT_INTEGRATION_PATH);
+  writeSafe(p, fileContent);
 };
 
 const fileContent = `type IntegrationData = {
