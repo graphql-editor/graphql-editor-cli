@@ -3,15 +3,15 @@
 import yargs from 'yargs';
 import { welcome } from '@/welcome.js';
 import { Auth } from '@/Auth/index.js';
-import { initConfiguration } from '@/commands/init/index.js';
-import { CommandSchema } from '@/commands/schema/index.js';
-import { CommandBootstrap } from '@/commands/bootstrap/index.js';
+import { initConfiguration } from '@/commands/common/init.js';
+import { CommandSchema } from '@/commands/common/schema.js';
 import { Config, Configuration, ConfigurationOptions } from '@/Configuration/index.js';
-import { CommandGetCIToken } from '@/commands/editor/getCIToken.js';
-import { CommandDev } from '@/commands/backend/commands/dev.js';
+import { CommandGetCIToken } from '@/commands/common/getCIToken.js';
+import { CommandDev } from '@/commands/common/dev.js';
 import Gei from '@/commands/gei/CLI.js';
 import CodeGen from '@/commands/codegen/CLI.js';
-import Cloud from '@/commands/cloud/CLI.js';
+import Cloud from '@/commands/create/CLI.js';
+import Create from '@/commands/cloud/CLI.js';
 import { confOptions, projectOptions, integrationOptions } from '@/common/promptOptions.js';
 
 welcome().then(() => {
@@ -23,7 +23,7 @@ welcome().then(() => {
     .alias('h', 'help')
     .command(
       'init',
-      'Create editor project config inside current working directory.',
+      'Configure current folder to work with editor commands and create config inside current working directory.',
       async (yargs) => {
         yargs.options(
           confOptions({
@@ -63,27 +63,13 @@ welcome().then(() => {
         await CommandSchema(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version' | 'schemaDir'>);
       },
     )
-    .command(
-      'bootstrap',
-      'Bootstrap a backend project',
-      async (yargs) => {
-        yargs.options(
-          confOptions({
-            ...projectOptions,
-          }),
-        );
-      },
-      async (argv) => {
-        await Auth.login().then(Config.setTokenOptions);
-        await CommandBootstrap(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
-      },
-    )
+    .command(Create)
     .command(Cloud)
     .command(CodeGen)
     .command(Gei)
     .command(
       'dev',
-      'Start development Typescript server and stucco server with hot reload.',
+      'Start Typescript server and stucco server with hot reload.',
       async (yargs) => {
         yargs.options(confOptions({ ...projectOptions }));
       },

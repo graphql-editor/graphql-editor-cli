@@ -1,4 +1,4 @@
-import * as templates from '@/commands/typings/templates/TypeScript.js';
+import * as templates from '@/commands/codegen/typings/templates/TypeScript.js';
 import { HandleTemplates } from '@/common/index.js';
 import { Environment } from 'graphql-zeus';
 import p from 'path';

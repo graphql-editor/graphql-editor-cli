@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-export const bootstrapIntegrationFile = ({ integrationFilePath }: { integrationFilePath?: string }) => {
-  const p = path.join(process.cwd(), integrationFilePath || './src/integration.ts');
+export const bootstrapIntegrationFile = ({ filesPath }: { filesPath?: string }) => {
+  const p = path.join(process.cwd(), filesPath || 'src', 'gei', 'integration.ts');
   fs.writeFileSync(p, fileContent);
 };
 
@@ -22,6 +22,7 @@ type IntegrationSpecification = {
     };
 };
 
+// Declare your resolver specifications here to generate JSON from it later using \`gei integrate\` command
 const integration: IntegrationSpecification = {};
   
 export default integration;

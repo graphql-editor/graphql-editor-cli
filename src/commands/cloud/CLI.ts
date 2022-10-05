@@ -1,12 +1,12 @@
 import { Auth } from '@/Auth/index.js';
-import { CommandDeploy } from '@/commands/backend/commands/deploy.js';
-import { CommandDeployRemote } from '@/commands/backend/commands/deployFromRemote.js';
-import { CommandPull } from '@/commands/backend/commands/pull.js';
-import { CommandPush } from '@/commands/backend/commands/push.js';
+import { CommandDeploy } from '@/commands/cloud/deploy.js';
+import { CommandDeployRemote } from '@/commands/cloud/deployFromRemote.js';
+import { CommandPull } from '@/commands/cloud/pull.js';
+import { CommandPush } from '@/commands/cloud/push.js';
 import { CommandSync } from '@/commands/cloud/sync.js';
 import { projectOptions, confOptions } from '@/common/promptOptions.js';
 import { Config, ConfigurationOptions } from '@/Configuration/index.js';
-import { ValueTypes } from '@/zeus';
+import { ValueTypes } from '@/zeus/index.js';
 import { CommandModule } from 'yargs';
 
 export default {

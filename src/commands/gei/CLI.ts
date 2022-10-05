@@ -27,33 +27,19 @@ export default {
         },
       )
       .command(
-        'generate',
-        'Generate integration.ts file',
+        'init',
+        'Generate gei definition files',
         async (yargs) => {
           yargs.options({
-            integrationFilePath: {
+            filesPath: {
               type: 'string',
-              describe: 'Path to generate integration.ts file',
-            },
-          });
-        },
-        async (argv) => {
-          bootstrapIntegrationFile(argv as Parameters<typeof bootstrapIntegrationFile>[0]);
-        },
-      )
-      .command(
-        'gei',
-        'Generate gei.ts file',
-        async (yargs) => {
-          yargs.options({
-            geiFilePath: {
-              type: 'string',
-              describe: 'Path to generate gei.ts file',
+              describe: 'Path to generate config files',
             },
           });
         },
         async (argv) => {
           bootstrapGeiFile(argv as Parameters<typeof bootstrapGeiFile>[0]);
+          bootstrapIntegrationFile(argv as Parameters<typeof bootstrapIntegrationFile>[0]);
         },
       )
       .command(

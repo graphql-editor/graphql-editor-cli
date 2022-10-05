@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-export const bootstrapGeiFile = ({ geiFilePath }: { geiFilePath?: string }) => {
-  const p = path.join(process.cwd(), geiFilePath || './src/gei.ts');
+export const bootstrapGeiFile = ({ filesPath }: { filesPath?: string }) => {
+  const p = path.join(process.cwd(), filesPath || 'src', 'gei', 'gei.ts');
   fs.writeFileSync(p, fileContent);
 };
 

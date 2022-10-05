@@ -19,7 +19,8 @@ export const CommandSync = async ({ namespace, project }: { namespace?: string; 
     return;
   }
   const deploymentZip = await (await fetch(deployment.getUrl)).buffer();
-  unZipFiles(deploymentZip, path.join(process.cwd(), TEMP));
+  const TEMPPATH = path.join(process.cwd(), TEMP);
+  unZipFiles(deploymentZip, TEMPPATH);
   const pusher = createPusher();
   const ch = pusher.subscribe(`presence-${namespace}@${project}`);
   ch.bind('pusher:subscription_succeeded', (e: any) => {
@@ -30,6 +31,7 @@ export const CommandSync = async ({ namespace, project }: { namespace?: string; 
   return new Promise((resolve, reject) => {
     process.on('SIGINT', () => {
       console.log('You clicked Ctrl+C!');
+      fs.rmSync(TEMPPATH);
       resolve('ok');
       process.exit(1);
     });

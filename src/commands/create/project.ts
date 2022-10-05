@@ -5,7 +5,7 @@ import { projectInstall } from 'pkg-install';
 import ora from 'ora';
 import { Config, Configuration, ConfigurationOptions } from '@/Configuration/index.js';
 import { Editor } from '@/Editor.js';
-import { TypeScript } from '@/commands/typings/generators/TypeScript.js';
+import { TypeScript } from '@/commands/codegen/typings/generators/TypeScript.js';
 import { logger } from '@/common/log/index.js';
 
 const cwd = process.cwd();
@@ -40,16 +40,11 @@ export const CommandBootstrap = async ({
 
   // new Configuration(projectPath);
   const createFiles = async () => {
-    writeProjectJSONFile((await import('./commands/backend/files/package.ts.json.js')).default, 'package.json');
-    writeProjectJSONFile((await import('./commands/backend/files/eslintrc.ts.json.js')).default, '.eslintrc.json');
-    writeProjectJSONFile((await import('./commands/backend/files/prettierrc.json.js')).default, '.prettierrc.json');
-    writeProjectJSONFile((await import('./commands/backend/files/tsconfig.json.js')).default, 'tsconfig.json');
-    fs.writeFileSync(
-      path.join(projectPath, '.gitignore'),
-      await (
-        await import('./commands/backend/files/,gitignore.js')
-      ).default,
-    );
+    writeProjectJSONFile((await import('./files/package.ts.json.js')).default, 'package.json');
+    writeProjectJSONFile((await import('./files/eslintrc.ts.json.js')).default, '.eslintrc.json');
+    writeProjectJSONFile((await import('./files/prettierrc.json.js')).default, '.prettierrc.json');
+    writeProjectJSONFile((await import('./files/tsconfig.json.js')).default, 'tsconfig.json');
+    fs.writeFileSync(path.join(projectPath, '.gitignore'), await (await import('./files/,gitignore.js')).default);
   };
   const loading = ora('Copying files').start();
   await createFiles();

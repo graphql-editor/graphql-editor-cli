@@ -1,7 +1,7 @@
 import { Auth } from '@/Auth/index.js';
-import { CommandModels } from '@/commands/backend/commands/models.js';
-import { CommandResolver } from '@/commands/backend/commands/resolver.js';
-import { CommandTypings } from '@/commands/typings/index.js';
+import { CommandModels } from '@/commands/codegen/models.js';
+import { CommandResolver } from '@/commands/codegen/resolver.js';
+import { CommandTypings } from '@/commands/codegen/typings/index.js';
 import { projectOptions, confOptions } from '@/common/promptOptions.js';
 import { Config, ConfigurationOptions } from '@/Configuration/index.js';
 import { CommandModule } from 'yargs';
