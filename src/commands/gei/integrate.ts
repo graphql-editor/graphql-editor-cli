@@ -5,7 +5,7 @@ import nodeVM from 'node:vm';
 import { DEFAULT_INTEGRATION_PATH } from '@/commands/gei/shared/consts.js';
 
 export const integrateStuccoJson = (props?: { integrationPath?: string }) => {
-  const { integrationPath = './src/integration.ts' } = props || {};
+  const { integrationPath } = props || {};
   const stuccoPath = './stucco.json';
   const integrationFile = path.join(
     process.cwd(),
@@ -41,17 +41,20 @@ export const integrateStuccoJson = (props?: { integrationPath?: string }) => {
     const objectOut = nodeVM.runInContext(out.outputText, context);
     const stuccoFileOut = JSON.parse(fs.readFileSync(stuccoFile, 'utf-8'));
 
+    const integrationResolvers = Object.entries(objectOut.resolvers).reduce(
+      (a, b) => ({
+        ...a,
+        [b[0]]: b[1],
+      }),
+      {},
+    );
+
     const result = {
       ...stuccoFileOut,
-      resolvers: Object.entries(stuccoFileOut.resolvers)
-        .map(([k, v]) => [k, objectOut[k]])
-        .reduce(
-          (a, b) => ({
-            ...a,
-            [b[0]]: b[1],
-          }),
-          {},
-        ),
+      resolvers: {
+        ...stuccoFileOut.resolvers,
+        ...integrationResolvers,
+      },
     };
 
     fs.writeFileSync(stuccoFile, JSON.stringify(result, null, 4));
