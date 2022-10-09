@@ -3,7 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import { projectInstall } from 'pkg-install';
 import ora from 'ora';
-import { Config, Configuration, ConfigurationOptions } from '@/Configuration/index.js';
+import {
+  Config,
+  Configuration,
+  ConfigurationOptions,
+} from '@/Configuration/index.js';
 import { Editor } from '@/Editor.js';
 import { TypeScript } from '@/commands/codegen/typings/generators/TypeScript.js';
 import { logger } from '@/common/log/index.js';
@@ -15,14 +19,17 @@ export const CommandBootstrap = async ({
   name,
   namespace,
   project,
-  version,
+  projectVersion,
 }: {
   name?: string;
   project?: string;
   namespace?: string;
-  version?: string;
+  projectVersion?: string;
 }) => {
-  const projectDetails = await Config.resolve({ namespace, project, version }, ['namespace', 'project', 'version']);
+  const projectDetails = await Config.resolve(
+    { namespace, project, projectVersion },
+    ['namespace', 'project', 'projectVersion'],
+  );
   const appSystemName = name
     ? name
     : (
@@ -40,11 +47,28 @@ export const CommandBootstrap = async ({
 
   // new Configuration(projectPath);
   const createFiles = async () => {
-    writeProjectJSONFile((await import('./files/package.ts.json.js')).default, 'package.json');
-    writeProjectJSONFile((await import('./files/eslintrc.ts.json.js')).default, '.eslintrc.json');
-    writeProjectJSONFile((await import('./files/prettierrc.json.js')).default, '.prettierrc.json');
-    writeProjectJSONFile((await import('./files/tsconfig.json.js')).default, 'tsconfig.json');
-    fs.writeFileSync(path.join(projectPath, '.gitignore'), await (await import('./files/,gitignore.js')).default);
+    writeProjectJSONFile(
+      (await import('./files/package.ts.json.js')).default,
+      'package.json',
+    );
+    writeProjectJSONFile(
+      (await import('./files/eslintrc.ts.json.js')).default,
+      '.eslintrc.json',
+    );
+    writeProjectJSONFile(
+      (await import('./files/prettierrc.json.js')).default,
+      '.prettierrc.json',
+    );
+    writeProjectJSONFile(
+      (await import('./files/tsconfig.json.js')).default,
+      'tsconfig.json',
+    );
+    fs.writeFileSync(
+      path.join(projectPath, '.gitignore'),
+      await (
+        await import('./files/,gitignore.js')
+      ).default,
+    );
   };
   const loading = ora('Copying files').start();
   await createFiles();
@@ -65,7 +89,9 @@ export const CommandBootstrap = async ({
   });
   fs.writeFileSync(path.join(projectPath, 'schema.graphql'), schema);
   fetchingSchema.succeed();
-  const typingsDetails: Required<Pick<ConfigurationOptions, 'typingsDir' | 'typingsEnv' | 'typingsHost'>> = {
+  const typingsDetails: Required<
+    Pick<ConfigurationOptions, 'typingsDir' | 'typingsEnv' | 'typingsHost'>
+  > = {
     typingsEnv: 'node',
     typingsHost: 'http://localhost:8080/',
     typingsDir: srcDir,
@@ -86,5 +112,8 @@ export const CommandBootstrap = async ({
     } as Partial<ConfigurationOptions>,
     Configuration.CONFIG_NAME,
   );
-  logger(`\n\nSuccessfully created backend project in path: ${projectPath}.`, 'success');
+  logger(
+    `\n\nSuccessfully created backend project in path: ${projectPath}.`,
+    'success',
+  );
 };

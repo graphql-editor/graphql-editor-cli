@@ -1,9 +1,16 @@
 import { DEFAULT_GEI_PATH } from '@/commands/gei/shared/consts.js';
+import { Config } from '@/Configuration/index.js';
 import { writeSafe } from '@/utils/FileUtils.js';
 import path from 'path';
 
-export const bootstrapGeiFile = ({ filesPath }: { filesPath?: string }) => {
-  const p = path.join(process.cwd(), filesPath || DEFAULT_GEI_PATH);
+export const bootstrapGeiFile = async (props: { geiPath?: string }) => {
+  const { geiPath } = await Config.configure(
+    {
+      geiPath: props?.geiPath,
+    },
+    ['geiPath'],
+  );
+  const p = path.join(process.cwd(), geiPath || DEFAULT_GEI_PATH);
   writeSafe(p, fileContent);
 };
 

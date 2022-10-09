@@ -5,14 +5,22 @@ import { welcome } from '@/welcome.js';
 import { Auth } from '@/Auth/index.js';
 import { initConfiguration } from '@/commands/common/init.js';
 import { CommandSchema } from '@/commands/common/schema.js';
-import { Config, Configuration, ConfigurationOptions } from '@/Configuration/index.js';
+import {
+  Config,
+  Configuration,
+  ConfigurationOptions,
+} from '@/Configuration/index.js';
 import { CommandGetCIToken } from '@/commands/common/getCIToken.js';
 import { CommandDev } from '@/commands/common/dev.js';
 import Gei from '@/commands/gei/CLI.js';
 import CodeGen from '@/commands/codegen/CLI.js';
 import Cloud from '@/commands/create/CLI.js';
 import Create from '@/commands/cloud/CLI.js';
-import { confOptions, projectOptions, integrationOptions } from '@/common/promptOptions.js';
+import {
+  confOptions,
+  projectOptions,
+  integrationOptions,
+} from '@/common/promptOptions.js';
 
 welcome().then(() => {
   new Configuration();
@@ -33,7 +41,12 @@ welcome().then(() => {
       },
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
-        await initConfiguration(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
+        await initConfiguration(
+          argv as Pick<
+            ConfigurationOptions,
+            'project' | 'namespace' | 'projectVersion'
+          >,
+        );
       },
     )
     .command(
@@ -52,7 +65,8 @@ welcome().then(() => {
           confOptions({
             ...projectOptions,
             schemaDir: {
-              describe: 'Path to created schema containing its name and extension',
+              describe:
+                'Path to created schema containing its name and extension',
               type: 'string',
             },
           }),
@@ -60,7 +74,12 @@ welcome().then(() => {
       },
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
-        await CommandSchema(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version' | 'schemaDir'>);
+        await CommandSchema(
+          argv as Pick<
+            ConfigurationOptions,
+            'project' | 'namespace' | 'projectVersion' | 'schemaDir'
+          >,
+        );
       },
     )
     .command(Create)
@@ -70,11 +89,9 @@ welcome().then(() => {
     .command(
       'dev',
       'Start Typescript server and stucco server with hot reload.',
-      async (yargs) => {
-        yargs.options(confOptions({ ...projectOptions }));
-      },
+      async (yargs) => {},
       async (argv) => {
-        CommandDev(argv as Pick<ConfigurationOptions, 'project' | 'namespace'>);
+        CommandDev();
       },
     )
     .command('token', 'Get CI token', async (argv) => {
@@ -82,5 +99,6 @@ welcome().then(() => {
     })
     .showHelpOnFail(true)
     .demandCommand()
+    .version()
     .epilog('Bye!').argv;
 });

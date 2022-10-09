@@ -16,7 +16,7 @@ export const projectOptions: ConfOptions = {
     describe: 'GraphQL Editor Project',
     type: 'string',
   },
-  version: {
+  projectVersion: {
     describe: 'GraphQL Editor Version name',
     type: 'string',
   },

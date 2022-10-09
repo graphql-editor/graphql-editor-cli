@@ -20,7 +20,12 @@ export default {
       },
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
-        await CommandBootstrap(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
+        await CommandBootstrap(
+          argv as Pick<
+            ConfigurationOptions,
+            'project' | 'namespace' | 'projectVersion'
+          >,
+        );
       },
     );
   },

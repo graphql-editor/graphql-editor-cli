@@ -3,7 +3,7 @@ import { CommandDeploy } from '@/commands/cloud/deploy.js';
 import { CommandDeployRemote } from '@/commands/cloud/deployFromRemote.js';
 import { CommandPull } from '@/commands/cloud/pull.js';
 import { CommandPush } from '@/commands/cloud/push.js';
-import { CommandSync } from '@/commands/cloud/sync.js';
+import { CommandSync } from '@/commands/cloud/server.js';
 import { projectOptions, confOptions } from '@/common/promptOptions.js';
 import { Config, ConfigurationOptions } from '@/Configuration/index.js';
 import { ValueTypes } from '@/zeus/index.js';
@@ -15,14 +15,16 @@ export default {
   builder: (yargs) => {
     return yargs
       .command(
-        'sync',
+        'server',
         'Live sync files from Editor Cloud to a temporary folder',
         async (yargs) => {
           yargs.options(confOptions({ ...projectOptions }));
         },
         async (argv) => {
           await Auth.login().then(Config.setTokenOptions);
-          await CommandSync(argv as Pick<ConfigurationOptions, 'project' | 'namespace'>);
+          await CommandSync(
+            argv as Pick<ConfigurationOptions, 'project' | 'namespace'>,
+          );
         },
       )
       .command(
@@ -33,7 +35,9 @@ export default {
         },
         async (argv) => {
           await Auth.login().then(Config.setTokenOptions);
-          await CommandPull(argv as Pick<ConfigurationOptions, 'project' | 'namespace'>);
+          await CommandPull(
+            argv as Pick<ConfigurationOptions, 'project' | 'namespace'>,
+          );
         },
       )
       .command(
@@ -44,7 +48,9 @@ export default {
         },
         async (argv) => {
           await Auth.login().then(Config.setTokenOptions);
-          await CommandPush(argv as Pick<ConfigurationOptions, 'project' | 'namespace'>);
+          await CommandPush(
+            argv as Pick<ConfigurationOptions, 'project' | 'namespace'>,
+          );
         },
       )
       .command(
@@ -65,16 +71,25 @@ export default {
               alias: 'e',
               array: true,
               coerce: (v: Array<string>) => {
-                return v.map((e: string) => e.split('=')).map(([name, ...value]) => ({ name, value: value.join('=') }));
+                return v
+                  .map((e: string) => e.split('='))
+                  .map(([name, ...value]) => ({
+                    name,
+                    value: value.join('='),
+                  }));
               },
-              describe: 'Set environment variables for example "-e URL=$URL" or "-e URL=example.com"',
+              describe:
+                'Set environment variables for example "-e URL=$URL" or "-e URL=example.com"',
             },
           });
         },
         async (argv) => {
           await Auth.login().then(Config.setTokenOptions);
           await CommandDeployRemote(
-            argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip'> & {
+            argv as Pick<
+              ConfigurationOptions,
+              'project' | 'namespace' | 'backendZip'
+            > & {
               env?: ValueTypes['Secret'][];
             },
           );
@@ -98,16 +113,25 @@ export default {
               alias: 'e',
               array: true,
               coerce: (v: Array<string>) => {
-                return v.map((e: string) => e.split('=')).map(([name, ...value]) => ({ name, value: value.join('=') }));
+                return v
+                  .map((e: string) => e.split('='))
+                  .map(([name, ...value]) => ({
+                    name,
+                    value: value.join('='),
+                  }));
               },
-              describe: 'Set environment variables for example "-e URL=$URL" or "-e URL=example.com"',
+              describe:
+                'Set environment variables for example "-e URL=$URL" or "-e URL=example.com"',
             },
           });
         },
         async (argv) => {
           await Auth.login().then(Config.setTokenOptions);
           await CommandDeploy(
-            argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'backendZip' | 'buildScript'> & {
+            argv as Pick<
+              ConfigurationOptions,
+              'project' | 'namespace' | 'backendZip' | 'buildScript'
+            > & {
               env?: ValueTypes['Secret'][];
             },
           );

@@ -1,61 +1,28 @@
 import { logger } from '@/common/log/index.js';
-import Tscwatch from 'tsc-watch/client.js';
-import { stucco } from 'stucco-js/lib/stucco/run.js';
-import { ChildProcess, spawn } from 'child_process';
-import { SIGINT } from 'constants';
-import path from 'path';
-const client = new Tscwatch();
+import { stuccoRun } from '@/common/stucco/index.js';
+import { typescriptServer } from '@/common/typescriptServer.js';
 
-const terminate = async (ch?: ChildProcess): Promise<void | number> => {
-  if (!ch) return;
-  const ret = new Promise<number>((resolve) => ch.on('close', (code: number) => resolve(code)));
-  ch.kill(SIGINT);
-  return ret;
-};
-
-const spawnPromise = async (cmd: string, args: string[]): Promise<ChildProcess> => {
-  const child = spawn(cmd, args, {
-    stdio: [process.stdin, process.stdout, process.stderr],
-    env: {
-      ['PATH']: `${path.join(process.cwd(), 'node_modules', '.bin')}:${process.env.PATH}`,
+export const CommandDev = async () => {
+  const { onCloseStucco, onCreateStucco } = await stuccoRun();
+  const tsServer = typescriptServer({
+    searchPath: './',
+    onCreate: async () => {
+      try {
+        await onCreateStucco();
+        logger('tsc success', 'success');
+      } finally {
+      }
     },
   });
-  return new Promise<ChildProcess>((resolve, reject) => {
-    child.on('error', reject);
-    child.on('spawn', () => {
-      child.off('error', reject);
-      resolve(child);
-    });
-  });
-};
-
-export const CommandDev = async ({ namespace, project }: { namespace?: string; project?: string }) => {
-  const bin = await stucco();
-  const args = ['local', 'start'];
-  let child: ChildProcess | undefined;
-  let taskRunning = false;
+  const close = () => {
+    tsServer.close();
+    onCloseStucco();
+  };
   process.on('SIGTERM', () => {
-    child?.kill(SIGINT);
+    close();
   });
   process.on('SIGINT', () => {
-    child?.kill(SIGINT);
+    close();
   });
-  client.on('success', async () => {
-    // Only one restart at once
-    if (taskRunning) return;
-    taskRunning = true;
-    try {
-      const code = await terminate(child);
-      if (code) logger(`child terminated with non 0 status: ${code}`, 'error');
-      child = await spawnPromise(bin, args);
-      logger('tsc success', 'success');
-    } finally {
-      taskRunning = false;
-    }
-  });
-  client.on('compile_errors', () => {
-    logger('tsc error', 'error');
-  });
-  client.start();
   return;
 };

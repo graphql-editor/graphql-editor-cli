@@ -12,13 +12,21 @@ interface BasicResolverProps {
   source?: string;
 }
 
-const basicResolver = ({ field, resolverParent, body = '', imports = '', source }: BasicResolverProps) => `
+const basicResolver = ({
+  field,
+  resolverParent,
+  body = '',
+  imports = '',
+  source,
+}: BasicResolverProps) => `
 import { FieldResolveInput } from 'stucco-js';
 import { resolverFor } from '../zeus';
 ${imports}
 
 export const handler = async (input: FieldResolveInput) => 
-  resolverFor('${resolverParent}','${field.name}',async (args${source ? `, source:${source}` : ``}) => {
+  resolverFor('${resolverParent}','${field.name}',async (args${
+  source ? `, source:${source}` : ``
+}) => {
     ${body}
   })(input.arguments${source ? `, input.source` : ``});
 `;
@@ -26,13 +34,16 @@ export const handler = async (input: FieldResolveInput) =>
 export const CommandResolver = async ({
   namespace,
   project,
-  version,
+  projectVersion,
 }: {
   namespace?: string;
   project?: string;
-  version?: string;
+  projectVersion?: string;
 }) => {
-  const resolve = await Config.configure({ namespace, project, version }, ['namespace', 'project', 'version']);
+  const resolve = await Config.configure(
+    { namespace, project, projectVersion },
+    ['namespace', 'project', 'projectVersion'],
+  );
   const schema = await Editor.getCompiledSchema(resolve);
   const parseSchema = Parser.parseAddExtensions(schema);
   const { parentResolver, resolver } = await TypeResolver(parseSchema);
@@ -49,5 +60,9 @@ export const CommandResolver = async ({
     path: resolverPath,
     type: 'add',
   });
-  addStucco({ basePath, stuccoResolverName: `${parentResolver}.${resolver.name}`, resolverLibPath });
+  addStucco({
+    basePath,
+    stuccoResolverName: `${parentResolver}.${resolver.name}`,
+    resolverLibPath,
+  });
 };

@@ -19,7 +19,12 @@ export default {
         },
         async (argv) => {
           await Auth.login().then(Config.setTokenOptions);
-          await CommandResolver(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
+          await CommandResolver(
+            argv as Pick<
+              ConfigurationOptions,
+              'project' | 'namespace' | 'projectVersion'
+            >,
+          );
         },
       )
       .command(
@@ -30,7 +35,12 @@ export default {
         },
         async (argv) => {
           await Auth.login().then(Config.setTokenOptions);
-          await CommandModels(argv as Pick<ConfigurationOptions, 'project' | 'namespace' | 'version'>);
+          await CommandModels(
+            argv as Pick<
+              ConfigurationOptions,
+              'project' | 'namespace' | 'projectVersion'
+            >,
+          );
         },
       )
       .command(
@@ -60,7 +70,12 @@ export default {
           await CommandTypings(
             argv as Pick<
               ConfigurationOptions,
-              'project' | 'namespace' | 'version' | 'typingsDir' | 'typingsEnv' | 'typingsHost'
+              | 'project'
+              | 'namespace'
+              | 'projectVersion'
+              | 'typingsDir'
+              | 'typingsEnv'
+              | 'typingsHost'
             >,
           );
         },

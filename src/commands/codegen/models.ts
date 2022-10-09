@@ -20,22 +20,22 @@ export const CommandModels = async ({
   namespace,
   backendSrc,
   project,
-  version,
+  projectVersion,
 }: {
   backendSrc?: string;
   namespace?: string;
   project?: string;
-  version?: string;
+  projectVersion?: string;
 }) => {
-  const resolve = await Config.configure({ namespace, backendSrc, project, version }, [
-    'namespace',
-    'project',
-    'version',
-    'backendSrc',
-  ]);
+  const resolve = await Config.configure(
+    { namespace, backendSrc, project, projectVersion },
+    ['namespace', 'project', 'projectVersion', 'backendSrc'],
+  );
   const schema = await Editor.getCompiledSchema(resolve);
   const tree = Parser.parseAddExtensions(schema);
-  const modelFields = tree.nodes.filter((f) => f.data.type === TypeDefinition.ObjectTypeDefinition);
+  const modelFields = tree.nodes.filter(
+    (f) => f.data.type === TypeDefinition.ObjectTypeDefinition,
+  );
   const modelsPath = path.join(resolve.backendSrc, 'models');
   let importsContent = '';
   let modelsContent = [];
@@ -44,7 +44,9 @@ export const CommandModels = async ({
     importsContent += `import { ${modelName} } from './${modelName}'\n`;
     modelsContent.push(`${modelName}: ${modelName};`);
   }
-  const modelsContentString = `export type Models = {\n\t${modelsContent.join('\n\t')}\n};`;
+  const modelsContentString = `export type Models = {\n\t${modelsContent.join(
+    '\n\t',
+  )}\n};`;
   const modelFileIndex = [importsContent, modelsContentString].join('\n\n');
   HandleTemplates.action({
     type: 'add',

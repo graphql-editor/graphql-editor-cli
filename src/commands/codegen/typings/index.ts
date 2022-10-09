@@ -9,14 +9,14 @@ export const CommandTypings = async ({
   typingsDir,
   namespace,
   project,
-  version,
+  projectVersion,
   typingsEnv,
   typingsHost,
 }: {
   typingsDir?: string;
   namespace?: string;
   project?: string;
-  version?: string;
+  projectVersion?: string;
   typingsEnv?: Environment;
   typingsHost?: string;
 }) => {
@@ -25,11 +25,18 @@ export const CommandTypings = async ({
       typingsDir,
       namespace,
       project,
-      version,
+      projectVersion,
       typingsEnv,
       typingsHost,
     },
-    ['namespace', 'project', 'version', 'typingsDir', 'typingsEnv', 'typingsHost'],
+    [
+      'namespace',
+      'project',
+      'projectVersion',
+      'typingsDir',
+      'typingsEnv',
+      'typingsHost',
+    ],
   );
   const schema = await Editor.getCompiledSchema(cfg);
   generators.TypeScript({

@@ -3,9 +3,15 @@
 
 # GraphQL Editor Cli
 
-Translate GraphQL to Anything and make it your one and only source of truth. Schema. Compatible with [GraphQL Editor](https://graphqleditor.com) projects( Free and Paid Tiers). So the main goal is to provide interactive experience creating GraphQL as a service.
+Compatible with [GraphQL Editor](https://graphqleditor.com) projects( Free and Paid Tiers). The main goal is to provide interactive experience creating GraphQL as a service.
+
+## Requirements
+
+- [GraphQL Editor](https://graphqleditor.com)
+- NodeJS >= 16
 
 - [GraphQL Editor Cli](#graphql-editor-cli)
+  - [Requirements](#requirements)
   - [Installation](#installation)
     - [Global](#global)
     - [Inside Repo](#inside-repo)
@@ -14,19 +20,32 @@ Translate GraphQL to Anything and make it your one and only source of truth. Sch
   - [Commands](#commands)
     - [Schema](#schema)
       - [Additional options](#additional-options)
-    - [Typings](#typings)
-      - [Additional options](#additional-options-1)
-    - [Backend](#backend)
-      - [Bootstrap](#bootstrap)
-      - [Development](#development)
-      - [Models](#models)
-        - [MongoDB](#mongodb)
-      - [Resolvers](#resolvers)
-      - [Deploy to GraphQL Editor Shared Worker](#deploy-to-graphql-editor-shared-worker)
+    - [Create project](#create-project)
+    - [Development](#development)
+    - [Cloud](#cloud)
+      - [Run Local Server for your GraphQL Editor Microservice in Cloud](#run-local-server-for-your-graphql-editor-microservice-in-cloud)
+      - [Deploy to GraphQL Editor Microservice](#deploy-to-graphql-editor-microservice)
         - [Environment inside shared worker](#environment-inside-shared-worker)
       - [Push to cloud](#push-to-cloud)
       - [Pull from cloud](#pull-from-cloud)
-  - [Roadmap](#roadmap)
+    - [Code Generation](#code-generation)
+      - [Typings](#typings)
+      - [Additional options](#additional-options-1)
+      - [Models](#models)
+        - [MongoDB](#mongodb)
+      - [Resolvers](#resolvers)
+        - [**`stucco.json`**](#stuccojson)
+    - [GraphQL Editor Integrations](#graphql-editor-integrations)
+      - [Installation](#installation-1)
+        - [**`package.json`**](#packagejson)
+        - [**`stucco.json`**](#stuccojson-1)
+      - [Development](#development-1)
+        - [Data format](#data-format)
+        - [**`integration.ts`**](#integrationts)
+        - [Init](#init)
+        - [Integrate](#integrate)
+        - [Publish](#publish)
+        - [Unpublish](#unpublish)
 
 ## Installation
 
@@ -58,11 +77,11 @@ In this order CLI will try to get argument.
 
 All commands also take these options which refer to your GraphQL Editor project
 
-| Option    | type   | description         |
-| --------- | ------ | ------------------- |
-| namespace | string | Your namespace name |
-| project   | string | Project name        |
-| version   | string | version name        |
+| Option         | type   | description         |
+| -------------- | ------ | ------------------- |
+| namespace      | string | Your namespace name |
+| project        | string | Project name        |
+| projectVersion | string | projectVersion name |
 
 ## Commands
 
@@ -80,12 +99,84 @@ $ gecli schema
 | --------- | ------ | --------------------------------- |
 | schemaDir | string | Directory to generate schema file |
 
-### Typings
+### Create project
+
+```sh
+$ gecli create backend
+```
+
+Create a backend for your graphql editor project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration. It is an interactive command. It will create a folder with project name you will provide
+
+### Development
+
+```sh
+$ gecli dev
+```
+
+To start typescript and stucco development server reacting to your code changes.
+
+### Cloud
+
+#### Run Local Server for your GraphQL Editor Microservice in Cloud
+
+When you have a microservice in cloud with or without GraphQL Editor backend, you can run local graphql server for your microservice using this command
+
+```sh
+gecli cloud server
+```
+
+This command will
+
+1. Download your files from GraphQL Editor Cloud to a temporary folder
+2. Install packages inside the folder
+3. Run stucco server and typescript server inside this folder.
+
+#### Deploy to GraphQL Editor Microservice
+
+With this command you can deploy your project with stucco based backend to them.
+
+```sh
+gecli cloud deploy --backendZip=https://github.com/aexol-studio/monospace-backend/archive/refs/heads/main.zip
+```
+
+##### Environment inside shared worker
+
+To pass environment variables use `-e flag` for deploys. For example
+
+```sh
+gecli cloud deploy -e DB_URL=https://exampledb.com -e HOME=$HOME
+```
+
+#### Push to cloud
+
+Sometimes you will want to push to cloud GraphQL Editor back from repo. So editor users can see/test the changes in Editor browser IDE. To do it
+
+```sh
+$ gecli cloud push
+```
+
+This will clean cloud folder and push cwd to the editor cloud.
+
+#### Pull from cloud
+
+When you want to move from cloud folder as your service is getting bigger and put the project inside repository. You can use pull command
+
+```sh
+$ gecli cloud pull
+```
+
+It will pull the project to the project name folder
+
+### Code Generation
+
+Code generation commands
+
+#### Typings
 
 Generate TypeScript typings from GraphQL Editor project.
 
 ```sh
-$ gecli typings
+$ gecli codegen typings
 ```
 
 #### Additional options
@@ -96,28 +187,10 @@ $ gecli typings
 | typingsEnv  | "browser" or "node | Environment for typings to work with        |
 | typingsHost | string             | GraphQL Server URL                          |
 
-### Backend
-
-#### Bootstrap
-
-```sh
-$ gecli bootstrap
-```
-
-Bootstrap a backend stucco project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration. It is an interactive command. It will create a folder with project name you will provide
-
-#### Development
-
-```sh
-$ gecli dev
-```
-
-To start stucco development server reacting to your code changes,
-
 #### Models
 
 ```sh
-$ gecli models
+$ gecli codegen models
 ```
 
 Generate TypeScript Models from GraphQL types. They are very useful to use with popular Databases
@@ -143,7 +216,9 @@ later on you may want to transform it so it is a database model.
 
 ```ts
 import type { ModelTypes } from '@/zeus';
-export type Person = Omit<ModelTypes['Person'], 'friends'> & { friends: string[] };
+export type Person = Omit<ModelTypes['Person'], 'friends'> & {
+  friends: string[];
+};
 ```
 
 So you see the concept.
@@ -153,12 +228,16 @@ So you see the concept.
 Here is an example how you can use your model in MongoDB.
 
 ```ts
-db.collection<MyModel>.find({})
+db.collection<MyModel>.find({});
 ```
 
 #### Resolvers
 
 CLI tool to generate [Stucco](https://github.com/graphql-editor/stucco-js) resolvers in TypeScript from GraphQL fields.
+
+```sh
+$ gecli codegen resolver
+```
 
 Given the following schema:
 
@@ -193,6 +272,8 @@ export const handler = async (): Promise<FieldResolveOutput> => {};
 
 and append correct entries to `stucco.json` file.
 
+##### **`stucco.json`**
+
 ```json
 {
   "resolvers": {
@@ -208,47 +289,101 @@ and append correct entries to `stucco.json` file.
 and after running `stucco` your resolver should work out of the box.
 Some resolver types however need little code to make them work the way you want.
 
-#### Deploy to GraphQL Editor Shared Worker
+### GraphQL Editor Integrations
 
-Shared workers are really powerful. With one command you can deploy stucco based backend to them.
+Both installation and development of graphql editor integrations is possible.
 
-```
-gecli deploy --backendZip=https://github.com/aexol-studio/monospace-backend/archive/refs/heads/main.zip
-```
+#### Installation
 
-##### Environment inside shared worker
+Installation is done via GraphQL Editor or just using an npm package name and providing resolver path to node_modules path
 
-To pass environment variables use `-e flag` for deploys. For example
+##### **`package.json`**
 
-```sh
-gecli deploy -e DB_URL=https://exampledb.com -e HOME=$HOME
-```
-
-#### Push to cloud
-
-Sometimes you will want to push to cloud GraphQL Editor back from repo. So editor users can see/test the changes in Editor browser IDE. To do it
-
-```sh
-$ gecli push
+```json
+{
+  "dependencies": {
+    "gei-crud": "0.0.2"
+  }
+}
 ```
 
-This will clean cloud folder and push cwd to the editor cloud.
+##### **`stucco.json`**
 
-#### Pull from cloud
-
-When you want to move from cloud folder as your service is getting bigger and put the project inside repository. You can use pull command
-
-```sh
-$ gecli pull
+```json
+{
+  "resolvers": {
+    "Query.objects": {
+      "resolve": {
+        "name": "node_modules/gei-crud/lib/Query/objects"
+      },
+      "data": {
+        "model": {
+          "value": "Pizza"
+        }
+      }
+    }
+  }
+}
 ```
 
-It will pull the project to the project name folder
+#### Development
 
-## Roadmap
+To develop GraphQL Editor integration use `gecli create backend` [command](#create-project) to create your project. Then init the integration.
 
-- [ ] Prisma models from GraphQL types interactive CLI
-- [ ] More use cases with other databases and ORMs
-- [ ] Deployment of microservices
-- [ ] Add colours
-- [x] Push files to editor
-- [x] Generation of ejected microservices CI
+##### Data format
+
+##### **`integration.ts`**
+
+```ts
+type IntegrationData = {
+  name: string;
+  description: string;
+  value: string | string[];
+  required?: boolean;
+};
+
+type IntegrationSpecification = {
+  [resolver: string]: {
+    name: string;
+    description: string;
+    data: Record<string, IntegrationData>;
+    resolve: { name: string };
+  };
+};
+const integration: IntegrationSpecification = {
+  'Query.objects': {
+    name: 'List objects',
+    description: 'List objects stored in database',
+    data: {
+      model: {
+        name: 'Database model',
+        description: 'Specify model name',
+        value: 'Object',
+        required: true,
+      },
+      sourceFilterParameters,
+    },
+    resolve: {
+      name: 'lib/Query/objects',
+    },
+  },
+};
+```
+
+Later on after `gecli gei integrate` command it integrates your typescript file to the `stucco.json`
+
+##### Init
+
+Init files needed to create integration from your backend project to be used in GraphQL Editor No-Code editor or as npm package.
+
+##### Integrate
+
+Integrate your files with project's `stucco.json`
+
+##### Publish
+
+Publish your integration to GraphQL Editor be used in GraphQL Editor No-Code editor.
+
+##### Unpublish
+
+Unpublish your integration from GraphQL Editor

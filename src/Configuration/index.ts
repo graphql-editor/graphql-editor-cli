@@ -6,6 +6,10 @@ import { Editor } from '@/Editor.js';
 import { IS_VERSION_FILE_REGEX } from '@/gshared/constants/index.js';
 import Conf from 'conf';
 import AutoCompleteInputPrompt from '@/utils/AutoCompleteInputPrompt.js';
+import {
+  DEFAULT_GEI_PATH,
+  DEFAULT_INTEGRATION_PATH,
+} from '@/commands/gei/shared/consts.js';
 
 export type DeploymentType = 'editor' | 'azure';
 
@@ -23,7 +27,7 @@ export interface TypingsConf {
 export interface EditorConf {
   namespace?: string;
   project?: string;
-  version?: string;
+  projectVersion?: string;
 }
 
 export interface BackendConf {
@@ -35,6 +39,8 @@ export interface BackendConf {
 export interface IntegrationConf {
   npmPackage?: string;
   registry?: string;
+  integrationPath?: string;
+  geiPath?: string;
 }
 export interface ConfigurationOptions
   extends TypingsConf,
@@ -55,7 +61,23 @@ const ConfigurationSpecialPrompts: {
     name: 'typingsEnv',
     type: 'list',
   },
-  version: { message: 'Project version', default: 'latest', type: 'input' },
+  projectVersion: {
+    message: 'Project version',
+    default: 'latest',
+    type: 'input',
+  },
+  integrationPath: {
+    message: 'integration.ts file path',
+    default: DEFAULT_INTEGRATION_PATH,
+    type: 'input',
+    name: 'integrationPath',
+  },
+  geiPath: {
+    message: 'gei.ts file path',
+    default: DEFAULT_GEI_PATH,
+    type: 'input',
+    name: 'geiPath',
+  },
 };
 
 export class Configuration {
@@ -127,7 +149,11 @@ export class Configuration {
       );
       return projectName;
     }
-    if (k === 'version' && this.options.namespace && this.options.project) {
+    if (
+      k === 'projectVersion' &&
+      this.options.namespace &&
+      this.options.project
+    ) {
       const project = await Editor.fetchProject({
         accountName: this.options.namespace,
         projectName: this.options.project,

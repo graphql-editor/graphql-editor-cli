@@ -156,17 +156,17 @@ export class Editor {
   public static getCompiledSchema = async ({
     namespace,
     project,
-    version,
+    projectVersion,
   }: {
     namespace: string;
     project: string;
-    version: string;
+    projectVersion: string;
   }) => {
     const p = await Editor.fetchProject({
       accountName: namespace,
       projectName: project,
     });
-    const cmnFiles = COMMON_FILES(version);
+    const cmnFiles = COMMON_FILES(projectVersion);
     const graphqlURL = p.sources!.sources!.find(
       (s) => s.filename === cmnFiles.code,
     )!;
