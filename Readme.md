@@ -332,6 +332,8 @@ To develop GraphQL Editor integration use `gecli create backend` [command](#crea
 
 ##### Data format
 
+Here is an example file. After generating files with `gecli gei init` command use `gecli gei integrate` to consume edited `integration.ts` file
+
 ##### **`integration.ts`**
 
 ```ts
@@ -361,7 +363,6 @@ const integration: IntegrationSpecification = {
         value: 'Object',
         required: true,
       },
-      sourceFilterParameters,
     },
     resolve: {
       name: 'lib/Query/objects',

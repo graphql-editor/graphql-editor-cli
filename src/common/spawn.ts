@@ -18,6 +18,7 @@ export const spawnPromise = async (
   const child = spawn(cmd, args, {
     stdio: [process.stdin, process.stdout, process.stderr],
     env: {
+      ...process.env,
       ['PATH']: `${path.join(process.cwd(), 'node_modules', '.bin')}:${
         process.env.PATH
       }`,

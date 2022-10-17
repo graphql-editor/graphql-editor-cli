@@ -47,14 +47,10 @@ export const integrateStuccoJson = async (props?: {
     );
     const context = nodeVM.createContext({ exports: {} });
     const objectOut = nodeVM.runInContext(out.outputText, context) as {
-      resolvers?: any;
+      [resolver: string]: any;
     };
     const stuccoFileOut = JSON.parse(fs.readFileSync(stuccoFile, 'utf-8'));
-
-    console.log(JSON.stringify(objectOut, null, 4));
-    const integrationResolvers = Object.entries(
-      objectOut.resolvers || {},
-    ).reduce(
+    const integrationResolvers = Object.entries(objectOut || {}).reduce(
       (a, b) => ({
         ...a,
         [b[0]]: b[1],
