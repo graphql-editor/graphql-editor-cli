@@ -1,20 +1,28 @@
 import { Config } from '@/Configuration/index.js';
 import { Editor } from '@/Editor.js';
-import { unZipFiles } from '@/utils/ZipUtils.js';
-import { fileInCloudFolder, MICROSERVICE_DEPLOYMENT_FILE } from '@/gshared/constants/index.js';
-import fetch from 'node-fetch';
+import { CLOUD_FOLDERS } from '@/gshared/constants/index.js';
 import path from 'path';
+import { writeInitialFiles } from '@/common/liveFiles.js';
 
-export const CommandPull = async ({ namespace, project }: { namespace?: string; project?: string }) => {
-  const resolve = await Config.configure({ namespace, project }, ['namespace', 'project']);
-  const p = await Editor.fetchProject({ accountName: resolve.namespace, projectName: resolve.project });
-  const deployment = p.sources?.sources?.find(
-    (s) => s.filename === fileInCloudFolder('microservices_deployment')(MICROSERVICE_DEPLOYMENT_FILE),
+export const CommandPull = async ({
+  namespace,
+  project,
+}: {
+  namespace?: string;
+  project?: string;
+}) => {
+  const resolve = await Config.configure({ namespace, project }, [
+    'namespace',
+    'project',
+  ]);
+  const p = await Editor.fetchProject({
+    accountName: resolve.namespace,
+    projectName: resolve.project,
+  });
+
+  const s3Files = p.sources?.sources?.filter((s) =>
+    s.filename?.startsWith(CLOUD_FOLDERS['microserviceJs'] + '/'),
   );
-  if (!deployment?.getUrl) {
-    return;
-  }
-  const deploymentZip = await (await fetch(deployment.getUrl)).buffer();
-  unZipFiles(deploymentZip, path.join(process.cwd(), resolve.project));
+  await writeInitialFiles(path.join(process.cwd(), resolve.project), s3Files);
   return;
 };

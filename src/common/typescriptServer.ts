@@ -44,8 +44,6 @@ export const typescriptServer = ({
     host,
     oldProgram,
   ) => {
-    console.log("** We're about to create the program! **");
-
     const result = origCreateProgram(rootNames, options, host, oldProgram);
     onCreate?.();
     return result;
@@ -53,7 +51,6 @@ export const typescriptServer = ({
   const origPostProgramCreate = host.afterProgramCreate;
 
   host.afterProgramCreate = (program) => {
-    console.log('** We finished making the program! **');
     const result = origPostProgramCreate!(program);
     afterCreate?.();
     return result;

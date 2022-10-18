@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-cli",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/index.js",
   "author": "Artur Czemiel",
@@ -68,7 +68,7 @@
     "pusher-js": "^7.4.0",
     "qs": "^6.11.0",
     "run-async": "^2.4.1",
-    "stucco-js": "^0.10.4",
+    "stucco-js": "^0.10.10",
     "yargs": "^17.5.1"
   }
 }

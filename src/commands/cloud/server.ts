@@ -1,6 +1,10 @@
 import { Config } from '@/Configuration/index.js';
 import { Editor } from '@/Editor.js';
-import { CLOUD_FOLDERS } from '@/gshared/constants/index.js';
+import {
+  CLOUD_FOLDERS,
+  DEPLOY_FILE,
+  STUCCO_FILE,
+} from '@/gshared/constants/index.js';
 import path from 'path';
 import { logger } from '@/common/log/index.js';
 import { projectInstall } from 'pkg-install';
@@ -35,13 +39,18 @@ export const CommandSync = async ({
   const s3Files = p.sources?.sources?.filter((s) =>
     s.filename?.startsWith(CLOUD_FOLDERS['microserviceJs'] + '/'),
   );
-  writeInitialFiles(TEMPPATH, s3Files);
+  await writeInitialFiles(TEMPPATH, s3Files);
   const loadingInstall = ora('Installing npm packages').start();
   await projectInstall({
     cwd: TEMPPATH,
   });
   loadingInstall.succeed();
-  const { onCloseStucco, onCreateStucco } = await stuccoRun();
+  const { onCloseStucco, onCreateStucco } = await stuccoRun({
+    configPath: path.join(TEMPPATH, STUCCO_FILE),
+    schemaPath: path.join(TEMPPATH, DEPLOY_FILE),
+    basePath: TEMPPATH,
+    cwd: TEMPPATH,
+  });
 
   const tsServer = typescriptServer({
     searchPath: TEMPPATH,

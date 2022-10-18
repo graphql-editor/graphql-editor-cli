@@ -38,8 +38,7 @@ export const pusherSync = ({
     console.log(e);
   });
   ch.bind('pusher:subscription_succeeded', (e: any) => {
-    console.log('SUCCEDED');
-    console.log(e);
+    console.log('SUCCEEDED');
   });
   return {
     ch,

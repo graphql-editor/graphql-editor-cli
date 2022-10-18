@@ -5,6 +5,7 @@ import { stucco } from 'stucco-js/lib/stucco/run.js';
 import { ChildProcess } from 'child_process';
 import { SIGINT } from 'constants';
 import { terminate, spawnPromise } from '@/common/spawn.js';
+import { platform } from 'os';
 
 export const addStucco = ({
   basePath,
@@ -33,9 +34,24 @@ export const addStucco = ({
   fs.writeFileSync(stuccoPath, JSON.stringify(stuccoFileContent, null, 4));
 };
 
-export const stuccoRun = async () => {
-  const bin = await stucco();
-  const args = ['local', 'start'];
+export const stuccoRun = async (props?: {
+  schemaPath?: string;
+  configPath?: string;
+  basePath?: string;
+  cwd?: string;
+}) => {
+  const stuccoPath = path.join(
+    props?.basePath || process.cwd(),
+    'node_modules',
+    '.bin',
+  );
+  const bin = path.join(
+    stuccoPath,
+    platform() === 'win32' ? 'stucco.exe' : 'stucco',
+  );
+  const args: string[] = ['local', 'start'];
+  if (props?.schemaPath) args.push('-s', props.schemaPath);
+  if (props?.configPath) args.push('-c', props.configPath);
 
   let stuccoChildProcess: ChildProcess | undefined;
   let taskRunning = false;
@@ -44,11 +60,18 @@ export const stuccoRun = async () => {
     onCreateStucco: async () => {
       if (taskRunning) return;
       taskRunning = true;
+      console.log(props?.cwd);
+
       try {
         const code = await terminate(stuccoChildProcess);
         if (code)
           logger(`stucco terminated with non 0 status: ${code}`, 'error');
-        stuccoChildProcess = await spawnPromise(bin, args);
+        stuccoChildProcess = await spawnPromise({
+          args,
+          cwd: props?.cwd,
+          cmd: bin,
+          basePath: props?.basePath,
+        });
       } finally {
         taskRunning = false;
       }

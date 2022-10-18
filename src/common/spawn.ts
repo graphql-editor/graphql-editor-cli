@@ -11,15 +11,24 @@ export const terminate = async (ch?: ChildProcess): Promise<void | number> => {
   return ret;
 };
 
-export const spawnPromise = async (
-  cmd: string,
-  args: string[],
-): Promise<ChildProcess> => {
+export const spawnPromise = async ({
+  args,
+  cmd,
+  basePath = process.cwd(),
+  cwd = process.cwd(),
+}: {
+  cmd: string;
+  args: string[];
+  basePath?: string;
+  cwd?: string;
+}): Promise<ChildProcess> => {
   const child = spawn(cmd, args, {
     stdio: [process.stdin, process.stdout, process.stderr],
+    cwd,
     env: {
       ...process.env,
-      ['PATH']: `${path.join(process.cwd(), 'node_modules', '.bin')}:${
+      cwd: process.cwd(),
+      ['PATH']: `${path.join(basePath, 'node_modules', '.bin')}:${
         process.env.PATH
       }`,
     },
