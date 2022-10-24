@@ -60,8 +60,6 @@ export const stuccoRun = async (props?: {
     onCreateStucco: async () => {
       if (taskRunning) return;
       taskRunning = true;
-      console.log(props?.cwd);
-
       try {
         const code = await terminate(stuccoChildProcess);
         if (code)

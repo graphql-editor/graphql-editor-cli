@@ -103,7 +103,7 @@ export const receiveLiveFiles = async (liveData: ReceiveData) => {
   }
   if (removeFiles.length > 0) {
     console.log(
-      `Removing files:\n${renameFiles.map((rf) => `${rf.s3Path}}`).join('\n')}`,
+      `Removing files:\n${renameFiles.map((rf) => rf.s3Path).join('\n')}`,
     );
     removeFiles.forEach((rf) => {
       fs.rm(path.join(TEMP, rf.s3Path), () => {});

@@ -36,9 +36,17 @@ export const CommandSync = async ({
     projectName: resolve.project,
   });
   const TEMPPATH = path.join(process.cwd(), TEMP);
-  const s3Files = p.sources?.sources?.filter((s) =>
-    s.filename?.startsWith(CLOUD_FOLDERS['microserviceJs'] + '/'),
+  const deploySchemaFile = p.sources?.sources?.find(
+    (s) => s.filename === DEPLOY_FILE,
   );
+  if (!deploySchemaFile) {
+    throw new Error("Schema doesn't have a root Query type.");
+  }
+  const s3Files = p.sources?.sources
+    ?.filter((s) =>
+      s.filename?.startsWith(CLOUD_FOLDERS['microserviceJs'] + '/'),
+    )
+    .concat([deploySchemaFile]);
   await writeInitialFiles(TEMPPATH, s3Files);
   const loadingInstall = ora('Installing npm packages').start();
   await projectInstall({
