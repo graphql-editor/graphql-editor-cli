@@ -1,16 +1,16 @@
-> Once you head down the GraphQL's path
+> Once you head down the GraphQL path
 > forever will it dominate your destiny.
 
-# GraphQL Editor Cli
+# GraphQL Editor CLI
 
-Compatible with [GraphQL Editor](https://graphqleditor.com) projects( Free and Paid Tiers). The main goal is to provide interactive experience creating GraphQL as a service.
+Compatible with [GraphQL Editor](https://graphqleditor.com) projects (Free and Paid Tiers). The main goal is to provide an interactive experience creating GraphQL as a service.
 
 ## Requirements
 
 - [GraphQL Editor](https://graphqleditor.com)
 - NodeJS >= 16
 
-- [GraphQL Editor Cli](#graphql-editor-cli)
+- [GraphQL Editor CLI](#graphql-editor-cli)
   - [Requirements](#requirements)
   - [Installation](#installation)
     - [Global](#global)
@@ -68,10 +68,10 @@ then use with npx for example or as a `package.json` script.
 All comands work in 3 ways.
 
 - You can provide all arguments with flags
-- you can get them from local config file
+- you can get them from a local config file
 - complete them in interactive modes
 
-In this order CLI will try to get argument.
+CLI will try to get argument in this order.
 
 ## Commmon Options
 
@@ -87,7 +87,7 @@ All commands also take these options which refer to your GraphQL Editor project
 
 ### Schema
 
-Fetch schema from GraphQL Editor project. Schema will be compiled with GraphQL libraries you are using for this project
+Fetch schema from a GraphQL Editor project. Schema will be compiled with the GraphQL libraries you are using for this project.
 
 ```sh
 $ gecli schema
@@ -105,7 +105,7 @@ $ gecli schema
 $ gecli create backend
 ```
 
-Create a backend for your graphql editor project. It will create folder with `package.json` `stucco.json` and eslint and prettier configuration. It is an interactive command. It will create a folder with project name you will provide
+Create a backend for your GraphQL Editor project. It will create a folder with `package.json` `stucco.json` and eslint and a prettier configuration. It is an interactive command. It will create a folder with the project name you will provide.
 
 ### Development
 
@@ -117,15 +117,15 @@ To start typescript and stucco development server reacting to your code changes.
 
 ### Cloud
 
-#### Run Local Server for your GraphQL Editor Microservice in Cloud
+#### Run a Local Server for your GraphQL Editor Microservice in Cloud
 
-When you have a microservice in cloud with or without GraphQL Editor backend, you can run local graphql server for your microservice using this command
+When you have a microservice in cloud with or without GraphQL Editor backend, you can run a local graphql server for your microservice using this command.
 
 ```sh
 gecli cloud server
 ```
 
-This command will
+This command will:
 
 1. Download your files from GraphQL Editor Cloud to a temporary folder
 2. Install packages inside the folder
@@ -149,23 +149,23 @@ gecli cloud deploy -e DB_URL=https://exampledb.com -e HOME=$HOME
 
 #### Push to cloud
 
-Sometimes you will want to push to cloud GraphQL Editor back from repo. So editor users can see/test the changes in Editor browser IDE. To do it
+Sometimes you will want to push to cloud GraphQL Editor back from the repo. So editor users can see/test the changes in the Editor browser IDE. To do it:
 
 ```sh
 $ gecli cloud push
 ```
 
-This will clean cloud folder and push cwd to the editor cloud.
+This will clean the cloud folder and push cwd to the editor cloud.
 
 #### Pull from cloud
 
-When you want to move from cloud folder as your service is getting bigger and put the project inside repository. You can use pull command
+When you want to move from the cloud folder as your service is getting bigger and put the project inside the repository. You can use the pull command:
 
 ```sh
 $ gecli cloud pull
 ```
 
-It will pull the project to the project name folder
+It will pull the project to the project name folder.
 
 ### Code Generation
 
@@ -173,7 +173,7 @@ Code generation commands
 
 #### Typings
 
-Generate TypeScript typings from GraphQL Editor project.
+Generate TypeScript typings from the GraphQL Editor project.
 
 ```sh
 $ gecli codegen typings
@@ -193,7 +193,7 @@ $ gecli codegen typings
 $ gecli codegen models
 ```
 
-Generate TypeScript Models from GraphQL types. They are very useful to use with popular Databases
+Generate TypeScript Models from GraphQL types. They are very useful to use with popular Databases.
 
 ```graphql
 type Person {
@@ -212,7 +212,7 @@ import type { ModelTypes } from '@/zeus';
 export type Person = ModelTypes['Person'];
 ```
 
-later on you may want to transform it so it is a database model.
+later on you may want to transform it so that it is a database model.
 
 ```ts
 import type { ModelTypes } from '@/zeus';
@@ -233,7 +233,7 @@ db.collection<MyModel>.find({});
 
 #### Resolvers
 
-CLI tool to generate [Stucco](https://github.com/graphql-editor/stucco-js) resolvers in TypeScript from GraphQL fields.
+A CLI tool to generate [Stucco](https://github.com/graphql-editor/stucco-js) resolvers in TypeScript from GraphQL fields.
 
 ```sh
 $ gecli codegen resolver
@@ -258,7 +258,7 @@ After chosing:
 1. `Query`
 2. `people`
 
-It should generate TypeScript resolver placed in `$src/Query/people.ts`
+It should generate a TypeScript resolver placed in `$src/Query/people.ts`
 
 ```ts
 import { FieldResolveInput, FieldResolveOutput } from 'stucco-js';
@@ -287,15 +287,15 @@ and append correct entries to `stucco.json` file.
 ```
 
 and after running `stucco` your resolver should work out of the box.
-Some resolver types however need little code to make them work the way you want.
+Some resolver types however need a little code to make them work the way you want.
 
 ### GraphQL Editor Integrations
 
-Both installation and development of graphql editor integrations is possible.
+Both installation and development of GraphQL Editor integrations is possible.
 
 #### Installation
 
-Installation is done via GraphQL Editor or just using an npm package name and providing resolver path to node_modules path
+Installation is done via GraphQL Editor or by just using an npm package name and providing a resolver path to node_modules path
 
 ##### **`package.json`**
 
@@ -328,7 +328,7 @@ Installation is done via GraphQL Editor or just using an npm package name and pr
 
 #### Development
 
-To develop GraphQL Editor integration use `gecli create backend` [command](#create-project) to create your project. Then init the integration.
+To develop a GraphQL Editor integration use the `gecli create backend` [command](#create-project) to create your project. Then init the integration.
 
 ##### Data format
 
@@ -371,7 +371,7 @@ const integration: IntegrationSpecification = {
 };
 ```
 
-Later on after `gecli gei integrate` command it integrates your typescript file to the `stucco.json`
+Later on after the `gecli gei integrate` command it integrates your typescript file to the `stucco.json`
 
 ##### Init
 
@@ -383,7 +383,7 @@ Integrate your files with project's `stucco.json`
 
 ##### Publish
 
-Publish your integration to GraphQL Editor be used in GraphQL Editor No-Code editor.
+Publish your integration to GraphQL Editor, to be used in GraphQL Editor No-Code editor.
 
 ##### Unpublish
 
