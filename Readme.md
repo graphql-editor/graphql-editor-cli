@@ -36,4 +36,4 @@ then use with npx for example or as a `package.json` script.
 ## Docs
 
 Docs are available here:
-[https://guide.graphqleditor.com/tools/untitled](https://guide.graphqleditor.com/tools/untitled)
+[https://graphqleditor.com/docs/tools/untitled/README/](https://graphqleditor.com/docs/tools/untitled/README/)
