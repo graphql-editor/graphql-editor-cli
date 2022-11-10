@@ -10,7 +10,7 @@ export default {
     start: 'gecli dev',
     build: 'tsc',
     watch: 'tsc --watch',
-    update: 'gecli models && gecli schema && gecli typings',
+    update: 'gecli codegen models && gecli codegen typings && gecli schema',
   },
   author: 'GraphQL Editor Centaur Generator',
   license: 'ISC',
