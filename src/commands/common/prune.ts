@@ -4,6 +4,7 @@ import { DEPLOY_FILE, STUCCO_FILE } from '@/gshared/constants/index.js';
 import { StuccoConfig } from '@/common/types.js';
 import { Parser } from 'graphql-js-tree';
 import { logger } from '@/common/log/index.js';
+import ora from 'ora';
 
 export const CommandPrune = async () => {
   const stuccoFile = readFileSync(
@@ -19,7 +20,7 @@ export const CommandPrune = async () => {
     throw new Error(`NO ${DEPLOY_FILE} in current working directory`);
   if (!stuccoFile)
     throw new Error(`NO ${STUCCO_FILE} in current working directory`);
-
+  const checking = ora(`Checking for dead resolvers`).start();
   const stuccoFileParsed: StuccoConfig = JSON.parse(stuccoFile);
   const tree = Parser.parse(schemaFile);
   Object.entries(stuccoFileParsed.resolvers).map(([k, resolver]) => {
@@ -38,5 +39,6 @@ export const CommandPrune = async () => {
         'info',
       );
     }
+    checking.succeed();
   });
 };

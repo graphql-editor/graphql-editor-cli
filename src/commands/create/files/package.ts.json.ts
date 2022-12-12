@@ -10,14 +10,15 @@ export default {
     start: 'gecli dev',
     build: 'tsc',
     watch: 'tsc --watch',
-    update: 'gecli models && gecli schema && gecli typings',
+    update: 'gecli codegen models && gecli schema && gecli codegen typings',
   },
   author: 'GraphQL Editor Centaur Generator',
   license: 'ISC',
   devDependencies: {
     '@types/node': devDependencies['@types/node'],
     '@types/node-fetch': '^2.5.7',
-    '@typescript-eslint/eslint-plugin': devDependencies['@typescript-eslint/eslint-plugin'],
+    '@typescript-eslint/eslint-plugin':
+      devDependencies['@typescript-eslint/eslint-plugin'],
     '@typescript-eslint/parser': devDependencies['@typescript-eslint/parser'],
     eslint: devDependencies['eslint'],
     'eslint-config-prettier': devDependencies['eslint-config-prettier'],
