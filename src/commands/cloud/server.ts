@@ -35,6 +35,7 @@ export const CommandSync = async ({
     accountName: resolve.namespace,
     projectName: resolve.project,
   });
+  const hasMongoInProject = await Editor.getServerLessMongo(p.id);
   const TEMPPATH = path.join(process.cwd(), TEMP);
   const deploySchemaFile = p.sources?.sources?.find(
     (s) => s.filename === DEPLOY_FILE,
@@ -58,6 +59,11 @@ export const CommandSync = async ({
     schemaPath: path.join(TEMPPATH, DEPLOY_FILE),
     basePath: TEMPPATH,
     cwd: TEMPPATH,
+    envs: hasMongoInProject
+      ? {
+          MONGO_URL: hasMongoInProject,
+        }
+      : undefined,
   });
 
   const tsServer = typescriptServer({

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import inquirer, { QuestionCollection } from 'inquirer';
-import { Environment } from 'graphql-zeus';
+import { Environment } from 'graphql-zeus-core';
 import { Editor } from '@/Editor.js';
 import { IS_VERSION_FILE_REGEX } from '@/gshared/constants/index.js';
 import Conf from 'conf';

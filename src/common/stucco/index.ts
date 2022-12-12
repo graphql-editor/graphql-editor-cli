@@ -39,6 +39,7 @@ export const stuccoRun = async (props?: {
   configPath?: string;
   basePath?: string;
   cwd?: string;
+  envs?: Record<string, string>;
 }) => {
   const stuccoPath = path.join(
     props?.basePath || process.cwd(),
@@ -69,6 +70,7 @@ export const stuccoRun = async (props?: {
           cwd: props?.cwd,
           cmd: bin,
           basePath: props?.basePath,
+          envs: props?.envs,
         });
       } finally {
         taskRunning = false;

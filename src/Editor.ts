@@ -327,6 +327,17 @@ export class Editor {
     });
     return response.createCloudDeployment;
   };
+  public static getServerLessMongo = async (projectId: string) => {
+    const response = await jolt()('query')({
+      getProject: [
+        { project: projectId },
+        {
+          dbConnection: true,
+        },
+      ],
+    });
+    return response.getProject?.dbConnection;
+  };
   public static deployRepoToSharedWorker = async (
     projectId: string,
     zipURI: string,

@@ -1,6 +1,6 @@
 import { Config } from '@/Configuration/index.js';
 import { Editor } from '@/Editor.js';
-import { Environment } from 'graphql-zeus';
+import { Environment } from 'graphql-zeus-core';
 import * as generators from '@/commands/codegen/typings/generators/TypeScript.js';
 import * as templates from '@/commands/codegen/typings/templates/TypeScript.js';
 export { generators, templates };

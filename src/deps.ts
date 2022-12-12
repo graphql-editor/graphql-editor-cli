@@ -37,7 +37,7 @@ export default {
     express: '^4.18.1',
     'fast-glob': '^3.2.12',
     'graphql-js-tree': '^0.1.7',
-    'graphql-zeus': '^5.1.9',
+    'graphql-zeus': '^5.2.1',
     inquirer: '^9.1.2',
     mime: '^3.0.0',
     'node-fetch': '^3.2.10',

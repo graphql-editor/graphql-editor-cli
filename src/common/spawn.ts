@@ -16,11 +16,13 @@ export const spawnPromise = async ({
   cmd,
   basePath = process.cwd(),
   cwd = process.cwd(),
+  envs,
 }: {
   cmd: string;
   args: string[];
   basePath?: string;
   cwd?: string;
+  envs?: Record<string, string>;
 }): Promise<ChildProcess> => {
   const child = spawn(cmd, args, {
     stdio: [process.stdin, process.stdout, process.stderr],
@@ -31,6 +33,7 @@ export const spawnPromise = async ({
       ['PATH']: `${path.join(basePath, 'node_modules', '.bin')}:${
         process.env.PATH
       }`,
+      ...envs,
     },
   });
   return new Promise<ChildProcess>((resolve, reject) => {
