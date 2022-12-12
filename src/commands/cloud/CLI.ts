@@ -1,6 +1,7 @@
 import { Auth } from '@/Auth/index.js';
 import { CommandDeploy } from '@/commands/cloud/deploy.js';
 import { CommandDeployRemote } from '@/commands/cloud/deployFromRemote.js';
+import { CommandInstall } from '@/commands/cloud/install.js';
 import { CommandPull } from '@/commands/cloud/pull.js';
 import { CommandPush } from '@/commands/cloud/push.js';
 import { CommandSync } from '@/commands/cloud/server.js';
@@ -23,6 +24,19 @@ export default {
         async (argv) => {
           await Auth.login().then(Config.setTokenOptions);
           await CommandSync(
+            argv as Pick<ConfigurationOptions, 'project' | 'namespace'>,
+          );
+        },
+      )
+      .command(
+        'install',
+        'Install no-code microservices from GraphQL Editor in your stucco.json file',
+        async (yargs) => {
+          yargs.options(confOptions({ ...projectOptions }));
+        },
+        async (argv) => {
+          await Auth.login().then(Config.setTokenOptions);
+          await CommandInstall(
             argv as Pick<ConfigurationOptions, 'project' | 'namespace'>,
           );
         },

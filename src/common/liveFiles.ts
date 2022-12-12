@@ -40,24 +40,27 @@ export const stratsWithS3 = (p: string) =>
   p.replace(`${CLOUD_FOLDERS['microserviceJs']}/`, '');
 export const replaceS3 = (p: string) =>
   p.replace(`${CLOUD_FOLDERS['microserviceJs']}/`, '');
-
+export const getS3File = async (file: ModelTypes['FakerSource']) => {
+  if (!file?.getUrl || !file.filename) {
+    return {};
+  }
+  const fileBuffer = await (await fetch(file.getUrl)).text();
+  return {
+    fileBuffer,
+    newName: file.filename.replace(
+      `${CLOUD_FOLDERS['microserviceJs']}/`,
+      '',
+    ) as string,
+  };
+};
 export const writeInitialFiles = async (
   folder: string,
   s3Files?: ModelTypes['FakerSource'][],
 ) => {
   await s3Files?.map(async (file) => {
-    console.log(file.filename);
-    if (!file?.getUrl || !file.filename) {
-      return;
-    }
-    const fileBuffer = await (await fetch(file.getUrl)).text();
-    writeSafe(
-      path.join(
-        folder,
-        file.filename.replace(`${CLOUD_FOLDERS['microserviceJs']}/`, ''),
-      ),
-      fileBuffer,
-    );
+    const { fileBuffer, newName } = await getS3File(file);
+    if (!fileBuffer) return;
+    writeSafe(path.join(folder, newName), fileBuffer);
   });
 };
 export const removeInitialFiles = (folder: string) => {

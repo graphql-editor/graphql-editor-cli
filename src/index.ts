@@ -16,11 +16,8 @@ import Gei from '@/commands/gei/CLI.js';
 import CodeGen from '@/commands/codegen/CLI.js';
 import Cloud from '@/commands/create/CLI.js';
 import Create from '@/commands/cloud/CLI.js';
-import {
-  confOptions,
-  projectOptions,
-  integrationOptions,
-} from '@/common/promptOptions.js';
+import { confOptions, projectOptions } from '@/common/promptOptions.js';
+import { CommandPrune } from '@/commands/common/prune.js';
 
 welcome().then(() => {
   new Configuration();
@@ -80,6 +77,14 @@ welcome().then(() => {
             'project' | 'namespace' | 'projectVersion' | 'schemaDir'
           >,
         );
+      },
+    )
+    .command(
+      'prune',
+      'Get information about redundant resolvers that do not exist in schema now.',
+      async (yargs) => {},
+      async (argv) => {
+        await CommandPrune();
       },
     )
     .command(Create)
