@@ -9,6 +9,7 @@ import {
 import { Config } from '@/Configuration/index.js';
 import fetch from 'node-fetch';
 import { COMMON_FILES } from '@/gshared/constants/index.js';
+import ora from 'ora';
 
 export interface FileArray {
   name: string;
@@ -111,6 +112,7 @@ export class Editor {
     accountName: string;
     projectName: string;
   }) => {
+    const checking = ora(`Downloading project ${accountName}/${projectName}`);
     const Query = await jolt()('query')({
       getNamespace: [
         { slug: accountName },
@@ -145,10 +147,12 @@ export class Editor {
     });
     const project = Query.getNamespace?.project;
     if (!project) {
+      checking.fail();
       throw new Error(
-        `Project "${projectName}" does not exist in "${accountName}" namespace`,
+        `Project "${projectName}" does not exist in "${accountName}" namespace. Consider changing project in config`,
       );
     }
+    checking.succeed();
     return project;
   };
   public static getFakerURL = (endpointUri: string) =>
@@ -328,6 +332,9 @@ export class Editor {
     return response.createCloudDeployment;
   };
   public static getServerLessMongo = async (projectId: string) => {
+    const checking = ora(
+      'Checking if remote mongo serverless configuration exists',
+    ).start();
     const response = await jolt()('query')({
       getProject: [
         { project: projectId },
@@ -336,7 +343,10 @@ export class Editor {
         },
       ],
     });
-    return response.getProject?.dbConnection;
+    const result = response.getProject?.dbConnection;
+    if (result) checking.succeed();
+    else checking.fail();
+    return result;
   };
   public static deployRepoToSharedWorker = async (
     projectId: string,

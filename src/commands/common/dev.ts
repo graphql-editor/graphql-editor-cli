@@ -12,11 +12,7 @@ export const CommandDev = async () => {
   const tsServer = typescriptServer({
     searchPath: './',
     onCreate: async () => {
-      try {
-        await onCreateStucco();
-        logger('tsc success', 'success');
-      } finally {
-      }
+      await onCreateStucco();
     },
   });
   const close = () => {
