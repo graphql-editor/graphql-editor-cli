@@ -50,13 +50,13 @@ export const CommandInstall = async ({
     path.join(process.cwd(), STUCCO_FILE),
     'utf-8',
   );
-  const loadStucco: StuccoConfig = JSON.parse(currentStucco);
-  const localStucco: StuccoConfig = JSON.parse(fileBuffer);
+  const localStucco: StuccoConfig = JSON.parse(currentStucco);
+  const remoteStucco: StuccoConfig = JSON.parse(fileBuffer);
   const updatedStucco: StuccoConfig = {
     ...localStucco,
     resolvers: {
       ...localStucco.resolvers,
-      ...loadStucco.resolvers,
+      ...remoteStucco.resolvers,
     },
   };
 
