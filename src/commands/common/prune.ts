@@ -39,6 +39,6 @@ export const CommandPrune = async () => {
         'info',
       );
     }
-    checking.succeed();
   });
+  checking.succeed();
 };

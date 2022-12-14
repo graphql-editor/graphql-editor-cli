@@ -18,6 +18,7 @@ import Cloud from '@/commands/create/CLI.js';
 import Create from '@/commands/cloud/CLI.js';
 import { confOptions, projectOptions } from '@/common/promptOptions.js';
 import { CommandPrune } from '@/commands/common/prune.js';
+import { CommandInspect } from '@/commands/common/inspect.js';
 
 welcome().then(() => {
   new Configuration();
@@ -85,6 +86,14 @@ welcome().then(() => {
       async (yargs) => {},
       async (argv) => {
         await CommandPrune();
+      },
+    )
+    .command(
+      'inspect',
+      'Get information about non-scalar resolvers that are not implemented in stucco.json',
+      async (yargs) => {},
+      async (argv) => {
+        await CommandInspect();
       },
     )
     .command(Create)
