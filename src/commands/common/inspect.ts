@@ -43,7 +43,8 @@ export const CommandInspect = async () => {
               ScalarTypes.Int,
               ScalarTypes.String,
             ] as string[]
-          ).includes(getTypeName(field.type.fieldType))
+          ).includes(getTypeName(field.type.fieldType)) &&
+          field.args.length === 0
         ) {
           return;
         }
