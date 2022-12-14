@@ -2,7 +2,12 @@ import path from 'path';
 import { readFileSync } from 'fs';
 import { DEPLOY_FILE, STUCCO_FILE } from '@/gshared/constants/index.js';
 import { StuccoConfig } from '@/common/types.js';
-import { getTypeName, Parser, ScalarTypes } from 'graphql-js-tree';
+import {
+  getTypeName,
+  Parser,
+  ScalarTypes,
+  TypeDefinition,
+} from 'graphql-js-tree';
 import { logger } from '@/common/log/index.js';
 import ora from 'ora';
 
@@ -25,31 +30,33 @@ export const CommandInspect = async () => {
   ).start();
   const stuccoFileParsed: StuccoConfig = JSON.parse(stuccoFile);
   const tree = Parser.parse(schemaFile);
-  tree.nodes.map((n) => {
-    n.args.map((field) => {
-      if (
-        (
-          [
-            ScalarTypes.Boolean,
-            ScalarTypes.Float,
-            ScalarTypes.ID,
-            ScalarTypes.Int,
-            ScalarTypes.String,
-          ] as string[]
-        ).includes(getTypeName(field.type.fieldType))
-      ) {
-        return;
-      }
-      const implementationStuccoString = `${n.name}.${field.name}`;
-      const isImplemented =
-        stuccoFileParsed.resolvers[implementationStuccoString];
-      if (!isImplemented) {
-        logger(
-          `There is no resolver for "${implementationStuccoString}" inside stucco.json`,
-          'info',
-        );
-      }
+  tree.nodes
+    .filter((n) => n.data.type === TypeDefinition.ObjectTypeDefinition)
+    .map((n) => {
+      n.args.map((field) => {
+        if (
+          (
+            [
+              ScalarTypes.Boolean,
+              ScalarTypes.Float,
+              ScalarTypes.ID,
+              ScalarTypes.Int,
+              ScalarTypes.String,
+            ] as string[]
+          ).includes(getTypeName(field.type.fieldType))
+        ) {
+          return;
+        }
+        const implementationStuccoString = `${n.name}.${field.name}`;
+        const isImplemented =
+          stuccoFileParsed.resolvers[implementationStuccoString];
+        if (!isImplemented) {
+          logger(
+            `There is no resolver for "${implementationStuccoString}" inside stucco.json`,
+            'info',
+          );
+        }
+      });
     });
-  });
   checking.succeed();
 };
