@@ -35,15 +35,17 @@ export const CommandInspect = async () => {
     .map((n) => {
       n.args.map((field) => {
         if (
-          (
-            [
-              ScalarTypes.Boolean,
-              ScalarTypes.Float,
-              ScalarTypes.ID,
-              ScalarTypes.Int,
-              ScalarTypes.String,
-            ] as string[]
-          ).includes(getTypeName(field.type.fieldType)) &&
+          (field.data.type === TypeDefinition.ScalarTypeDefinition ||
+            field.data.type === TypeDefinition.EnumTypeDefinition ||
+            (
+              [
+                ScalarTypes.Boolean,
+                ScalarTypes.Float,
+                ScalarTypes.ID,
+                ScalarTypes.Int,
+                ScalarTypes.String,
+              ] as string[]
+            ).includes(getTypeName(field.type.fieldType))) &&
           field.args.length === 0
         ) {
           return;
