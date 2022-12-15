@@ -30,24 +30,29 @@ export const CommandInspect = async () => {
   ).start();
   const stuccoFileParsed: StuccoConfig = JSON.parse(stuccoFile);
   const tree = Parser.parse(schemaFile);
+  const scalarTypes = tree.nodes
+    .filter((n) => n.data.type === TypeDefinition.ScalarTypeDefinition)
+    .map((n) => n.name);
+  const enumTypes = tree.nodes
+    .filter((n) => n.data.type === TypeDefinition.EnumTypeDefinition)
+    .map((n) => n.name);
+  const singletonTypes = (
+    [
+      ScalarTypes.Boolean,
+      ScalarTypes.Float,
+      ScalarTypes.ID,
+      ScalarTypes.Int,
+      ScalarTypes.String,
+    ] as string[]
+  )
+    .concat(scalarTypes)
+    .concat(enumTypes);
   tree.nodes
     .filter((n) => n.data.type === TypeDefinition.ObjectTypeDefinition)
     .map((n) => {
       n.args.map((field) => {
-        if (
-          (field.data.type === TypeDefinition.ScalarTypeDefinition ||
-            field.data.type === TypeDefinition.EnumTypeDefinition ||
-            (
-              [
-                ScalarTypes.Boolean,
-                ScalarTypes.Float,
-                ScalarTypes.ID,
-                ScalarTypes.Int,
-                ScalarTypes.String,
-              ] as string[]
-            ).includes(getTypeName(field.type.fieldType))) &&
-          field.args.length === 0
-        ) {
+        const typeName = getTypeName(field.type.fieldType);
+        if (singletonTypes.includes(typeName) && field.args.length === 0) {
           return;
         }
         const implementationStuccoString = `${n.name}.${field.name}`;
