@@ -26,10 +26,16 @@ class AwfulAutocompletePrompt extends Base {
   lastSearchTerm?: string;
   done?: Function;
   opt: inquirer.prompts.PromptOptions<
-    Question<Answers> & { source: (answers: Answers, searchTerm?: string) => string[] }
+    Question<Answers> & {
+      source: (answers: Answers, searchTerm?: string) => string[];
+    }
   > = this.opt;
 
-  constructor(questions: Array<Question>, rl: ReadLineInterface, answers: Answers) {
+  constructor(
+    questions: Array<Question>,
+    rl: ReadLineInterface,
+    answers: Answers,
+  ) {
     super(questions, rl, answers);
 
     // Make sure no default is set (so it won't be printed)
@@ -71,7 +77,9 @@ class AwfulAutocompletePrompt extends Base {
 
     if (this.firstRender) {
       const suggestText = '';
-      content += pc.dim('(Use arrow keys or type to search' + suggestText + ')');
+      content += pc.dim(
+        '(Use arrow keys or type to search' + suggestText + ')',
+      );
     }
 
     // Render choices or answer depending on the state
@@ -93,7 +101,11 @@ class AwfulAutocompletePrompt extends Base {
         realIndexPosition += name ? name.split('\n').length : 0;
         return true;
       });
-      bottomContent += this.paginator.paginate(choicesStr, realIndexPosition, 10);
+      bottomContent += this.paginator.paginate(
+        choicesStr,
+        realIndexPosition,
+        10,
+      );
     } else {
       content += this.rl.line;
       bottomContent += '  ' + pc.yellow('No results...');
@@ -120,7 +132,9 @@ class AwfulAutocompletePrompt extends Base {
     if (typeof this.opt.validate === 'function') {
       const checkValidationResult = (validationResult: string | boolean) => {
         if (validationResult !== true) {
-          this.render(validationResult || 'Enter something, tab to autocomplete!');
+          this.render(
+            validationResult || 'Enter something, tab to autocomplete!',
+          );
         } else {
           this.onSubmitAfterValidation(lineOrRl);
         }
@@ -205,7 +219,8 @@ class AwfulAutocompletePrompt extends Base {
       this.nbChoices = realChoices.length;
 
       const selectedIndex = realChoices.findIndex(
-        (choice: any) => choice === this.initialValue || choice.value === this.initialValue,
+        (choice: any) =>
+          choice === this.initialValue || choice.value === this.initialValue,
       );
 
       if (selectedIndex >= 0) {
@@ -265,7 +280,10 @@ function listRender(choices: Choices, pointer: number) {
     if (choice.disabled) {
       separatorOffset++;
       output += '  - ' + choice.name;
-      output += ' (' + (typeof choice.disabled === 'string' ? choice.disabled : 'Disabled') + ')';
+      output +=
+        ' (' +
+        (typeof choice.disabled === 'string' ? choice.disabled : 'Disabled') +
+        ')';
       output += '\n';
       return;
     }
