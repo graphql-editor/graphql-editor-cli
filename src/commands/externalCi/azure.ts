@@ -1,12 +1,39 @@
-export const CommandAzure = () => {};
+import path from 'path';
+import fs from 'fs';
+import { AzureGitlabCIConf, Config } from '@/Configuration/index.js';
 
-const template = ({ name }: { name: string }) => `
+export const CommandAzureGitlab = async (props: AzureGitlabCIConf) => {
+  const resolve = await Config.configure(props, [
+    'azureFnName',
+    'azureEnv',
+    'azureCors',
+  ]);
+  const saveCI = path.join(process.cwd(), '.gitlab-ci.yml');
+  fs.writeFileSync(saveCI, template(resolve));
+};
+const DEFAULT_AZURE_CORS =
+  'https://functions-next.azure.com https://functions-staging.azure.com https://functions.azure.com';
+const generateEnvVariables = (names: string) => {
+  return names
+    .replace(' ', '')
+    .split(',')
+    .map(
+      (n) =>
+        `  - az functionapp config appsettings set -g $RESOURCE_GROUP -n $FUNCTION_APP --settings "${n}=\$[${n}}"`,
+    )
+    .join('\n');
+};
+
+const template = ({
+  azureFnName,
+  azureEnv,
+  azureCors,
+}: Required<AzureGitlabCIConf>) => {
+  return `
 stages:
   - build
-  - test
   - deploy image
   - deploy
-  - envs
 
 variables:
   RUNTIME: node
@@ -15,28 +42,28 @@ variables:
   STORAGE_PLAN: Standard_LRS
   FUNCTION_VERSION: 3
   LOCATION: westeurope
-  RESOURCE_GROUP: ${name}
-  ASPLAN: ${name}
-  ROUTER_APP: ${name}-api
-  FUNCTION_APP: ${name}-api-functions
-  STORAGE_SA: ${name}apidevsa
+  RESOURCE_GROUP: ${azureFnName}
+  ASPLAN: ${azureFnName}
+  ROUTER_APP: ${azureFnName}-api
+  FUNCTION_APP: ${azureFnName}-api-functions
+  STORAGE_SA: ${azureFnName}apidevsa
   AZURE_USER: gitlab@aexolaexol.onmicrosoft.com
 .variables_prod: &variables_prod
-  RESOURCE_GROUP: ${name}-p
-  ASPLAN: ${name}-p
-  ROUTER_APP: ${name}-p-api
-  FUNCTION_APP: ${name}-p-api-functions
-  STORAGE_SA: ${name}papiprodsa
+  RESOURCE_GROUP: ${azureFnName}-p
+  ASPLAN: ${azureFnName}-p
+  ROUTER_APP: ${azureFnName}-p-api
+  FUNCTION_APP: ${azureFnName}-p-api-functions
+  STORAGE_SA: ${azureFnName}papipdsa
   CORS_ORIGINS: >
-    https://staging.profitabee.com https://app.profitabee.com https://business.aexol.com http://localhost:3000 https://functions.azure.com https://functions-staging.azure.com https://functions-next.azure.com
+    ${DEFAULT_AZURE_CORS.concat(azureCors ? ' ' + azureCors : '')}
 .variables_staging: &variables_staging
-  RESOURCE_GROUP: ${name}-s
-  ASPLAN: ${name}-s
-  ROUTER_APP: ${name}-s-api
-  FUNCTION_APP: ${name}-s-api-functions
-  STORAGE_SA: ${name}papistagsa
+  RESOURCE_GROUP: ${azureFnName}-s
+  ASPLAN: ${azureFnName}-s
+  ROUTER_APP: ${azureFnName}-s-api
+  FUNCTION_APP: ${azureFnName}-s-api-functions
+  STORAGE_SA: ${azureFnName}papisgsa
   CORS_ORIGINS: >
-    https://staging.profitabee.com https://app.profitabee.com http://localhost:3000 https://functions.azure.com https://functions-staging.azure.com https://functions-next.azure.com
+    ${DEFAULT_AZURE_CORS.concat(azureCors ? ' ' + azureCors : '')}
 
 build:
   stage: build
@@ -63,10 +90,7 @@ build:
   - az login -u \$[AZURE_USER} -p \$[AZURE_SECRET}
   - az webapp cors remove -g $RESOURCE_GROUP -n $ROUTER_APP --allowed-origins
   - az functionapp cors add -g $RESOURCE_GROUP -n $ROUTER_APP --allowed-origins \$[CORS_ORIGINS:-'*'}
-  - az functionapp config appsettings set -g $RESOURCE_GROUP -n $FUNCTION_APP --settings "MONGO_URL=\$[MONGO_URL}"
-  - az functionapp config appsettings set -g $RESOURCE_GROUP -n $FUNCTION_APP --settings "GRAPHQL_EDITOR_TOKEN=\$[GRAPHQL_EDITOR_TOKEN}"
-  - az functionapp config appsettings set -g $RESOURCE_GROUP -n $FUNCTION_APP --settings "JWT_SECRET=\$[JWT_SECRET}"
-
+${generateEnvVariables(azureEnv)}
 
 .deploy_init: &deploy_init
   image: mcr.microsoft.com/azure-cli
@@ -146,3 +170,4 @@ deploy_prod:
       when: manual
   <<: *deploy
 `;
+};

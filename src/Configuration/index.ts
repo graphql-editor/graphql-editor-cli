@@ -30,6 +30,11 @@ export interface EditorConf {
   projectVersion?: string;
 }
 
+export interface AzureGitlabCIConf {
+  azureFnName?: string;
+  azureEnv?: string;
+  azureCors?: string;
+}
 export interface BackendConf {
   backendSrc?: string;
   backendLib?: string;
@@ -46,6 +51,7 @@ export interface ConfigurationOptions
   extends TypingsConf,
     EditorConf,
     BackendConf,
+    AzureGitlabCIConf,
     IntegrationConf {
   schemaDir?: string;
 }
@@ -200,9 +206,8 @@ export class Configuration {
           [P in keyof T]: T[P] extends infer R | undefined ? R : T[P];
         }
       : never;
-    return updatedOptions as Pick<
-      typeof updatedOptions,
-      Z extends Array<infer R> ? R : {}
+    return updatedOptions as Required<
+      Pick<typeof updatedOptions, Z extends Array<infer R> ? R : {}>
     >;
   };
 

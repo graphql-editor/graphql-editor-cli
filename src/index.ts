@@ -16,6 +16,7 @@ import Gei from '@/commands/gei/CLI.js';
 import CodeGen from '@/commands/codegen/CLI.js';
 import Cloud from '@/commands/create/CLI.js';
 import Create from '@/commands/cloud/CLI.js';
+import ExternalCI from '@/commands/externalCi/CLI.js';
 import { confOptions, projectOptions } from '@/common/promptOptions.js';
 import { CommandPrune } from '@/commands/common/prune.js';
 import { CommandInspect } from '@/commands/common/inspect.js';
@@ -98,6 +99,7 @@ welcome().then(() => {
     )
     .command(Create)
     .command(Cloud)
+    .command(ExternalCI)
     .command(CodeGen)
     .command(Gei)
     .command(
