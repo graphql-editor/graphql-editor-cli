@@ -19,7 +19,7 @@ const generateEnvVariables = (names: string) => {
     .split(',')
     .map(
       (n) =>
-        `  - az functionapp config appsettings set -g $RESOURCE_GROUP -n $FUNCTION_APP --settings "${n}=\$[${n}}"`,
+        `  - az functionapp config appsettings set -g $RESOURCE_GROUP -n $FUNCTION_APP --settings "${n}=\${${n}}"`,
     )
     .join('\n');
 };
@@ -87,22 +87,22 @@ build:
     expire_in: 1 week
 
 .environment_ci_setup: &environment_ci_setup
-  - az login -u \$[AZURE_USER} -p \$[AZURE_SECRET}
+  - az login -u \${AZURE_USER} -p \${AZURE_SECRET}
   - az webapp cors remove -g $RESOURCE_GROUP -n $ROUTER_APP --allowed-origins
-  - az functionapp cors add -g $RESOURCE_GROUP -n $ROUTER_APP --allowed-origins \$[CORS_ORIGINS:-'*'}
+  - az functionapp cors add -g $RESOURCE_GROUP -n $ROUTER_APP --allowed-origins \${CORS_ORIGINS:-'*'}
 ${generateEnvVariables(azureEnv)}
 
 .deploy_init: &deploy_init
   image: mcr.microsoft.com/azure-cli
   stage: deploy
   script:
-    - az login -u \$[AZURE_USER} -p \$[AZURE_SECRET}
+    - az login -u \${AZURE_USER} -p \${AZURE_SECRET}
     - az group create -n $RESOURCE_GROUP -l $LOCATION
     - az appservice plan create -g $RESOURCE_GROUP -n $ASPLAN -l $LOCATION --sku $PLAN_SKU --is-linux
     - az storage account create -n $STORAGE_SA -l $LOCATION -g $RESOURCE_GROUP --sku $STORAGE_PLAN
     - az functionapp create -n $ROUTER_APP -g $RESOURCE_GROUP --storage-account $STORAGE_SA -p $ASPLAN --os-type Linux --functions-version $FUNCTION_VERSION --runtime $RUNTIME --runtime-version $RUNTIME_VERSION
     - az functionapp config appsettings set -g $RESOURCE_GROUP -n $ROUTER_APP --settings WEBSITE_RUN_FROM_PACKAGE=1
-    - az functionapp config appsettings set -g $RESOURCE_GROUP -n $ROUTER_APP --settings "STUCCO_AZURE_WORKER_BASE_URL=https://\$[FUNCTION_APP}.azurewebsites.net"
+    - az functionapp config appsettings set -g $RESOURCE_GROUP -n $ROUTER_APP --settings "STUCCO_AZURE_WORKER_BASE_URL=https://\${FUNCTION_APP}.azurewebsites.net"
     - az functionapp create -n $FUNCTION_APP -g $RESOURCE_GROUP --storage-account $STORAGE_SA -p $ASPLAN --os-type Linux --functions-version $FUNCTION_VERSION --runtime $RUNTIME --runtime-version $RUNTIME_VERSION
     - az functionapp config appsettings set -g $RESOURCE_GROUP -n $FUNCTION_APP --settings WEBSITE_RUN_FROM_PACKAGE=1
     - az functionapp update --set clientCertEnabled=true -n $FUNCTION_APP -g $RESOURCE_GROUP
@@ -138,7 +138,7 @@ deploy_init_staging:
   image: mcr.microsoft.com/azure-cli
   stage: deploy
   script:
-    - az login -u \$[AZURE_USER} -p \$[AZURE_SECRET}
+    - az login -u \${AZURE_USER} -p \${AZURE_SECRET}
     - az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $FUNCTION_APP --src dist/function.zip
     - az functionapp deployment source config-zip -g $RESOURCE_GROUP -n $ROUTER_APP --src dist/router.zip
     - *environment_ci_setup
