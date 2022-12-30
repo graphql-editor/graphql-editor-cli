@@ -1,4 +1,3 @@
-import { DEFAULT_INTEGRATION_PATH } from '@/commands/gei/shared/consts.js';
 import { Config } from '@/Configuration/index.js';
 import { writeSafe } from '@/utils/FileUtils.js';
 import path from 'path';
@@ -14,29 +13,15 @@ export const bootstrapIntegrationFile = async (props: {
   );
   const p = path.join(
     process.cwd(),
-    integrationPath || DEFAULT_INTEGRATION_PATH,
+    integrationPath || "gei.ts",
   );
   writeSafe(p, fileContent);
 };
 
-const fileContent = `type IntegrationData = {
-    name: string;
-    description: string;
-    value: string | string[];
-    required?: boolean;
-};
-
-type IntegrationSpecification = {
-    [resolver: string]: {
-        name: string;
-        description: string;
-        data: Record<string, IntegrationData>;
-        resolve: { name: string };
-    };
-};
+const fileContent = `import { NewIntegration } from 'graphql-editor-cli';
 
 // Declare your resolver specifications here to generate JSON from it later using \`gei integrate\` command
-const integration: IntegrationSpecification = {};
+const integration = NewIntegration({});
   
 export default integration;
 `;
