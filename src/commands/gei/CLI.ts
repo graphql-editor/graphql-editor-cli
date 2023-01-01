@@ -1,4 +1,3 @@
-import { bootstrapGeiFile } from '@/commands/gei/bootstrapGeiFile.js';
 import { bootstrapIntegrationFile } from '@/commands/gei/bootstrapIntegrationFile.js';
 import { integrateStuccoJson } from '@/commands/gei/integrate.js';
 import {
@@ -48,7 +47,6 @@ export default {
           });
         },
         async (argv) => {
-          bootstrapGeiFile(argv as Parameters<typeof bootstrapGeiFile>[0]);
           bootstrapIntegrationFile(
             argv as Parameters<typeof bootstrapIntegrationFile>[0],
           );

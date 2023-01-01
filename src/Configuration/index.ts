@@ -6,10 +6,7 @@ import { Editor } from '@/Editor.js';
 import { IS_VERSION_FILE_REGEX } from '@/gshared/constants/index.js';
 import Conf from 'conf';
 import AutoCompleteInputPrompt from '@/utils/AutoCompleteInputPrompt.js';
-import {
-  DEFAULT_GEI_PATH,
-  DEFAULT_INTEGRATION_PATH,
-} from '@/commands/gei/shared/consts.js';
+import { DEFAULT_GEI_PATH } from '@/commands/gei/shared/consts.js';
 
 export type DeploymentType = 'editor' | 'azure';
 
@@ -73,10 +70,10 @@ const ConfigurationSpecialPrompts: {
     type: 'input',
   },
   integrationPath: {
-    message: 'integration.ts file path',
-    default: DEFAULT_INTEGRATION_PATH,
+    message: 'integration configuration file path',
     type: 'input',
     name: 'integrationPath',
+    default: "gei.ts",
   },
   geiPath: {
     message: 'gei.ts file path',
