@@ -55,8 +55,8 @@
     "fast-glob": "^3.2.12",
     "figures": "^5.0.0",
     "graphql-js-tree": "^0.1.7",
-    "graphql-zeus": "^5.2.1",
-    "graphql-zeus-core": "^5.2.1",
+    "graphql-zeus": "^5.2.4",
+    "graphql-zeus-core": "^5.2.4",
     "inquirer": "^9.1.2",
     "mime": "^3.0.0",
     "node-fetch": "^3.2.10",
@@ -67,6 +67,7 @@
     "pusher-js": "^7.4.0",
     "qs": "^6.11.0",
     "run-async": "^2.4.1",
+    "stripe": "^11.5.0",
     "stucco-js": "^0.10.10",
     "ts-node": "^10.9.1",
     "yargs": "^17.5.1"

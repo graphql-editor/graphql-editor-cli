@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { FieldResolveInput } from 'stucco-js';
+import { FieldResolveInput, TypeRef} from 'stucco-js';
+import { integrateWithConfig } from './integrate.js';
+import { StuccoConfig, ResolverConfig, findNodeModules } from './handler.js';
+import { integrations, IntegrationSpecificationInput } from './registry.js';
 
 export interface ConfigOpts {
     stuccoJSONPath?: string;
@@ -15,37 +18,6 @@ export const getResolverData = <T>(input: FieldResolveInput, opts?: ConfigOpts) 
   return resolver as ResolverConfig<T>;
 };
 
-export interface StuccoConfig {
-  resolvers: Resolvers;
-}
-
-export interface Resolvers {
-  [x: `${string}.${string}`]: ResolverConfig;
-}
-
-export interface ResolverConfig<T = unknown> {
-  resolve: Resolve;
-  data?: {
-    [P in keyof T]: {
-      value: T[P];
-    };
-  };
-}
-
-export interface Resolve {
-  name: string;
-}
-
-interface NamedTypeRef {
-  name: string;
-}
-interface NonNullTypeRef {
-  nonNull: TypeRef;
-}
-interface ListTypeRef {
-  list: TypeRef;
-}
-type TypeRef = NamedTypeRef | NonNullTypeRef | ListTypeRef | undefined;
 export const getReturnTypeName = (ref: TypeRef): string | undefined => {
   if (!ref) return;
   if ('nonNull' in ref || 'list' in ref) {
@@ -53,20 +25,57 @@ export const getReturnTypeName = (ref: TypeRef): string | undefined => {
   }
   return ref.name;
 };
-export type IntegrationData = {
-    name: string;
-    description: string;
-    value: string | string[];
-    required?: boolean;
-};
 
-export type IntegrationSpecification = {
-    [resolver: string]: {
-        name: string;
-        description: string;
-        data: Record<string, IntegrationData>;
-        resolve: { name: string };
-    };
-};
 
-export const NewIntegration = (integration: IntegrationSpecification): IntegrationSpecification => integration;
+export const NewIntegration = (integrationName: string, integration: IntegrationSpecificationInput): StuccoConfig => {
+  const res: StuccoConfig = {
+    resolvers: {}
+  };
+  // register integration
+  integrations[integrationName] = integration;
+  const nodeModules = path.relative(process.cwd(), findNodeModules());
+  for (const typeName in integration) {
+    for (const fieldName in integration[typeName]) {
+      const { handler, ...field } = integration[typeName][fieldName]
+      res.resolvers = {
+        ...res.resolvers,
+        [`${typeName}.${fieldName}`]: {
+          ...field,
+          integration: 'gei',
+          resolve: {
+            name: path.join(nodeModules, 'graphql-editor-cli', 'lib', 'integrations', 'handler.js'),
+            integration: integrationName,
+          },
+        },
+      }
+    }
+  }
+  return res;
+}
+
+export interface Project extends StuccoConfig {
+  integrations?: string[];
+}
+
+export const NewProject = (project: Project) => {
+  const { integrations = [], ...rest } = project;
+  return integrateWithConfig(rest, ...integrations);
+}
+
+export {
+  IntegrationData,
+  IntegrationSpecificationInput,
+  IntegrationSpecificationInputField,
+  IntegrationSpecificationInputType,
+  IntegrationSpecificationField,
+} from './registry.js';
+
+export {
+  findNodeModules,
+  ResolverConfig,
+  StuccoConfig,
+  IntegrationResolverConfig,
+  Resolve,
+  Resolvers,
+  integrationMainImport,
+} from './handler.js';

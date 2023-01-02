@@ -26,7 +26,7 @@ export const integrateStuccoJson = async (props?: {
     ? integrationPath
     : fs.existsSync(defaultPath)
     ? defaultPath
-    : path.join(process.cwd(), "gei.ts");
+    : path.join(process.cwd(), "src/index.ts");
 
   const existIntegrationFile = fs.existsSync(integrationFile);
   if (!existIntegrationFile) {

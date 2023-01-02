@@ -42,6 +42,7 @@ export interface IntegrationConf {
   npmPackage?: string;
   registry?: string;
   integrationPath?: string;
+  integrationName?: string;
   geiPath?: string;
 }
 export interface ConfigurationOptions
@@ -69,11 +70,16 @@ const ConfigurationSpecialPrompts: {
     default: 'latest',
     type: 'input',
   },
+  integrationName: {
+    message: 'integration name',
+    type: 'input',
+    name: 'integrationName',
+  },
   integrationPath: {
-    message: 'integration configuration file path',
+    message: 'integration main file path',
     type: 'input',
     name: 'integrationPath',
-    default: "gei.ts",
+    default: "src/index.ts",
   },
   geiPath: {
     message: 'gei.ts file path',
@@ -84,7 +90,7 @@ const ConfigurationSpecialPrompts: {
 };
 
 export class Configuration {
-  private options: ConfigurationOptions = {};
+  private options: Partial<ConfigurationOptions> = {};
   private authConfig = new Conf<TokenConf>({
     projectName: 'graphql-editor',
     projectSuffix: 'auth',
