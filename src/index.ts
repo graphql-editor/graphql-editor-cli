@@ -57,6 +57,14 @@ welcome().then(() => {
       },
     )
     .command(
+      'logout',
+      'Logout from GraphQL Editor',
+      async (yargs) => {},
+      (argv) => {
+        Auth.logout();
+      },
+    )
+    .command(
       'schema',
       'Generate GraphQL schema from project at given path',
       async (yargs) => {

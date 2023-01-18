@@ -31,6 +31,10 @@ function dateDelta(date1: Date, date2: Date) {
  * Provides connection to GraphQL Editor
  */
 export class Auth {
+  public static logout = () => {
+    Config.logout();
+    logger('Successfully logged out', 'success');
+  };
   public static login = async (): Promise<TokenConf> =>
     new Promise(async (resolve, reject) => {
       const currentToken = Config.getTokenOptions('token');
