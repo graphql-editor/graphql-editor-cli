@@ -105,11 +105,7 @@ export type IntegrationSpecificationInputField = {
   name: string;
   description: string;
   data?: Record<string, IntegrationData>;
-  handler: (
-    args: unknown,
-    source: unknown,
-    input: FieldResolveInput,
-  ) => unknown;
+  handler: (input: FieldResolveInput) => unknown;
 };
 
 export type IntegrationSpecificationInputType = {
