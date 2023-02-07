@@ -11,6 +11,7 @@ import {
 import { Editor } from '@/Editor.js';
 import { TypeScript } from '@/commands/codegen/typings/generators/TypeScript.js';
 import { logger } from '@/common/log/index.js';
+import { STUCCO_FILE } from '@/gshared/constants/index.js';
 
 const cwd = process.cwd();
 const jsonFile = (json: any) => JSON.stringify(json, null, 4);
@@ -62,6 +63,10 @@ export const CommandBootstrap = async ({
     writeProjectJSONFile(
       (await import('./files/tsconfig.json.js')).default,
       'tsconfig.json',
+    );
+    writeProjectJSONFile(
+      (await import('./files/stucco.json.js')).default,
+      STUCCO_FILE,
     );
     fs.writeFileSync(
       path.join(projectPath, '.gitignore'),

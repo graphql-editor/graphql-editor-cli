@@ -13,7 +13,6 @@ import {
 import { CommandGetCIToken } from '@/commands/common/getCIToken.js';
 import { CommandDev } from '@/commands/common/dev.js';
 import Gei from '@/commands/gei/CLI.js';
-import Project from '@/commands/project/CLI.js';
 import CodeGen from '@/commands/codegen/CLI.js';
 import Cloud from '@/commands/create/CLI.js';
 import Create from '@/commands/cloud/CLI.js';
@@ -103,7 +102,6 @@ welcome().then(() => {
     .command(ExternalCI)
     .command(CodeGen)
     .command(Gei)
-    .command(Project)
     .command(
       'dev',
       'Start Typescript server and stucco server with hot reload.',

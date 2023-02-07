@@ -14,9 +14,17 @@ import { Config } from '@/Configuration/index.js';
 
 const packageJSON = async (name: string) => {
   const version = JSON.parse(
-    await fs.promises.readFile(
-      path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'package.json'),
-    ).then((b) => b.toString())
+    await fs.promises
+      .readFile(
+        path.join(
+          path.dirname(fileURLToPath(import.meta.url)),
+          '..',
+          '..',
+          '..',
+          'package.json',
+        ),
+      )
+      .then((b) => b.toString()),
   ).version as string;
   return `{
   "name": "${name}",
@@ -35,8 +43,8 @@ const packageJSON = async (name: string) => {
   "dependencies": {
     "graphql-editor-cli": "^${version}"
   }
-}`
-}
+}`;
+};
 
 const tsconfig = `{
   "compilerOptions": {
@@ -52,7 +60,7 @@ const tsconfig = `{
 	"declaration": true
   },
   "include": ["src/**/*"]
-}`
+}`;
 
 export default {
   command: 'gei <command>',
@@ -86,7 +94,7 @@ export default {
         'Generate gei definition files',
         async (yargs) => {
           yargs.options({
-            name: {
+            integrationName: {
               type: 'string',
               describe: 'Integration name',
             },
@@ -105,7 +113,10 @@ export default {
             },
             ['integrationName'],
           );
-          await fs.promises.writeFile('package.json', await packageJSON(integrationName as string));
+          await fs.promises.writeFile(
+            'package.json',
+            await packageJSON(integrationName as string),
+          );
           await Promise.all([
             bootstrapIntegrationFile(
               argv as Parameters<typeof bootstrapIntegrationFile>[0],
