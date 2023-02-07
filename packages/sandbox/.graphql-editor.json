@@ -1,0 +1,6 @@
+{
+    "namespace": "editor-integrations",
+    "project": "rest",
+    "version": "latest",
+    "integrationPath": "src/gei.ts"
+}
