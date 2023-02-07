@@ -12,7 +12,7 @@ jobs:
           node-version: "16.x"
           registry-url: "https://registry.npmjs.org"
       - run: npm install
-      - run: npm run build - graphql-editor-cli
+      - run: npm run build -w graphql-editor-cli
       - run: npm publish --access public --tag latest -w graphql-editor-cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
