@@ -1,24 +1,10 @@
 {
-  "name": "graphql-editor-cli",
-  "version": "0.6.9",
+  "name": "workspaces",
+  "version": "0.6.8",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
-  "main": "lib/api.js",
   "author": "Artur Czemiel",
   "license": "MIT",
-  "bin": {
-    "graphql-editor-cli": "lib/index.js",
-    "gecli": "lib/index.js"
-  },
   "type": "module",
-  "scripts": {
-    "build": "npm run clean && ttsc",
-    "start": "npm run clean && ttsc --watch",
-    "clean": "rimraf lib/",
-    "extract-packages": "cp package.json src/deps.json",
-    "editor": "zeus https://api.staging.project.graphqleditor.com/graphql ./src -n --es",
-    "shared": "imp sync",
-    "cli": "node lib/index.js"
-  },
   "devDependencies": {
     "@types/adm-zip": "^0.5.0",
     "@types/archiver": "^5.3.1",
@@ -39,36 +25,12 @@
     "prettier": "^2.7.1",
     "ttypescript": "^1.5.13",
     "typescript": "^4.8.3",
-    "typescript-transform-paths": "^3.3.1"
+    "typescript-transform-paths": "^3.3.1",
+    "graphql-editor-cli": "*"
   },
-  "peerDependencies": {
-    "typescript": "^4.8.3"
-  },
-  "dependencies": {
-    "adm-zip": "^0.5.9",
-    "archiver": "^5.3.1",
-    "chalk": "^5.0.1",
-    "clipboardy": "^3.0.0",
-    "conf": "^10.2.0",
-    "execa": "^6.1.0",
-    "express": "^4.18.1",
-    "fast-glob": "^3.2.12",
-    "figures": "^5.0.0",
-    "graphql-js-tree": "^0.2.2",
-    "graphql-zeus": "^5.2.5",
-    "graphql-zeus-core": "^5.2.5",
-    "inquirer": "^9.1.2",
-    "mime": "^3.0.0",
-    "node-fetch": "^3.2.10",
-    "open": "^8.4.0",
-    "ora": "^6.1.2",
-    "picocolors": "^1.0.0",
-    "pkg-install": "^1.0.0",
-    "pusher-js": "^7.4.0",
-    "qs": "^6.11.0",
-    "run-async": "^2.4.1",
-    "stucco-js": "^0.10.10",
-    "ts-node": "^10.9.1",
-    "yargs": "^17.5.1"
-  }
+  "dependencies": {},
+  "workspaces": [
+    "packages/cli",
+    "packages/sandbox"
+  ]
 }

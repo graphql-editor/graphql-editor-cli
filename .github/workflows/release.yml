@@ -9,10 +9,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '16.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "16.x"
+          registry-url: "https://registry.npmjs.org"
       - run: npm install
-      - run: npm run build
-      - run: npm publish --access public --tag latest
+      - run: npm run build - graphql-editor-cli
+      - run: npm publish --access public --tag latest -w graphql-editor-cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

@@ -10,23 +10,25 @@ const makeAbs = ({ integrationPath }: { integrationPath: string }) => {
     integrationPath = path.join(process.cwd(), integrationPath);
   }
   return { integrationPath };
-}
+};
 export const integrateStuccoJson = async (props?: {
   integrationPath?: string;
 }) => {
-  const { integrationPath } = makeAbs(await Config.configure(
-    {
-      integrationPath: props?.integrationPath,
-    },
-    ['integrationPath'],
-  ));
+  const { integrationPath } = makeAbs(
+    await Config.configure(
+      {
+        integrationPath: props?.integrationPath,
+      },
+      ['integrationPath'],
+    ),
+  );
   const stuccoPath = path.join(process.cwd(), 'stucco.json');
   const defaultPath = path.join(process.cwd(), DEFAULT_INTEGRATION_PATH);
   const integrationFile = integrationPath
     ? integrationPath
     : fs.existsSync(defaultPath)
     ? defaultPath
-    : path.join(process.cwd(), "gei.ts");
+    : path.join(process.cwd(), 'src/index.ts');
 
   const existIntegrationFile = fs.existsSync(integrationFile);
   if (!existIntegrationFile) {
@@ -36,27 +38,44 @@ export const integrateStuccoJson = async (props?: {
   }
 
   try {
+    const pathToIntegrate = path.join(
+      path.dirname(fileURLToPath(import.meta.url)),
+      '..',
+      '..',
+      '..',
+      'lib',
+      'integrations',
+      'integrate.js',
+    );
     const proc = spawn(
-      "node",
+      'node',
       [
-        "--loader",
-        "ts-node/esm",
-        path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'lib', 'integrations', 'integrate.js'),
-        "-s", stuccoPath,
-        "-i", integrationFile,
+        '--loader',
+        'ts-node/esm',
+        pathToIntegrate,
+        '-s',
+        stuccoPath,
+        '-i',
+        integrationFile,
       ],
       {
         cwd: process.cwd(),
-        stdio: ['ignore', 'ignore', 'pipe']
+        stdio: ['ignore', 'ignore', 'pipe'],
       },
     );
     let stderr = [] as Uint8Array[];
     proc.stderr.on('data', (data) => {
       stderr = stderr.concat(data);
-    })
-    const code = await new Promise<number | null>((resolve) => proc.on('exit', (code) => resolve(code)));
+    });
+    const code = await new Promise<number | null>((resolve) =>
+      proc.on('exit', (code) => resolve(code)),
+    );
     if (code !== 0) {
-      throw new Error(`Error creating integration, exit code ${code}.\n${Buffer.concat(stderr).toString()}`)
+      throw new Error(
+        `Error creating integration, exit code ${code}.\n${Buffer.concat(
+          stderr,
+        ).toString()}`,
+      );
     }
   } catch (error) {
     console.error(error);

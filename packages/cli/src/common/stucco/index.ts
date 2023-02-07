@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { logger } from '@/common/log/index.js';
-import { stucco } from 'stucco-js/lib/stucco/run.js';
 import { ChildProcess } from 'child_process';
 import { SIGINT } from 'constants';
 import { terminate, spawnPromise } from '@/common/spawn.js';
