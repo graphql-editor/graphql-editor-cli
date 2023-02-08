@@ -1,7 +1,7 @@
 {
   "name": "sandbox",
   "private": true,
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "author": "Artur Czemiel",
   "license": "MIT",
@@ -11,8 +11,5 @@
     "integrate": "npm run cli -- gei integrate"
   },
   "devDependencies": {},
-  "dependencies": {},
-  "workspaces": [
-    "packages/cli"
-  ]
+  "dependencies": {}
 }

@@ -16,7 +16,7 @@ export default {
   },
   dependencies: {
     'node-fetch': '^2.6.0',
-    'stucco-js': '^0.10.16',
+    'stucco-js': '^0.10.17',
     ws: '^8.12.0',
   },
 };

@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-cli",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/api.js",
   "author": "Artur Czemiel",
@@ -14,7 +14,6 @@
     "build": "npm run clean && ttsc",
     "start": "npm run clean && ttsc --watch",
     "clean": "rimraf lib/",
-    "extract-packages": "cp package.json src/deps.json",
     "editor": "zeus https://api.staging.project.graphqleditor.com/graphql ./src -n --es",
     "shared": "imp sync",
     "cli": "node lib/index.js"
@@ -67,7 +66,7 @@
     "pusher-js": "^7.4.0",
     "qs": "^6.11.0",
     "run-async": "^2.4.1",
-    "stucco-js": "^0.10.16",
+    "stucco-js": "^0.10.17",
     "ts-node": "^10.9.1",
     "yargs": "^17.5.1"
   }
