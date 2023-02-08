@@ -29,31 +29,8 @@ export const getReturnTypeName = (ref: TypeRef): string | undefined => {
   return ref.name;
 };
 
-export const NewIntegration = (
-  integrationName: string,
-  integration: IntegrationSpecificationInput,
-): StuccoConfig => {
-  const res: StuccoConfig = {
-    resolvers: {},
-  };
-  // register integration
-  integrations[integrationName] = integration;
-  for (const typeName in integration) {
-    for (const fieldName in integration[typeName]) {
-      const { handler, ...field } = integration[typeName][fieldName];
-      res.resolvers = {
-        ...res.resolvers,
-        [`${typeName}.${fieldName}`]: {
-          ...field,
-          integration: 'gei',
-          resolve: {
-            name: `${integrationName}@${typeName}.${fieldName}.handler`,
-          },
-        },
-      };
-    }
-  }
-  return res;
+export const NewIntegration = (integration: IntegrationSpecificationInput) => {
+  return integration;
 };
 
 export interface Project extends StuccoConfig {

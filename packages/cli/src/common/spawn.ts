@@ -1,7 +1,7 @@
 import { ChildProcess, spawn } from 'child_process';
 import path from 'path';
 import { SIGINT } from 'constants';
-import { findNodeModules } from '@/api';
+import { findNodeModules } from '@/api.js';
 
 export const terminate = async (ch?: ChildProcess): Promise<void | number> => {
   if (!ch) return;

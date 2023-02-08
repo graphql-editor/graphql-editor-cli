@@ -3,9 +3,8 @@
         "Query.rest": {
             "name": "dsda",
             "description": "dsdsad",
-            "integration": "gei",
             "resolve": {
-                "name": "gei-rest@Query.rest.handler"
+                "name": "Query.rest.handler"
             }
         }
     }

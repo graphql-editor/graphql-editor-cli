@@ -1,7 +1,7 @@
 import { NewIntegration } from "graphql-editor-cli";
 
 // Declare your resolver specifications here to generate JSON from it later using `gei integrate` command
-const integration = NewIntegration("gei-rest", {
+const integration = NewIntegration({
   Query: {
     rest: {
       name: "dsda",
