@@ -1,6 +1,7 @@
 import { ChildProcess, spawn } from 'child_process';
 import path from 'path';
 import { SIGINT } from 'constants';
+import { findNodeModules } from '@/api';
 
 export const terminate = async (ch?: ChildProcess): Promise<void | number> => {
   if (!ch) return;
@@ -24,15 +25,14 @@ export const spawnPromise = async ({
   cwd?: string;
   envs?: Record<string, string>;
 }): Promise<ChildProcess> => {
+  const nodeModules = findNodeModules(basePath);
   const child = spawn(cmd, args, {
     stdio: [process.stdin, process.stdout, process.stderr],
     cwd,
     env: {
       ...process.env,
       cwd: process.cwd(),
-      ['PATH']: `${path.join(basePath, 'node_modules', '.bin')}:${
-        process.env.PATH
-      }`,
+      ['PATH']: `${path.join(nodeModules, '.bin')}:${process.env.PATH}`,
       ...envs,
     },
   });
