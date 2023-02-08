@@ -38,7 +38,6 @@ export const NewIntegration = (
   };
   // register integration
   integrations[integrationName] = integration;
-  const nodeModules = path.relative(process.cwd(), 'node_modules');
   for (const typeName in integration) {
     for (const fieldName in integration[typeName]) {
       const { handler, ...field } = integration[typeName][fieldName];
@@ -121,3 +120,21 @@ export type IntegrationSpecificationField = Omit<
   'handler'
 > & {};
 export let integrations: Record<string, IntegrationSpecificationInput> = {};
+
+export const findNodeModules = (at: string = process.cwd()): string => {
+  at = path.normalize(at);
+  try {
+    const nm = path.join(at, 'node_modules');
+    const st = fs.statSync(nm);
+    if (!st.isDirectory()) {
+      throw new Error('not a directory');
+    }
+    return nm;
+  } catch (e) {
+    const up = path.normalize(path.join(at, '..'));
+    if (up === at) {
+      throw e;
+    }
+    return findNodeModules(up);
+  }
+};

@@ -5,6 +5,7 @@ import { ChildProcess } from 'child_process';
 import { SIGINT } from 'constants';
 import { terminate, spawnPromise } from '@/common/spawn.js';
 import { platform } from 'os';
+import { findNodeModules } from '@/api.js';
 
 export const addStucco = ({
   basePath,
@@ -40,11 +41,8 @@ export const stuccoRun = async (props?: {
   cwd?: string;
   envs?: Record<string, string>;
 }) => {
-  const stuccoPath = path.join(
-    props?.basePath || process.cwd(),
-    'node_modules',
-    '.bin',
-  );
+  const nodeModules = findNodeModules(props?.basePath || process.cwd());
+  const stuccoPath = path.join(nodeModules, '.bin');
   const bin = path.join(
     stuccoPath,
     platform() === 'win32' ? 'stucco.exe' : 'stucco',
