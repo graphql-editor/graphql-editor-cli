@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-cli",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/api.js",
   "author": "Artur Czemiel",
@@ -54,8 +54,8 @@
     "fast-glob": "^3.2.12",
     "figures": "^5.0.0",
     "graphql-js-tree": "^0.1.7",
-    "graphql-zeus": "^5.2.4",
-    "graphql-zeus-core": "^5.2.4",
+    "graphql-zeus": "^5.2.8",
+    "graphql-zeus-core": "^5.2.8",
     "inquirer": "^9.1.2",
     "mime": "^3.0.0",
     "node-fetch": "^3.2.10",
