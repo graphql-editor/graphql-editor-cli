@@ -5,6 +5,7 @@ import { DEPLOY_FILE, STUCCO_FILE } from '@/gshared/constants/index.js';
 import path from 'path';
 import fs from 'fs';
 import process from 'node:process';
+import * as dotenv from 'dotenv';
 
 let killing = false;
 let changingFile = false;
@@ -17,14 +18,20 @@ export const CommandDev = async () => {
   const tsServer = typescriptServer({
     searchPath: './',
     onCreate: async () => {
-      await onCreateStucco();
+      const envFile = getEnvFile();
+      await onCreateStucco({
+        envs: envFile,
+      });
     },
   });
   const fileServer = fs.watch(process.cwd(), (e, f) => {
     if (changingFile) return;
     if (f === STUCCO_FILE || f.startsWith('.env')) {
+      const envFile = getEnvFile();
       changingFile = true;
-      onCreateStucco().then((e) => {
+      onCreateStucco({
+        envs: envFile,
+      }).then((e) => {
         changingFile = false;
       });
     }
@@ -47,4 +54,14 @@ export const CommandDev = async () => {
     close();
   });
   return;
+};
+
+const getEnvFile = () => {
+  const dir = fs.readdirSync(process.cwd());
+  const envFile = dir.find((e) => e.startsWith('.env'));
+  if (envFile) {
+    const filePath = path.join(process.cwd(), envFile);
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    return dotenv.parse(fileContent);
+  }
 };

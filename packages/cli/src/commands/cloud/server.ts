@@ -59,18 +59,18 @@ export const CommandSync = async ({
     schemaPath: path.join(TEMPPATH, DEPLOY_FILE),
     basePath: TEMPPATH,
     cwd: TEMPPATH,
-    envs: hasMongoInProject
-      ? {
-          MONGO_URL: hasMongoInProject,
-        }
-      : undefined,
   });
+  const envs = hasMongoInProject
+    ? {
+        MONGO_URL: hasMongoInProject,
+      }
+    : undefined;
 
   const tsServer = typescriptServer({
     searchPath: TEMPPATH,
     onCreate: async () => {
       try {
-        await onCreateStucco();
+        await onCreateStucco({ envs });
         logger('tsc success', 'success');
       } finally {
       }

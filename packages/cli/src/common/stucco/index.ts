@@ -39,7 +39,6 @@ export const stuccoRun = async (props?: {
   configPath?: string;
   basePath?: string;
   cwd?: string;
-  envs?: Record<string, string>;
 }) => {
   const nodeModules = findNodeModules(props?.basePath || process.cwd());
   const stuccoPath = path.join(nodeModules, '.bin');
@@ -55,7 +54,7 @@ export const stuccoRun = async (props?: {
   let taskRunning = false;
 
   return {
-    onCreateStucco: async () => {
+    onCreateStucco: async (stuccoProps?: { envs?: Record<string, string> }) => {
       if (taskRunning) return;
       taskRunning = true;
       try {
@@ -67,7 +66,7 @@ export const stuccoRun = async (props?: {
           cwd: props?.cwd,
           cmd: bin,
           basePath: props?.basePath,
-          envs: props?.envs,
+          envs: stuccoProps?.envs,
         });
       } finally {
         taskRunning = false;
