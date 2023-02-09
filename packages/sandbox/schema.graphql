@@ -1,0 +1,10 @@
+
+
+type Query{
+	restProxy: Anything
+}
+
+scalar Anything
+schema{
+	query: Query
+}

@@ -31,6 +31,6 @@
       }
     ]
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "src/commands/create/files/.gitignore.ts"],
   "exclude": ["node_modules"]
 }

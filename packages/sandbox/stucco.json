@@ -1,11 +1,11 @@
 {
-    "resolvers": {
-        "Query.rest": {
-            "name": "dsda",
-            "description": "dsdsad",
-            "resolve": {
-                "name": "Query.rest.handler"
-            }
-        }
+  "resolvers": {
+    "Query.rest": {
+      "name": "dsda",
+      "description": "dsdsaaaaadsadsaadsd",
+      "resolve": {
+        "name": "Query.rest.handler"
+      }
     }
+  }
 }

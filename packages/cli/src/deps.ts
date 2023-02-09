@@ -10,9 +10,7 @@ export default {
     'eslint-plugin-prettier': '^4.2.1',
     prettier: '^2.7.1',
     'ts-node': '^10.9.1',
-    ttypescript: '^1.5.13',
     typescript: '^4.8.3',
-    'typescript-transform-paths': '^3.3.1',
   },
   dependencies: {
     'node-fetch': '^2.6.0',

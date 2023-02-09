@@ -1,28 +1,21 @@
 import { Config } from '@/Configuration/index.js';
 import { writeSafe } from '@/utils/FileUtils.js';
 import path from 'path';
-import fs from 'fs';
 
-export const bootstrapIntegrationFile = async (props: {
+export const bootstrapIntegrationFile = async ({
+  integrationPath,
+}: {
   integrationPath?: string;
 }) => {
-  const pJSON = JSON.parse(await fs.promises.readFile('package.json').then((b) => b.toString()));
-
+  const resolve = await Config.configure({ integrationPath }, [
+    'integrationPath',
+  ]);
   const fileContent = `import { NewIntegration } from 'graphql-editor-cli';
 
-const integration = NewIntegration('${pJSON.name}', {});
+const integration = NewIntegration({});
 
 export default integration;
 `;
-  const { integrationPath } = await Config.configure(
-    {
-      integrationPath: props?.integrationPath,
-    },
-    ['integrationPath'],
-  );
-  const p = path.join(
-    process.cwd(),
-    integrationPath || "src/index.ts",
-  );
+  const p = path.join(process.cwd(), resolve.integrationPath);
   writeSafe(p, fileContent);
 };
