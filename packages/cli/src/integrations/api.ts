@@ -21,6 +21,14 @@ export const getResolverData = <T>(
   return resolver as ResolverConfig<T>;
 };
 
+export const getSchema = ({
+  schemaPath = path.join(process.cwd(), 'schema.graphql'),
+}: {
+  schemaPath?: string;
+}) => {
+  return fs.readFileSync(schemaPath, 'utf-8');
+};
+
 export const getReturnTypeName = (ref: TypeRef): string | undefined => {
   if (!ref) return;
   if ('nonNull' in ref || 'list' in ref) {
