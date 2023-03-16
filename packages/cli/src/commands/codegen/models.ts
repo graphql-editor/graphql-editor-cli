@@ -9,7 +9,7 @@ export const getModel = async (modelsPath: string, field: ParserField) => {
   HandleTemplates.action({
     type: 'addIfNotExist',
     path: `${modelsPath}/${modelName}.ts`,
-    content: `import { ModelTypes } from '../zeus';
+    content: `import { ModelTypes } from '../zeus/index.js';
     
 export type ${modelName} = ModelTypes['${field.name}'];`,
   });
@@ -41,7 +41,7 @@ export const CommandModels = async ({
   let modelsContent = [];
   for (const f of modelFields) {
     const modelName = await getModel(modelsPath, f);
-    importsContent += `import { ${modelName} } from './${modelName}'\n`;
+    importsContent += `import { ${modelName} } from './${modelName}.js'\n`;
     modelsContent.push(`${modelName}: ${modelName};`);
   }
   const modelsContentString = `export type Models = {\n\t${modelsContent.join(

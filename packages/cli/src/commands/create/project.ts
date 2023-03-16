@@ -49,7 +49,7 @@ export const CommandBootstrap = async ({
   // new Configuration(projectPath);
   const createFiles = async () => {
     writeProjectJSONFile(
-      (await import('./files/package.ts.json.js')).default,
+      (await import('./files/package.ts.json.js')).default(appSystemName),
       'package.json',
     );
     writeProjectJSONFile(

@@ -15,19 +15,15 @@ interface BasicResolverProps {
 const basicResolver = ({
   field,
   resolverParent,
-  body = '',
-  imports = '',
   source,
 }: BasicResolverProps) => `
 import { FieldResolveInput } from 'stucco-js';
-import { resolverFor } from '../zeus';
-${imports}
+import { resolverFor } from '../zeus/index.js';
 
 export const handler = async (input: FieldResolveInput) => 
   resolverFor('${resolverParent}','${field.name}',async (args${
   source ? `, source:${source}` : ``
 }) => {
-    ${body}
   })(input.arguments${source ? `, input.source` : ``});
 `;
 

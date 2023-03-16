@@ -3,9 +3,9 @@ export default {
     skipLibCheck: true,
     moduleResolution: 'node',
     target:
-      'es2020' /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */,
+      'es2022' /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */,
     module:
-      'es2020' /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
+      'es2022' /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
     declaration: true /* Generates corresponding '.d.ts' file. */,
     outDir: './lib' /* Redirect output structure to the directory. */,
     rootDir:
