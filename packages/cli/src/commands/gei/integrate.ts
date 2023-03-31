@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
 import { DEFAULT_INTEGRATION_PATH } from '@/commands/gei/shared/consts.js';
 import { Config } from '@/Configuration/index.js';
-
+import os from 'os';
 const makeAbs = ({ integrationPath }: { integrationPath: string }) => {
   if (integrationPath && !path.isAbsolute(integrationPath)) {
     integrationPath = path.join(process.cwd(), integrationPath);
@@ -61,6 +61,7 @@ export const integrateStuccoJson = async (props?: {
       {
         cwd: process.cwd(),
         stdio: ['ignore', 'ignore', 'pipe'],
+        shell: os.platform() === 'win32',
       },
     );
     let stderr = [] as Uint8Array[];

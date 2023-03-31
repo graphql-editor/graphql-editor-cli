@@ -2,6 +2,7 @@ import { ChildProcess, spawn } from 'child_process';
 import path from 'path';
 import { SIGINT } from 'constants';
 import { findNodeModules } from '@/api.js';
+import os from 'os';
 
 export const terminate = async (ch?: ChildProcess): Promise<void | number> => {
   if (!ch) return;
@@ -35,6 +36,7 @@ export const spawnPromise = async ({
       ['PATH']: `${path.join(nodeModules, '.bin')}:${process.env.PATH}`,
       ...envs,
     },
+    shell: os.platform() === 'win32',
   });
   return new Promise<ChildProcess>((resolve, reject) => {
     child.on('error', reject);

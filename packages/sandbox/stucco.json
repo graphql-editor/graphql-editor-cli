@@ -1,9 +1,9 @@
 {
-  "resolvers": {
-    "Query.restProxy": {
-      "resolve": {
-        "name": "lib/handler"
-      }
+    "resolvers": {
+        "Query.restProxy": {
+            "resolve": {
+                "name": "lib/handler"
+            }
+        }
     }
-  }
 }
