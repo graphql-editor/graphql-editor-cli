@@ -33,11 +33,10 @@ export const addStucco = ({
   };
   fs.writeFileSync(stuccoPath, JSON.stringify(stuccoFileContent, null, 4));
 };
-
 const toFile = (s: string) => {
   const p = platform();
   if (p === 'win32') {
-    return `"${s}"`;
+    return '/' + s.split(path.sep).slice(1).join(path.posix.sep);
   }
   return s;
 };
