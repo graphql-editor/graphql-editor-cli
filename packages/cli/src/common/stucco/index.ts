@@ -34,6 +34,14 @@ export const addStucco = ({
   fs.writeFileSync(stuccoPath, JSON.stringify(stuccoFileContent, null, 4));
 };
 
+const toFile = (s: string) => {
+  const p = platform();
+  if (p === 'win32') {
+    return `"${s}"`;
+  }
+  return s;
+};
+
 export const stuccoRun = async (props?: {
   schemaPath?: string;
   configPath?: string;
@@ -44,11 +52,11 @@ export const stuccoRun = async (props?: {
   const stuccoPath = path.join(nodeModules, '.bin');
   const bin = path.join(
     stuccoPath,
-    platform() === 'win32' ? 'stucco.exe' : 'stucco',
+    platform() === 'win32' ? 'stucco.cmd' : 'stucco',
   );
   const args: string[] = ['local', 'start'];
-  if (props?.schemaPath) args.push('-s', props.schemaPath);
-  if (props?.configPath) args.push('-c', props.configPath);
+  if (props?.schemaPath) args.push('-s', toFile(props.schemaPath));
+  if (props?.configPath) args.push('-c', toFile(props.configPath));
 
   let stuccoChildProcess: ChildProcess | undefined;
   let taskRunning = false;
