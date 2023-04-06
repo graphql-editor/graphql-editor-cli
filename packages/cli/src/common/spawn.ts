@@ -33,7 +33,9 @@ export const spawnPromise = async ({
     env: {
       ...process.env,
       cwd: process.cwd(),
-      ['PATH']: `${path.join(nodeModules, '.bin')}:${process.env.PATH}`,
+      ['PATH']: `${path.join(nodeModules, '.bin')}${
+        os.platform() === 'win32' ? ';' : ':'
+      }${process.env.PATH}`,
       ...envs,
     },
     shell: os.platform() === 'win32',
