@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { logger } from '@/common/log/index.js';
-import { ChildProcess } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { SIGINT } from 'constants';
 import { terminate, spawnPromise } from '@/common/spawn.js';
 import { platform } from 'os';
@@ -80,6 +80,18 @@ export const stuccoRun = async (props?: {
       }
     },
     onCloseStucco: () => {
+      const p = platform();
+      if (p === 'win32' && stuccoChildProcess?.pid) {
+        try {
+          spawn('taskkill', [
+            '/pid',
+            stuccoChildProcess.pid.toString(),
+            '/f',
+            '/t',
+          ]);
+        } catch {}
+        return;
+      }
       stuccoChildProcess?.kill(SIGINT);
     },
   };
