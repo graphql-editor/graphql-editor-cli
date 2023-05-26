@@ -26,7 +26,7 @@ export const CommandDev = async () => {
   });
   const fileServer = fs.watch(process.cwd(), (e, f) => {
     if (changingFile) return;
-    if (f === STUCCO_FILE || f.startsWith('.env')) {
+    if (f === STUCCO_FILE || f.startsWith('.env') || f.endsWith('.graphql')) {
       const envFile = getEnvFile();
       changingFile = true;
       onCreateStucco({
