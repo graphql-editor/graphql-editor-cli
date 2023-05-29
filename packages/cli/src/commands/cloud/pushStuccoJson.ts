@@ -1,7 +1,10 @@
 import { logger } from '@/common/log/index.js';
 import { Config } from '@/Configuration/index.js';
 import { Editor } from '@/Editor.js';
-import { CLOUD_FOLDERS } from '@/gshared/constants/index.js';
+import {
+    CLOUD_FOLDERS,
+    STUCCO_FILE,
+} from '@/gshared/constants/index.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -15,8 +18,8 @@ export const pushStuccoJson = async ({ namespace, project }: { namespace?: strin
     await Editor.saveFilesToCloud(
         p.id,
         [{
-            name: path.join(CLOUD_FOLDERS.microserviceJs, 'stucco.json'),
-            content: fs.readFileSync('stucco.json'),
+            name: path.join(CLOUD_FOLDERS.microserviceJs, STUCCO_FILE),
+            content: fs.readFileSync(STUCCO_FILE),
             type: 'text/plain',
         }]
     );
