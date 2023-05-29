@@ -20,6 +20,7 @@ import ExternalCI from '@/commands/externalCi/CLI.js';
 import { confOptions, projectOptions } from '@/common/promptOptions.js';
 import { CommandPrune } from '@/commands/common/prune.js';
 import { CommandInspect } from '@/commands/common/inspect.js';
+import { pushStuccoJson } from '@/commands/cloud/pushStuccoJson.js';
 
 welcome().then(() => {
   new Configuration();
@@ -51,7 +52,7 @@ welcome().then(() => {
     .command(
       'login',
       'Login to GraphQL Editor',
-      async (yargs) => {},
+      async (yargs) => { },
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
       },
@@ -59,7 +60,7 @@ welcome().then(() => {
     .command(
       'logout',
       'Logout from GraphQL Editor',
-      async (yargs) => {},
+      async (yargs) => { },
       (argv) => {
         Auth.logout();
       },
@@ -92,7 +93,7 @@ welcome().then(() => {
     .command(
       'prune',
       'Get information about redundant resolvers that do not exist in schema now.',
-      async (yargs) => {},
+      async (yargs) => { },
       async (argv) => {
         await CommandPrune();
       },
@@ -100,7 +101,7 @@ welcome().then(() => {
     .command(
       'inspect',
       'Get information about non-scalar resolvers that are not implemented in stucco.json',
-      async (yargs) => {},
+      async (yargs) => { },
       async (argv) => {
         await CommandInspect();
       },
@@ -113,7 +114,7 @@ welcome().then(() => {
     .command(
       'dev',
       'Start Typescript server and stucco server with hot reload.',
-      async (yargs) => {},
+      async (yargs) => { },
       async (argv) => {
         CommandDev();
       },
@@ -121,6 +122,16 @@ welcome().then(() => {
     .command('token', 'Get CI token', async (argv) => {
       await CommandGetCIToken();
     })
+    .command(
+      'stucco',
+      'Update your stucco file to cloud for synchronizing resolvers',
+      async (yargs) => { },
+      async (argv) => {
+        await pushStuccoJson(
+          argv as Pick<ConfigurationOptions, 'project' | 'namespace'>,
+        );
+      },
+    )
     .showHelpOnFail(true)
     .demandCommand()
     .version()
