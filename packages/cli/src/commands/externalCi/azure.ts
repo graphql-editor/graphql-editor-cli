@@ -14,6 +14,7 @@ export const CommandAzureGitlab = async (props: AzureGitlabCIConf) => {
 const DEFAULT_AZURE_CORS =
   'https://functions-next.azure.com https://functions-staging.azure.com https://functions.azure.com';
 const generateEnvVariables = (names: string) => {
+  if (!names) return "";
   return names
     .replace(' ', '')
     .split(',')
@@ -29,6 +30,7 @@ const template = ({
   azureEnv,
   azureCors,
 }: Required<AzureGitlabCIConf>) => {
+  if (!azureFnName) throw new Error('You have to specify unique azureFnName for your resources.')
   return `
 stages:
   - build
