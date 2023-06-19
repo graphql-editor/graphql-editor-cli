@@ -39,7 +39,7 @@ stages:
 
 variables:
   RUNTIME: node
-  RUNTIME_VERSION: 14
+  RUNTIME_VERSION: 18
   PLAN_SKU: B1
   STORAGE_PLAN: Standard_LRS
   FUNCTION_VERSION: 3
