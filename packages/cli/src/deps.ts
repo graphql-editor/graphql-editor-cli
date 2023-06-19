@@ -13,7 +13,7 @@ export default {
     typescript: '^4.8.3',
   },
   dependencies: {
-    'node-fetch': '^2.6.0',
+    'node-fetch': '^3.2.10',
     'stucco-js': '^0.10.17',
     ws: '^8.12.0',
   },
