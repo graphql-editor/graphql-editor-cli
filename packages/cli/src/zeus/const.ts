@@ -1,17 +1,20 @@
 /* eslint-disable */
 
 export const AllTypesProps: Record<string,any> = {
-	DeployCodeToCloudNode14Opts:{
-
+	MarketplaceProjectsSortInput:{
+		name:"SortOrder",
+		id:"SortOrder",
+		owner:"SortOrder",
+		public:"SortOrder",
+		slug:"SortOrder",
+		tags:"SortOrder",
+		team:"SortOrder",
+		createdAt:"SortOrder"
 	},
-	AccountType: "enum" as const,
 	ChangeSubscriptionInput:{
 
 	},
 	Project:{
-		cloudDeploymentStatus:{
-
-		},
 		members:{
 
 		},
@@ -19,71 +22,24 @@ export const AllTypesProps: Record<string,any> = {
 
 		}
 	},
+	Namespace:{
+		project:{
+
+		},
+		projects:{
+
+		}
+	},
+	PaymentDate: `scalar.PaymentDate` as const,
 	ProjectsSortInput:{
+		name:"SortOrder",
+		id:"SortOrder",
 		owner:"SortOrder",
 		public:"SortOrder",
 		slug:"SortOrder",
 		tags:"SortOrder",
 		team:"SortOrder",
-		createdAt:"SortOrder",
-		name:"SortOrder",
-		id:"SortOrder"
-	},
-	RFC3339Date: `scalar.RFC3339Date` as const,
-	PredictCheckoutInput:{
-
-	},
-	CustomerInput:{
-
-	},
-	Team:{
-		member:{
-
-		},
-		members:{
-
-		},
-		serviceAccounts:{
-
-		}
-	},
-	DeployCodeToCloudURIKind: "enum" as const,
-	MarketplaceOps:{
-		addProject:{
-			opts:"AddProjectInput"
-		},
-		removeProject:{
-
-		}
-	},
-	VatInput:{
-
-	},
-	Secret:{
-
-	},
-	CloudDeploymentStatus: "enum" as const,
-	Decimal: `scalar.Decimal` as const,
-	UpdateProject:{
-
-	},
-	CreateServiceAccountInput:{
-
-	},
-	SortOrder: "enum" as const,
-	AddProjectInput:{
-		npmRegistryPackage:"NpmRegistryPackageInput"
-	},
-	NewSource:{
-
-	},
-	SchemaSubscription:{
-		watchJobStatus:{
-
-		},
-		watchLogs:{
-
-		}
+		createdAt:"SortOrder"
 	},
 	Query:{
 		checkoutData:{
@@ -99,6 +55,9 @@ export const AllTypesProps: Record<string,any> = {
 
 		},
 		findProjectsByTag:{
+
+		},
+		generateStripeBillingPortal:{
 
 		},
 		getNamespace:{
@@ -121,22 +80,108 @@ export const AllTypesProps: Record<string,any> = {
 		},
 		predictCheckout:{
 			data:"PredictCheckoutInput"
+		},
+		stripePaymentLink:{
+			data:"StripeCheckoutDataInput"
 		}
+	},
+	NpmRegistryPackageInput:{
+
+	},
+	VatInput:{
+
 	},
 	RenameFileInput:{
 
 	},
-	FileServerCredentials: `scalar.FileServerCredentials` as const,
+	Decimal: `scalar.Decimal` as const,
+	MarketplaceOps:{
+		addProject:{
+			opts:"AddProjectInput"
+		},
+		removeProject:{
+
+		}
+	},
+	Role: "enum" as const,
+	Mutation:{
+		changePassword:{
+
+		},
+		changeSubscription:{
+			in:"ChangeSubscriptionInput"
+		},
+		consumeInviteToken:{
+
+		},
+		createTeam:{
+
+		},
+		createUser:{
+
+		},
+		deployToFaker:{
+
+		},
+		removeProject:{
+
+		},
+		sync:{
+
+		},
+		team:{
+
+		},
+		updateProject:{
+			in:"UpdateProject"
+		},
+		updateSources:{
+			sources:"NewSource"
+		}
+	},
+	ProjectOps:{
+		addMember:{
+			role:"Role"
+		},
+		createTemporaryFile:{
+
+		},
+		removeSources:{
+
+		},
+		renameSources:{
+			files:"RenameFileInput"
+		},
+		update:{
+			in:"UpdateProject"
+		}
+	},
 	Marketplace:{
 		projects:{
 			sort:"MarketplaceProjectsSortInput"
 		}
 	},
-	CheckoutDataInput:{
-		customer:"CustomerInput",
-		vat:"VatInput"
+	MemberOps:{
+		update:{
+			role:"Role"
+		}
 	},
-	PaymentDate: `scalar.PaymentDate` as const,
+	NewSource:{
+
+	},
+	FileServerCredentials: `scalar.FileServerCredentials` as const,
+	CustomerInput:{
+
+	},
+	AddProjectInput:{
+		npmRegistryPackage:"NpmRegistryPackageInput"
+	},
+	PredictCheckoutInput:{
+
+	},
+	StripeCheckoutDataInput:{
+
+	},
 	TeamOps:{
 		addMember:{
 			role:"Role"
@@ -172,138 +217,45 @@ export const AllTypesProps: Record<string,any> = {
 
 		}
 	},
-	MemberOps:{
-		update:{
-			role:"Role"
-		}
-	},
-	Mutation:{
-		changePassword:{
-
-		},
-		changeSubscription:{
-			in:"ChangeSubscriptionInput"
-		},
-		consumeInviteToken:{
-
-		},
-		createCloudDeployment:{
-
-		},
-		createProject:{
-
-		},
-		createTeam:{
-
-		},
-		createUser:{
-
-		},
-		deployCodeToCloud:{
-			opts:"DeployCodeToCloudInput"
-		},
-		deployToFaker:{
-
-		},
-		removeCloudDeployment:{
-
-		},
-		removeProject:{
-
-		},
-		runtimeLogs:{
-
-		},
-		setCloudDeploymentConfig:{
-			input:"SetCloudDeploymentConfigInput"
-		},
-		sync:{
-
-		},
-		team:{
-
-		},
-		updateProject:{
-			in:"UpdateProject"
-		},
-		updateSources:{
-			sources:"NewSource"
-		}
-	},
-	SetCloudDeploymentConfigCorsInput:{
+	AccountType: "enum" as const,
+	SortOrder: "enum" as const,
+	CreateServiceAccountInput:{
 
 	},
-	DeployCodeToCloudInput:{
-		kind:"DeployCodeToCloudURIKind",
-		env:"DeployCodeToCloudEnv",
-		secrets:"Secret",
-		node14Opts:"DeployCodeToCloudNode14Opts"
+	CheckoutDataInput:{
+		customer:"CustomerInput",
+		vat:"VatInput"
 	},
-	ProjectOps:{
-		addMember:{
-			role:"Role"
-		},
-		createTemporaryFile:{
+	RFC3339Date: `scalar.RFC3339Date` as const,
+	Team:{
+		member:{
 
 		},
-		deployCodeToCloud:{
-			opts:"DeployCodeToCloudInput"
-		},
-		removeSources:{
+		members:{
 
 		},
-		renameSources:{
-			files:"RenameFileInput"
-		},
-		setCloudDeploymentConfig:{
-			input:"SetCloudDeploymentConfigInput"
-		},
-		update:{
-			in:"UpdateProject"
-		}
-	},
-	SetCloudDeploymentConfigInput:{
-		secrets:"Secret",
-		cors:"SetCloudDeploymentConfigCorsInput"
-	},
-	DeployCodeToCloudEnv: "enum" as const,
-	Namespace:{
-		project:{
-
-		},
-		projects:{
+		serviceAccounts:{
 
 		}
 	},
-	MarketplaceProjectsSortInput:{
-		owner:"SortOrder",
-		public:"SortOrder",
-		slug:"SortOrder",
-		tags:"SortOrder",
-		team:"SortOrder",
-		createdAt:"SortOrder",
-		name:"SortOrder",
-		id:"SortOrder"
-	},
-	Role: "enum" as const,
-	NpmRegistryPackageInput:{
+	UpdateProject:{
 
 	}
 }
 
 export const ReturnTypes: Record<string,any> = {
-	ServiceAccountApiKey:{
-		id:"String",
-		key:"String",
-		name:"String"
+	FakerSource:{
+		checksum:"String",
+		contents:"String",
+		filename:"String",
+		getUrl:"String",
+		updatedAt:"String"
 	},
-	MarketplaceItemConnection:{
+	SubscriptionConnection:{
 		pageInfo:"PageInfo",
-		projects:"MarketplaceItem"
+		subscriptions:"Subscription"
 	},
 	Project:{
-		cloudDeploymentConfig:"CloudDeploymentConfig",
-		cloudDeploymentStatus:"CloudDeploymentStatus",
 		createdAt:"RFC3339Date",
 		dbConnection:"String",
 		description:"String",
@@ -323,86 +275,43 @@ export const ReturnTypes: Record<string,any> = {
 		updatedAt:"RFC3339Date",
 		upstream:"String"
 	},
-	PredictCheckout:{
-		price:"Float",
-		trialDays:"Int"
-	},
-	RFC3339Date: `scalar.RFC3339Date` as const,
-	SubscriptionConnection:{
-		pageInfo:"PageInfo",
-		subscriptions:"Subscription"
-	},
-	FakerSource:{
-		checksum:"String",
-		contents:"String",
-		filename:"String",
-		getUrl:"String",
-		updatedAt:"String"
-	},
 	User:{
 		accountType:"AccountType",
 		consentGiven:"Boolean",
 		consentTimestamp:"Int",
 		id:"ID",
 		namespace:"Namespace",
+		stripeCustomerId:"ID",
 		subscriptions:"SubscriptionConnection",
 		username:"String"
 	},
-	Team:{
-		id:"ID",
-		member:"Member",
-		members:"MemberConnection",
+	Namespace:{
+		project:"Project",
+		projects:"ProjectConnection",
+		public:"Boolean",
+		slug:"String"
+	},
+	InviteToken:{
+		createdAt:"String",
+		domain:"String",
+		expiration:"String",
 		name:"String",
-		namespace:"Namespace",
-		planID:"Int",
-		serviceAccounts:"ServiceAccountConnection",
-		tokens:"InviteToken"
-	},
-	NpmRegistryPackage:{
-		package:"String",
-		registry:"String"
-	},
-	TemporaryFile:{
-		getUrl:"String",
-		putUrl:"String"
-	},
-	MarketplaceOps:{
-		addProject:"Boolean",
-		removeProject:"Boolean"
+		removed:"Boolean",
+		role:"Role",
+		token:"String"
 	},
 	TeamConnection:{
 		pageInfo:"PageInfo",
 		teams:"Team"
 	},
-	MarketplaceUpstream:{
-		"...on NpmRegistryPackage":"NpmRegistryPackage"
+	MarketplaceItem:{
+		project:"Project",
+		upstream:"MarketplaceUpstream"
 	},
-	CloudCorsSetting:{
-		allowCredentials:"Boolean",
-		allowedHeaders:"String",
-		allowedMethod:"String",
-		allowedOrigins:"String"
-	},
-	Member:{
-		email:"String",
-		role:"Role",
-		serviceAccount:"Boolean",
-		username:"String"
-	},
-	Decimal: `scalar.Decimal` as const,
-	Header:{
-		key:"String",
-		value:"String"
-	},
-	ServiceAccount:{
-		description:"String",
-		keys:"ServiceAccountApiKey",
-		name:"String",
-		tags:"String"
-	},
-	SchemaSubscription:{
-		watchJobStatus:"CloudDeploymentStatus",
-		watchLogs:"String"
+	PaymentDate: `scalar.PaymentDate` as const,
+	ServiceAccountConnection:{
+		pageInfo:"PageInfo",
+		serviceAccounts:"ServiceAccount"
 	},
 	Query:{
 		checkoutData:"String",
@@ -411,6 +320,7 @@ export const ReturnTypes: Record<string,any> = {
 		fileServerCredentials:"FileServerCredentials",
 		findProjects:"ProjectConnection",
 		findProjectsByTag:"ProjectConnection",
+		generateStripeBillingPortal:"String",
 		getNamespace:"Namespace",
 		getProject:"Project",
 		getTeam:"Team",
@@ -419,30 +329,121 @@ export const ReturnTypes: Record<string,any> = {
 		marketplace:"Marketplace",
 		myTeams:"TeamConnection",
 		payments:"Payment",
-		predictCheckout:"PredictCheckout"
-	},
-	PageInfo:{
-		last:"String",
-		limit:"Int",
-		next:"Boolean"
-	},
-	ProjectConnection:{
-		pageInfo:"PageInfo",
-		projects:"Project"
+		predictCheckout:"PredictCheckout",
+		stripePaymentLink:"String"
 	},
 	FakerSourceConnection:{
 		pageInfo:"PageInfo",
 		sources:"FakerSource"
 	},
+	PredictCheckout:{
+		price:"Float",
+		trialDays:"Int"
+	},
+	Decimal: `scalar.Decimal` as const,
+	TemporaryFile:{
+		getUrl:"String",
+		putUrl:"String"
+	},
+	MarketplaceItemConnection:{
+		pageInfo:"PageInfo",
+		projects:"MarketplaceItem"
+	},
+	MarketplaceOps:{
+		addProject:"Boolean",
+		removeProject:"Boolean"
+	},
+	Mutation:{
+		changePassword:"Boolean",
+		changeSubscription:"Boolean",
+		consumeInviteToken:"Boolean",
+		createTeam:"TeamOps",
+		createUser:"User",
+		deleteAccount:"Boolean",
+		deployToFaker:"Boolean",
+		marketplace:"MarketplaceOps",
+		removeProject:"Boolean",
+		resendVerificationEmail:"Boolean",
+		sync:"Boolean",
+		team:"TeamOps",
+		updateProject:"Boolean",
+		updateSources:"SourceUploadInfo"
+	},
+	ProjectOps:{
+		addMember:"Member",
+		createTemporaryFile:"TemporaryFile",
+		delete:"Boolean",
+		deployToFaker:"Boolean",
+		removeSources:"Boolean",
+		renameSources:"Boolean",
+		update:"Boolean"
+	},
+	Header:{
+		key:"String",
+		value:"String"
+	},
+	Endpoint:{
+		uri:"String"
+	},
 	UserConnection:{
 		pageInfo:"PageInfo",
 		users:"User"
 	},
-	FileServerCredentials: `scalar.FileServerCredentials` as const,
+	ServiceAccountApiKey:{
+		id:"String",
+		key:"String",
+		name:"String"
+	},
 	Marketplace:{
 		projects:"MarketplaceItemConnection"
 	},
-	PaymentDate: `scalar.PaymentDate` as const,
+	MemberOps:{
+		delete:"Boolean",
+		update:"Boolean"
+	},
+	MemberConnection:{
+		members:"Member",
+		pageInfo:"PageInfo"
+	},
+	Member:{
+		email:"String",
+		role:"Role",
+		serviceAccount:"Boolean",
+		username:"String"
+	},
+	Subscription:{
+		cancelURL:"String",
+		expiration:"String",
+		quantity:"Int",
+		seats:"UserConnection",
+		status:"String",
+		subscriptionID:"Int",
+		subscriptionPlanID:"Int",
+		updateURL:"String"
+	},
+	ServiceAccount:{
+		description:"String",
+		keys:"ServiceAccountApiKey",
+		name:"String",
+		tags:"String"
+	},
+	FileServerCredentials: `scalar.FileServerCredentials` as const,
+	NpmRegistryPackage:{
+		package:"String",
+		registry:"String"
+	},
+	Payment:{
+		amount:"Decimal",
+		currency:"String",
+		date:"PaymentDate",
+		receiptURL:"String",
+		subscriptionID:"Int"
+	},
+	SourceUploadInfo:{
+		filename:"String",
+		headers:"Header",
+		putUrl:"String"
+	},
 	TeamOps:{
 		addMember:"Member",
 		createProject:"Project",
@@ -461,107 +462,32 @@ export const ReturnTypes: Record<string,any> = {
 		removeServiceAccountApiKey:"Boolean",
 		removeToken:"String"
 	},
-	ServiceAccountConnection:{
+	PageInfo:{
+		last:"String",
+		limit:"Int",
+		next:"Boolean"
+	},
+	ProjectConnection:{
 		pageInfo:"PageInfo",
-		serviceAccounts:"ServiceAccount"
+		projects:"Project"
 	},
-	MemberOps:{
-		delete:"Boolean",
-		update:"Boolean"
+	MarketplaceUpstream:{
+		"...on NpmRegistryPackage":"NpmRegistryPackage"
 	},
-	CloudDeploymentConfig:{
-		cors:"CloudCorsSetting",
-		secrets:"SecretOutput"
-	},
-	Endpoint:{
-		uri:"String"
-	},
-	Subscription:{
-		cancelURL:"String",
-		expiration:"String",
-		quantity:"Int",
-		seats:"UserConnection",
-		status:"String",
-		subscriptionID:"Int",
-		subscriptionPlanID:"Int",
-		updateURL:"String"
-	},
-	Mutation:{
-		changePassword:"Boolean",
-		changeSubscription:"Boolean",
-		consumeInviteToken:"Boolean",
-		createCloudDeployment:"String",
-		createProject:"Project",
-		createTeam:"TeamOps",
-		createUser:"User",
-		deleteAccount:"Boolean",
-		deployCodeToCloud:"String",
-		deployToFaker:"Boolean",
-		marketplace:"MarketplaceOps",
-		removeCloudDeployment:"String",
-		removeProject:"Boolean",
-		resendVerificationEmail:"Boolean",
-		runtimeLogs:"String",
-		setCloudDeploymentConfig:"Boolean",
-		sync:"Boolean",
-		team:"TeamOps",
-		updateProject:"Boolean",
-		updateSources:"SourceUploadInfo"
-	},
-	ProjectOps:{
-		addMember:"Member",
-		createCloudDeployment:"String",
-		createTemporaryFile:"TemporaryFile",
-		delete:"Boolean",
-		deployCodeToCloud:"String",
-		deployToFaker:"Boolean",
-		removeCloudDeployment:"String",
-		removeSources:"Boolean",
-		renameSources:"Boolean",
-		runtimeLogs:"String",
-		setCloudDeploymentConfig:"Boolean",
-		update:"Boolean"
-	},
-	SecretOutput:{
+	RFC3339Date: `scalar.RFC3339Date` as const,
+	Team:{
+		id:"ID",
+		member:"Member",
+		members:"MemberConnection",
 		name:"String",
-		value:"String"
-	},
-	Namespace:{
-		project:"Project",
-		projects:"ProjectConnection",
-		public:"Boolean",
-		slug:"String"
-	},
-	MarketplaceItem:{
-		project:"Project",
-		upstream:"MarketplaceUpstream"
-	},
-	Payment:{
-		amount:"Decimal",
-		currency:"String",
-		date:"PaymentDate",
-		receiptURL:"String",
-		subscriptionID:"Int"
-	},
-	MemberConnection:{
-		members:"Member",
-		pageInfo:"PageInfo"
-	},
-	InviteToken:{
-		domain:"String",
-		name:"String",
-		removed:"Boolean",
-		token:"String"
-	},
-	SourceUploadInfo:{
-		filename:"String",
-		headers:"Header",
-		putUrl:"String"
+		namespace:"Namespace",
+		planID:"Int",
+		serviceAccounts:"ServiceAccountConnection",
+		tokens:"InviteToken"
 	}
 }
 
 export const Ops = {
-subscription: "SchemaSubscription" as const,
-	query: "Query" as const,
+query: "Query" as const,
 	mutation: "Mutation" as const
 }
