@@ -1,7 +1,9 @@
-import fs from 'fs';
+import fs, { read } from 'fs';
 import path from 'path';
 import { Action } from '@/common/handleTemplates/models.js';
-const unifyString = (s: string) => s.replace(/\s/g, '').replace(/\n/g, '').replace(/\"/g, `'`);
+import { log } from 'console';
+const unifyString = (s: string) =>
+  s.replace(/\s/g, '').replace(/\n/g, '').replace(/\"/g, `'`);
 export class HandleTemplates {
   public static action = (a: Action) => {
     const folder = path.dirname(a.path);
@@ -29,6 +31,13 @@ export class HandleTemplates {
         }
       }
       fs.appendFileSync(a.path, a.content);
+    }
+    if (a.type === 'get') {
+      const fileExist = fs.existsSync(a.path);
+      if (fileExist) {
+        const readFile = fs.readFileSync(a.path);
+        return readFile;
+      }
     }
   };
 }
