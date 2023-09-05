@@ -22,8 +22,8 @@ const jolt = () => {
   const token = Config.getTokenOptions('token');
   const headers: Record<string, string> = token
     ? {
-        Authorization: `Bearer ${token}`,
-      }
+      Authorization: `Bearer ${token}`,
+    }
     : {};
   return Chain('https://api.staging.project.graphqleditor.com/graphql', {
     headers,
@@ -34,8 +34,8 @@ const joltSubscription = () => {
   const token = Config.getTokenOptions('token');
   const headers: Record<string, string> = token
     ? {
-        Authorization: `Bearer ${token}`,
-      }
+      Authorization: `Bearer ${token}`,
+    }
     : {};
   return Subscription('https://api.staging.project.graphqleditor.com/graphql', {
     headers,
@@ -184,14 +184,9 @@ export class Editor {
         ? (await fetch(libraryURL.getUrl!)).text()
         : new Promise<string>((resolve) => resolve('')),
     ]);
-    const sdlMerge = mergeSDLs(graphqlFile, libraryFile);
-    if (sdlMerge.__typename === 'error')
-      throw new Error(
-        sdlMerge.errors
-          .map((e) => `Conflict on: ${e.conflictingNode}.${e.conflictingField}`)
-          .join('\n'),
-      );
-    return sdlMerge.sdl;
+    const sdlMerge = mergeSDLs(graphqlFile, libraryFile)
+    if (sdlMerge.__typename === 'error') throw new Error(sdlMerge.errors.map(e => `Conflict on: ${e.conflictingNode}.${e.conflictingField}`).join("\n"))
+    return sdlMerge.sdl
   };
 
   public static getSchema = async (resolve: {

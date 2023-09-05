@@ -1,7 +1,6 @@
-import fs, { read } from 'fs';
+import fs from 'fs';
 import path from 'path';
 import { Action } from '@/common/handleTemplates/models.js';
-import { log } from 'console';
 const unifyString = (s: string) =>
   s.replace(/\s/g, '').replace(/\n/g, '').replace(/\"/g, `'`);
 export class HandleTemplates {
