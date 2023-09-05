@@ -33,12 +33,11 @@ export const CommandSchemaPush = async ({
     accountName: resolve.namespace,
     projectName: resolve.project,
   });
-  const t = await Editor.saveFilesToCloud(p.id, [
+  await Editor.saveFilesToCloud(p.id, [
     {
       content: schema,
       name: 'schema-latest.graphql',
       type: 'application/json',
     },
   ]);
-  console.log(t);
 };
