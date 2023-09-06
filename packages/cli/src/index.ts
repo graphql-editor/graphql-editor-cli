@@ -4,7 +4,6 @@ import yargs from 'yargs';
 import { welcome } from '@/welcome.js';
 import { Auth } from '@/Auth/index.js';
 import { initConfiguration } from '@/commands/common/init.js';
-import { CommandSchema } from '@/commands/common/schema.js';
 import {
   Config,
   Configuration,
@@ -17,6 +16,7 @@ import CodeGen from '@/commands/codegen/CLI.js';
 import Cloud from '@/commands/create/CLI.js';
 import Create from '@/commands/cloud/CLI.js';
 import ExternalCI from '@/commands/externalCi/CLI.js';
+import Schema from '@/commands/schema/CLI.js';
 import { confOptions, projectOptions } from '@/common/promptOptions.js';
 import { CommandPrune } from '@/commands/common/prune.js';
 import { CommandInspect } from '@/commands/common/inspect.js';
@@ -44,7 +44,7 @@ welcome().then(() => {
         await initConfiguration(
           argv as Pick<
             ConfigurationOptions,
-            'project' | 'namespace' | 'projectVersion'
+            'project' | 'namespace' | 'projectVersion' | 'schemaDir'
           >,
         );
       },
@@ -52,7 +52,7 @@ welcome().then(() => {
     .command(
       'login',
       'Login to GraphQL Editor',
-      async (yargs) => { },
+      async (yargs) => {},
       async (argv) => {
         await Auth.login().then(Config.setTokenOptions);
       },
@@ -60,40 +60,15 @@ welcome().then(() => {
     .command(
       'logout',
       'Logout from GraphQL Editor',
-      async (yargs) => { },
+      async (yargs) => {},
       (argv) => {
         Auth.logout();
       },
     )
     .command(
-      'schema',
-      'Generate GraphQL schema from project at given path',
-      async (yargs) => {
-        yargs.options(
-          confOptions({
-            ...projectOptions,
-            schemaDir: {
-              describe:
-                'Path to created schema containing its name and extension',
-              type: 'string',
-            },
-          }),
-        );
-      },
-      async (argv) => {
-        await Auth.login().then(Config.setTokenOptions);
-        await CommandSchema(
-          argv as Pick<
-            ConfigurationOptions,
-            'project' | 'namespace' | 'projectVersion' | 'schemaDir'
-          >,
-        );
-      },
-    )
-    .command(
       'prune',
       'Get information about redundant resolvers that do not exist in schema now.',
-      async (yargs) => { },
+      async (yargs) => {},
       async (argv) => {
         await CommandPrune();
       },
@@ -101,20 +76,21 @@ welcome().then(() => {
     .command(
       'inspect',
       'Get information about non-scalar resolvers that are not implemented in stucco.json',
-      async (yargs) => { },
+      async (yargs) => {},
       async (argv) => {
         await CommandInspect();
       },
     )
     .command(Create)
     .command(Cloud)
+    .command(Schema)
     .command(ExternalCI)
     .command(CodeGen)
     .command(Gei)
     .command(
       'dev',
       'Start Typescript server and stucco server with hot reload.',
-      async (yargs) => { },
+      async (yargs) => {},
       async (argv) => {
         CommandDev();
       },
@@ -125,7 +101,7 @@ welcome().then(() => {
     .command(
       'stucco',
       'Update your stucco file to cloud for synchronizing resolvers',
-      async (yargs) => { },
+      async (yargs) => {},
       async (argv) => {
         await pushStuccoJson(
           argv as Pick<ConfigurationOptions, 'project' | 'namespace'>,

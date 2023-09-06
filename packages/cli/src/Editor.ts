@@ -1,11 +1,4 @@
-import {
-  Subscription,
-  Chain,
-  DeployCodeToCloudEnv,
-  DeployCodeToCloudURIKind,
-  GraphQLTypes,
-  ValueTypes,
-} from '@/zeus/index.js';
+import { Subscription, Chain, GraphQLTypes, ValueTypes } from '@/zeus/index.js';
 import { Config } from '@/Configuration/index.js';
 import fetch from 'node-fetch';
 import { COMMON_FILES } from '@/gshared/constants/index.js';
@@ -22,8 +15,8 @@ const jolt = () => {
   const token = Config.getTokenOptions('token');
   const headers: Record<string, string> = token
     ? {
-      Authorization: `Bearer ${token}`,
-    }
+        Authorization: `Bearer ${token}`,
+      }
     : {};
   return Chain('https://api.staging.project.graphqleditor.com/graphql', {
     headers,
@@ -34,8 +27,8 @@ const joltSubscription = () => {
   const token = Config.getTokenOptions('token');
   const headers: Record<string, string> = token
     ? {
-      Authorization: `Bearer ${token}`,
-    }
+        Authorization: `Bearer ${token}`,
+      }
     : {};
   return Subscription('https://api.staging.project.graphqleditor.com/graphql', {
     headers,
@@ -184,9 +177,14 @@ export class Editor {
         ? (await fetch(libraryURL.getUrl!)).text()
         : new Promise<string>((resolve) => resolve('')),
     ]);
-    const sdlMerge = mergeSDLs(graphqlFile, libraryFile)
-    if (sdlMerge.__typename === 'error') throw new Error(sdlMerge.errors.map(e => `Conflict on: ${e.conflictingNode}.${e.conflictingField}`).join("\n"))
-    return sdlMerge.sdl
+    const sdlMerge = mergeSDLs(graphqlFile, libraryFile);
+    if (sdlMerge.__typename === 'error')
+      throw new Error(
+        sdlMerge.errors
+          .map((e) => `Conflict on: ${e.conflictingNode}.${e.conflictingField}`)
+          .join('\n'),
+      );
+    return sdlMerge.sdl;
   };
 
   public static getSchema = async (resolve: {
@@ -328,12 +326,6 @@ export class Editor {
         }),
     );
   };
-  public static deployProjectToCloud = async (projectId: string) => {
-    const response = await jolt()('mutation')({
-      createCloudDeployment: [{ id: projectId }, true],
-    });
-    return response.createCloudDeployment;
-  };
   public static getServerLessMongo = async (projectId: string) => {
     const checking = ora(
       'Checking if remote mongo serverless configuration exists',
@@ -350,31 +342,6 @@ export class Editor {
     if (result) checking.succeed();
     else checking.fail();
     return result;
-  };
-  public static deployRepoToSharedWorker = async (
-    projectId: string,
-    zipURI: string,
-    opts: Pick<ValueTypes['DeployCodeToCloudInput'], 'node14Opts' | 'secrets'>,
-  ) => {
-    const response = await jolt()('mutation')({
-      deployCodeToCloud: [
-        {
-          id: projectId,
-          opts: {
-            codeURI: zipURI,
-            env: DeployCodeToCloudEnv.NODE14,
-            kind: DeployCodeToCloudURIKind.ZIP,
-            ...opts,
-          },
-        },
-        true,
-      ],
-    });
-    const deploymentId = response.deployCodeToCloud;
-    if (!deploymentId) {
-      throw new Error('Cannot deploy project');
-    }
-    return deploymentId;
   };
   public static publishIntegration = async (
     projectId: string,
@@ -394,12 +361,6 @@ export class Editor {
       },
     });
     return response.marketplace?.removeProject;
-  };
-  public static showDeploymentLogs = async (streamID: string) => {
-    const response = await joltSubscription()('subscription')({
-      watchLogs: [{ streamID }, true],
-    });
-    return response;
   };
   public static getDeviceCode = async () => {
     const response = await fetch(

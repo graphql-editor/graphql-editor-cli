@@ -60,7 +60,10 @@ export const apiFetch =
   (query: string, variables: Record<string, unknown> = {}) => {
     const fetchOptions = options[1] || {};
     if (fetchOptions.method && fetchOptions.method === 'GET') {
-      return fetch(`${options[0]}?query=${encodeURIComponent(query)}`, fetchOptions)
+      return fetch(
+        `${options[0]}?query=${encodeURIComponent(query)}`,
+        fetchOptions,
+      )
         .then(handleFetchResponse)
         .then((response: GraphQLResponse) => {
           if (response.errors) {
@@ -130,7 +133,10 @@ export const InternalsBuildQuery = ({
     if (k === '__alias') {
       return Object.entries(o)
         .map(([alias, objectUnderAlias]) => {
-          if (typeof objectUnderAlias !== 'object' || Array.isArray(objectUnderAlias)) {
+          if (
+            typeof objectUnderAlias !== 'object' ||
+            Array.isArray(objectUnderAlias)
+          ) {
             throw new Error(
               'Invalid alias it should be __alias:{ YOUR_ALIAS_NAME: { OPERATION_NAME: { ...selectors }}}',
             );
@@ -141,28 +147,42 @@ export const InternalsBuildQuery = ({
         })
         .join('\n');
     }
-    const hasOperationName = root && options?.operationName ? ' ' + options.operationName : '';
+    const hasOperationName =
+      root && options?.operationName ? ' ' + options.operationName : '';
     const keyForDirectives = o.__directives ?? '';
     const query = `{${Object.entries(o)
       .filter(([k]) => k !== '__directives')
-      .map((e) => ibb(...e, [p, `field<>${keyForPath}`].join(SEPARATOR), false, vars))
+      .map((e) =>
+        ibb(...e, [p, `field<>${keyForPath}`].join(SEPARATOR), false, vars),
+      )
       .join('\n')}}`;
     if (!root) {
       return `${k} ${keyForDirectives}${hasOperationName} ${query}`;
     }
-    const varsString = vars.map((v) => `${v.name}: ${v.graphQLType}`).join(', ');
-    return `${k} ${keyForDirectives}${hasOperationName}${varsString ? `(${varsString})` : ''} ${query}`;
+    const varsString = vars
+      .map((v) => `${v.name}: ${v.graphQLType}`)
+      .join(', ');
+    return `${k} ${keyForDirectives}${hasOperationName}${
+      varsString ? `(${varsString})` : ''
+    } ${query}`;
   };
   return ibb;
 };
 
 export const Thunder =
   (fn: FetchFunction) =>
-  <O extends keyof typeof Ops, SCLR extends ScalarDefinition, R extends keyof ValueTypes = GenericOperation<O>>(
+  <
+    O extends keyof typeof Ops,
+    SCLR extends ScalarDefinition,
+    R extends keyof ValueTypes = GenericOperation<O>,
+  >(
     operation: O,
     graphqlOptions?: ThunderGraphQLOptions<SCLR>,
   ) =>
-  <Z extends ValueTypes[R]>(o: Z | ValueTypes[R], ops?: OperationOptions & { variables?: Record<string, unknown> }) =>
+  <Z extends ValueTypes[R]>(
+    o: Z | ValueTypes[R],
+    ops?: OperationOptions & { variables?: Record<string, unknown> },
+  ) =>
     fn(
       Zeus(operation, o, {
         operationOptions: ops,
@@ -187,11 +207,18 @@ export const Chain = (...options: chainOptions) => Thunder(apiFetch(options));
 
 export const SubscriptionThunder =
   (fn: SubscriptionFunction) =>
-  <O extends keyof typeof Ops, SCLR extends ScalarDefinition, R extends keyof ValueTypes = GenericOperation<O>>(
+  <
+    O extends keyof typeof Ops,
+    SCLR extends ScalarDefinition,
+    R extends keyof ValueTypes = GenericOperation<O>,
+  >(
     operation: O,
     graphqlOptions?: ThunderGraphQLOptions<SCLR>,
   ) =>
-  <Z extends ValueTypes[R]>(o: Z | ValueTypes[R], ops?: OperationOptions & { variables?: ExtractVariables<Z> }) => {
+  <Z extends ValueTypes[R]>(
+    o: Z | ValueTypes[R],
+    ops?: OperationOptions & { variables?: ExtractVariables<Z> },
+  ) => {
     const returnedFunction = fn(
       Zeus(operation, o, {
         operationOptions: ops,
@@ -200,7 +227,9 @@ export const SubscriptionThunder =
     ) as SubscriptionToGraphQL<Z, GraphQLTypes[R], SCLR>;
     if (returnedFunction?.on && graphqlOptions?.scalars) {
       const wrapped = returnedFunction.on;
-      returnedFunction.on = (fnToCall: (args: InputType<GraphQLTypes[R], Z, SCLR>) => void) =>
+      returnedFunction.on = (
+        fnToCall: (args: InputType<GraphQLTypes[R], Z, SCLR>) => void,
+      ) =>
         wrapped((data: InputType<GraphQLTypes[R], Z, SCLR>) => {
           if (graphqlOptions?.scalars) {
             return fnToCall(
@@ -220,7 +249,8 @@ export const SubscriptionThunder =
     return returnedFunction;
   };
 
-export const Subscription = (...options: chainOptions) => SubscriptionThunder(apiSubscription(options));
+export const Subscription = (...options: chainOptions) =>
+  SubscriptionThunder(apiSubscription(options));
 export const Zeus = <
   Z extends ValueTypes[R],
   O extends keyof typeof Ops,
@@ -243,9 +273,11 @@ export const Zeus = <
 
 export const ZeusSelect = <T>() => ((t: unknown) => t) as SelectionFunction<T>;
 
-export const Selector = <T extends keyof ValueTypes>(key: T) => key && ZeusSelect<ValueTypes[T]>();
+export const Selector = <T extends keyof ValueTypes>(key: T) =>
+  key && ZeusSelect<ValueTypes[T]>();
 
-export const TypeFromSelector = <T extends keyof ValueTypes>(key: T) => key && ZeusSelect<ValueTypes[T]>();
+export const TypeFromSelector = <T extends keyof ValueTypes>(key: T) =>
+  key && ZeusSelect<ValueTypes[T]>();
 export const Gql = Chain(HOST, {
   headers: {
     'Content-Type': 'application/json',
@@ -278,9 +310,17 @@ export const decodeScalarsInResponse = <O extends Operations>({
     returns,
   });
 
-  const scalarPaths = builder(initialOp as string, ops[initialOp], initialZeusQuery);
+  const scalarPaths = builder(
+    initialOp as string,
+    ops[initialOp],
+    initialZeusQuery,
+  );
   if (scalarPaths) {
-    const r = traverseResponse({ scalarPaths, resolvers: scalars })(initialOp as string, response, [ops[initialOp]]);
+    const r = traverseResponse({ scalarPaths, resolvers: scalars })(
+      initialOp as string,
+      response,
+      [ops[initialOp]],
+    );
     return r;
   }
   return response;
@@ -295,7 +335,11 @@ export const traverseResponse = ({
     [x: string]: ScalarResolver | undefined;
   };
 }) => {
-  const ibb = (k: string, o: InputValueType | VType, p: string[] = []): unknown => {
+  const ibb = (
+    k: string,
+    o: InputValueType | VType,
+    p: string[] = [],
+  ): unknown => {
     if (Array.isArray(o)) {
       return o.map((eachO) => ibb(k, eachO, p));
     }
@@ -305,15 +349,31 @@ export const traverseResponse = ({
     const scalarPathString = p.join(SEPARATOR);
     const currentScalarString = scalarPaths[scalarPathString];
     if (currentScalarString) {
-      const currentDecoder = resolvers[currentScalarString.split('.')[1]]?.decode;
+      const currentDecoder =
+        resolvers[currentScalarString.split('.')[1]]?.decode;
       if (currentDecoder) {
         return currentDecoder(o);
       }
     }
-    if (typeof o === 'boolean' || typeof o === 'number' || typeof o === 'string' || !o) {
+    if (
+      typeof o === 'boolean' ||
+      typeof o === 'number' ||
+      typeof o === 'string' ||
+      !o
+    ) {
       return o;
     }
-    return Object.fromEntries(Object.entries(o).map(([k, v]) => [k, ibb(k, v, [...p, purifyGraphQLKey(k)])]));
+    const entries = Object.entries(o).map(
+      ([k, v]) => [k, ibb(k, v, [...p, purifyGraphQLKey(k)])] as const,
+    );
+    const objectFromEntries = entries.reduce<Record<string, unknown>>(
+      (a, [k, v]) => {
+        a[k] = v;
+        return a;
+      },
+      {},
+    );
+    return objectFromEntries;
   };
   return ibb;
 };
@@ -342,7 +402,13 @@ export type ReturnTypesType = {
     | undefined;
 };
 export type InputValueType = {
-  [x: string]: undefined | boolean | string | number | [any, undefined | boolean | InputValueType] | InputValueType;
+  [x: string]:
+    | undefined
+    | boolean
+    | string
+    | number
+    | [any, undefined | boolean | InputValueType]
+    | InputValueType;
 };
 export type VType =
   | undefined
@@ -369,12 +435,23 @@ export type VariableDefinition = {
 export const SEPARATOR = '|';
 
 export type fetchOptions = Parameters<typeof fetch>;
-type websocketOptions = typeof WebSocket extends new (...args: infer R) => WebSocket ? R : never;
-export type chainOptions = [fetchOptions[0], fetchOptions[1] & { websocket?: websocketOptions }] | [fetchOptions[0]];
-export type FetchFunction = (query: string, variables?: Record<string, unknown>) => Promise<any>;
+type websocketOptions = typeof WebSocket extends new (
+  ...args: infer R
+) => WebSocket
+  ? R
+  : never;
+export type chainOptions =
+  | [fetchOptions[0], fetchOptions[1] & { websocket?: websocketOptions }]
+  | [fetchOptions[0]];
+export type FetchFunction = (
+  query: string,
+  variables?: Record<string, unknown>,
+) => Promise<any>;
 export type SubscriptionFunction = (query: string) => any;
 type NotUndefined<T> = T extends undefined ? never : T;
-export type ResolverType<F> = NotUndefined<F extends [infer ARGS, any] ? ARGS : undefined>;
+export type ResolverType<F> = NotUndefined<
+  F extends [infer ARGS, any] ? ARGS : undefined
+>;
 
 export type OperationOptions = {
   operationName?: string;
@@ -397,12 +474,17 @@ export class GraphQLError extends Error {
     return 'GraphQL Response Error';
   }
 }
-export type GenericOperation<O> = O extends keyof typeof Ops ? typeof Ops[O] : never;
+export type GenericOperation<O> = O extends keyof typeof Ops
+  ? typeof Ops[O]
+  : never;
 export type ThunderGraphQLOptions<SCLR extends ScalarDefinition> = {
   scalars?: SCLR | ScalarCoders;
 };
 
-const ExtractScalar = (mappedParts: string[], returns: ReturnTypesType): `scalar.${string}` | undefined => {
+const ExtractScalar = (
+  mappedParts: string[],
+  returns: ReturnTypesType,
+): `scalar.${string}` | undefined => {
   if (mappedParts.length === 0) {
     return;
   }
@@ -418,7 +500,13 @@ const ExtractScalar = (mappedParts: string[], returns: ReturnTypesType): `scalar
   return returnP1 as `scalar.${string}` | undefined;
 };
 
-export const PrepareScalarPaths = ({ ops, returns }: { returns: ReturnTypesType; ops: Operations }) => {
+export const PrepareScalarPaths = ({
+  ops,
+  returns,
+}: {
+  returns: ReturnTypesType;
+  ops: Operations;
+}) => {
   const ibb = (
     k: string,
     originalKey: string,
@@ -430,7 +518,11 @@ export const PrepareScalarPaths = ({ ops, returns }: { returns: ReturnTypesType;
     if (!o) {
       return;
     }
-    if (typeof o === 'boolean' || typeof o === 'number' || typeof o === 'string') {
+    if (
+      typeof o === 'boolean' ||
+      typeof o === 'number' ||
+      typeof o === 'string'
+    ) {
       const extractionArray = [...pOriginals, originalKey];
       const isScalar = ExtractScalar(extractionArray, returns);
       if (isScalar?.startsWith('scalar')) {
@@ -447,7 +539,10 @@ export const PrepareScalarPaths = ({ ops, returns }: { returns: ReturnTypesType;
     if (k === '__alias') {
       return Object.entries(o)
         .map(([alias, objectUnderAlias]) => {
-          if (typeof objectUnderAlias !== 'object' || Array.isArray(objectUnderAlias)) {
+          if (
+            typeof objectUnderAlias !== 'object' ||
+            Array.isArray(objectUnderAlias)
+          ) {
             throw new Error(
               'Invalid alias it should be __alias:{ YOUR_ALIAS_NAME: { OPERATION_NAME: { ...selectors }}}',
             );
@@ -472,7 +567,9 @@ export const PrepareScalarPaths = ({ ops, returns }: { returns: ReturnTypesType;
           k,
           v,
           isInlineFragment ? p : [...p, purifyGraphQLKey(keyName || k)],
-          isInlineFragment ? pOriginals : [...pOriginals, purifyGraphQLKey(originalKey)],
+          isInlineFragment
+            ? pOriginals
+            : [...pOriginals, purifyGraphQLKey(originalKey)],
           false,
         );
       })
@@ -484,7 +581,8 @@ export const PrepareScalarPaths = ({ ops, returns }: { returns: ReturnTypesType;
   return ibb;
 };
 
-export const purifyGraphQLKey = (k: string) => k.replace(/\([^)]*\)/g, '').replace(/^[^:]*\:/g, '');
+export const purifyGraphQLKey = (k: string) =>
+  k.replace(/\([^)]*\)/g, '').replace(/^[^:]*\:/g, '');
 
 const mapPart = (p: string) => {
   const [isArg, isField] = p.split('<>');
@@ -502,14 +600,22 @@ const mapPart = (p: string) => {
 
 type Part = ReturnType<typeof mapPart>;
 
-export const ResolveFromPath = (props: AllTypesPropsType, returns: ReturnTypesType, ops: Operations) => {
+export const ResolveFromPath = (
+  props: AllTypesPropsType,
+  returns: ReturnTypesType,
+  ops: Operations,
+) => {
   const ResolvePropsType = (mappedParts: Part[]) => {
     const oKey = ops[mappedParts[0].v];
     const propsP1 = oKey ? props[oKey] : props[mappedParts[0].v];
     if (propsP1 === 'enum' && mappedParts.length === 1) {
       return 'enum';
     }
-    if (typeof propsP1 === 'string' && propsP1.startsWith('scalar.') && mappedParts.length === 1) {
+    if (
+      typeof propsP1 === 'string' &&
+      propsP1.startsWith('scalar.') &&
+      mappedParts.length === 1
+    ) {
       return propsP1;
     }
     if (typeof propsP1 === 'object') {
@@ -592,7 +698,9 @@ export const InternalArgsBuilt = ({
   const arb = (a: ZeusArgsType, p = '', root = true): string => {
     if (typeof a === 'string') {
       if (a.startsWith(START_VAR_NAME)) {
-        const [varName, graphQLType] = a.replace(START_VAR_NAME, '$').split(GRAPHQL_TYPE_SEPARATOR);
+        const [varName, graphQLType] = a
+          .replace(START_VAR_NAME, '$')
+          .split(GRAPHQL_TYPE_SEPARATOR);
         const v = vars.find((v) => v.name === varName);
         if (!v) {
           vars.push({
@@ -643,19 +751,31 @@ export const InternalArgsBuilt = ({
   return arb;
 };
 
-export const resolverFor = <X, T extends keyof ResolverInputTypes, Z extends keyof ResolverInputTypes[T]>(
+export const resolverFor = <
+  X,
+  T extends keyof ResolverInputTypes,
+  Z extends keyof ResolverInputTypes[T],
+>(
   type: T,
   field: Z,
   fn: (
-    args: Required<ResolverInputTypes[T]>[Z] extends [infer Input, any] ? Input : any,
+    args: Required<ResolverInputTypes[T]>[Z] extends [infer Input, any]
+      ? Input
+      : any,
     source: any,
-  ) => Z extends keyof ModelTypes[T] ? ModelTypes[T][Z] | Promise<ModelTypes[T][Z]> | X : any,
-) => fn as (args?: any, source?: any) => any;
+  ) => Z extends keyof ModelTypes[T]
+    ? ModelTypes[T][Z] | Promise<ModelTypes[T][Z]> | X
+    : never,
+) => fn as (args?: any, source?: any) => ReturnType<typeof fn>;
 
 export type UnwrapPromise<T> = T extends Promise<infer R> ? R : T;
-export type ZeusState<T extends (...args: any[]) => Promise<any>> = NonNullable<UnwrapPromise<ReturnType<T>>>;
+export type ZeusState<T extends (...args: any[]) => Promise<any>> = NonNullable<
+  UnwrapPromise<ReturnType<T>>
+>;
 export type ZeusHook<
-  T extends (...args: any[]) => Record<string, (...args: any[]) => Promise<any>>,
+  T extends (
+    ...args: any[]
+  ) => Record<string, (...args: any[]) => Promise<any>>,
   N extends keyof ReturnType<T>,
 > = ZeusState<ReturnType<T>[N]>;
 
@@ -672,7 +792,9 @@ type DeepAnify<T> = {
 type IsPayLoad<T> = T extends [any, infer PayLoad] ? PayLoad : T;
 export type ScalarDefinition = Record<string, ScalarResolver>;
 
-type IsScalar<S, SCLR extends ScalarDefinition> = S extends 'scalar' & { name: infer T }
+type IsScalar<S, SCLR extends ScalarDefinition> = S extends 'scalar' & {
+  name: infer T;
+}
   ? T extends keyof SCLR
     ? SCLR[T]['decode'] extends (s: unknown) => unknown
       ? ReturnType<SCLR[T]['decode']>
@@ -685,16 +807,28 @@ type IsArray<T, U, SCLR extends ScalarDefinition> = T extends Array<infer R>
 type FlattenArray<T> = T extends Array<infer R> ? R : T;
 type BaseZeusResolver = boolean | 1 | string | Variable<any, string>;
 
-type IsInterfaced<SRC extends DeepAnify<DST>, DST, SCLR extends ScalarDefinition> = FlattenArray<SRC> extends
-  | ZEUS_INTERFACES
-  | ZEUS_UNIONS
+type IsInterfaced<
+  SRC extends DeepAnify<DST>,
+  DST,
+  SCLR extends ScalarDefinition,
+> = FlattenArray<SRC> extends ZEUS_INTERFACES | ZEUS_UNIONS
   ? {
       [P in keyof SRC]: SRC[P] extends '__union' & infer R
         ? P extends keyof DST
-          ? IsArray<R, '__typename' extends keyof DST ? DST[P] & { __typename: true } : DST[P], SCLR>
-          : Record<string, unknown>
+          ? IsArray<
+              R,
+              '__typename' extends keyof DST
+                ? DST[P] & { __typename: true }
+                : DST[P],
+              SCLR
+            >
+          : IsArray<
+              R,
+              '__typename' extends keyof DST ? { __typename: true } : never,
+              SCLR
+            >
         : never;
-    }[keyof DST] & {
+    }[keyof SRC] & {
       [P in keyof Omit<
         Pick<
           SRC,
@@ -703,19 +837,29 @@ type IsInterfaced<SRC extends DeepAnify<DST>, DST, SCLR extends ScalarDefinition
           }[keyof DST]
         >,
         '__typename'
-      >]: IsPayLoad<DST[P]> extends BaseZeusResolver ? IsScalar<SRC[P], SCLR> : IsArray<SRC[P], DST[P], SCLR>;
+      >]: IsPayLoad<DST[P]> extends BaseZeusResolver
+        ? IsScalar<SRC[P], SCLR>
+        : IsArray<SRC[P], DST[P], SCLR>;
     }
   : {
-      [P in keyof Pick<SRC, keyof DST>]: IsPayLoad<DST[P]> extends BaseZeusResolver
+      [P in keyof Pick<SRC, keyof DST>]: IsPayLoad<
+        DST[P]
+      > extends BaseZeusResolver
         ? IsScalar<SRC[P], SCLR>
         : IsArray<SRC[P], DST[P], SCLR>;
     };
 
-export type MapType<SRC, DST, SCLR extends ScalarDefinition> = SRC extends DeepAnify<DST>
-  ? IsInterfaced<SRC, DST, SCLR>
-  : never;
+export type MapType<
+  SRC,
+  DST,
+  SCLR extends ScalarDefinition,
+> = SRC extends DeepAnify<DST> ? IsInterfaced<SRC, DST, SCLR> : never;
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type InputType<SRC, DST, SCLR extends ScalarDefinition = {}> = IsPayLoad<DST> extends { __alias: infer R }
+export type InputType<
+  SRC,
+  DST,
+  SCLR extends ScalarDefinition = {},
+> = IsPayLoad<DST> extends { __alias: infer R }
   ? {
       [P in keyof R]: MapType<SRC, R[P], SCLR>[keyof MapType<SRC, R[P], SCLR>];
     } & MapType<SRC, Omit<IsPayLoad<DST>, '__alias'>, SCLR>
@@ -723,17 +867,26 @@ export type InputType<SRC, DST, SCLR extends ScalarDefinition = {}> = IsPayLoad<
 export type SubscriptionToGraphQL<Z, T, SCLR extends ScalarDefinition> = {
   ws: WebSocket;
   on: (fn: (args: InputType<T, Z, SCLR>) => void) => void;
-  off: (fn: (e: { data?: InputType<T, Z, SCLR>; code?: number; reason?: string; message?: string }) => void) => void;
-  error: (fn: (e: { data?: InputType<T, Z, SCLR>; errors?: string[] }) => void) => void;
+  off: (
+    fn: (e: {
+      data?: InputType<T, Z, SCLR>;
+      code?: number;
+      reason?: string;
+      message?: string;
+    }) => void,
+  ) => void;
+  error: (
+    fn: (e: { data?: InputType<T, Z, SCLR>; errors?: string[] }) => void,
+  ) => void;
   open: () => void;
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type FromSelector<SELECTOR, NAME extends keyof GraphQLTypes, SCLR extends ScalarDefinition = {}> = InputType<
-  GraphQLTypes[NAME],
+export type FromSelector<
   SELECTOR,
-  SCLR
->;
+  NAME extends keyof GraphQLTypes,
+  SCLR extends ScalarDefinition = {},
+> = InputType<GraphQLTypes[NAME], SELECTOR, SCLR>;
 
 export type ScalarResolver = {
   encode?: (s: unknown) => string;
@@ -750,7 +903,13 @@ type BuiltInVariableTypes = {
   ['Boolean']: boolean;
 };
 type AllVariableTypes = keyof BuiltInVariableTypes | keyof ZEUS_VARIABLES;
-type VariableRequired<T extends string> = `${T}!` | T | `[${T}]` | `[${T}]!` | `[${T}!]` | `[${T}!]!`;
+type VariableRequired<T extends string> =
+  | `${T}!`
+  | T
+  | `[${T}]`
+  | `[${T}]!`
+  | `[${T}!]`
+  | `[${T}!]!`;
 type VR<T extends string> = VariableRequired<VariableRequired<T>>;
 
 export type GraphQLVariableType = VR<AllVariableTypes>;
@@ -773,11 +932,12 @@ type DecomposeType<T, Type> = T extends `[${infer R}]`
   ? NonNullable<DecomposeType<R, Type>>
   : Type | undefined;
 
-type ExtractTypeFromGraphQLType<T extends string> = T extends keyof ZEUS_VARIABLES
-  ? ZEUS_VARIABLES[T]
-  : T extends keyof BuiltInVariableTypes
-  ? BuiltInVariableTypes[T]
-  : any;
+type ExtractTypeFromGraphQLType<T extends string> =
+  T extends keyof ZEUS_VARIABLES
+    ? ZEUS_VARIABLES[T]
+    : T extends keyof BuiltInVariableTypes
+    ? BuiltInVariableTypes[T]
+    : any;
 
 export type GetVariableType<T extends string> = DecomposeType<
   T,
@@ -795,70 +955,109 @@ type OptionalKeys<T> = {
   [P in keyof T]?: T[P];
 };
 
-export type WithOptionalNullables<T> = OptionalKeys<WithNullableKeys<T>> & WithNonNullableKeys<T>;
+export type WithOptionalNullables<T> = OptionalKeys<WithNullableKeys<T>> &
+  WithNonNullableKeys<T>;
 
 export type Variable<T extends GraphQLVariableType, Name extends string> = {
   ' __zeus_name': Name;
   ' __zeus_type': T;
 };
 
-export type ExtractVariables<Query> = Query extends Variable<infer VType, infer VName>
+export type ExtractVariables<Query> = Query extends Variable<
+  infer VType,
+  infer VName
+>
   ? { [key in VName]: GetVariableType<VType> }
   : Query extends [infer Inputs, infer Outputs]
   ? ExtractVariables<Inputs> & ExtractVariables<Outputs>
   : Query extends string | number | boolean
   ? // eslint-disable-next-line @typescript-eslint/ban-types
     {}
-  : UnionToIntersection<{ [K in keyof Query]: WithOptionalNullables<ExtractVariables<Query[K]>> }[keyof Query]>;
+  : UnionToIntersection<
+      {
+        [K in keyof Query]: WithOptionalNullables<ExtractVariables<Query[K]>>;
+      }[keyof Query]
+    >;
 
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I,
+) => void
+  ? I
+  : never;
 
 export const START_VAR_NAME = `$ZEUS_VAR`;
 export const GRAPHQL_TYPE_SEPARATOR = `__$GRAPHQL__`;
 
-export const $ = <Type extends GraphQLVariableType, Name extends string>(name: Name, graphqlType: Type) => {
-  return (START_VAR_NAME + name + GRAPHQL_TYPE_SEPARATOR + graphqlType) as unknown as Variable<Type, Name>;
+export const $ = <Type extends GraphQLVariableType, Name extends string>(
+  name: Name,
+  graphqlType: Type,
+) => {
+  return (START_VAR_NAME +
+    name +
+    GRAPHQL_TYPE_SEPARATOR +
+    graphqlType) as unknown as Variable<Type, Name>;
 };
 type ZEUS_INTERFACES = never;
 export type ScalarCoders = {
-  RFC3339Date?: ScalarResolver;
+  PaymentDate?: ScalarResolver;
   Decimal?: ScalarResolver;
   FileServerCredentials?: ScalarResolver;
-  PaymentDate?: ScalarResolver;
+  RFC3339Date?: ScalarResolver;
 };
 type ZEUS_UNIONS = GraphQLTypes['MarketplaceUpstream'];
 
 export type ValueTypes = {
-  ['DeployCodeToCloudNode14Opts']: {
-    buildScript?: string | undefined | null | Variable<any, string>;
-  };
-  /** Defines user's account type */
-  ['AccountType']: AccountType;
-  ['ServiceAccountApiKey']: AliasType<{
-    id?: boolean | `@${string}`;
-    key?: boolean | `@${string}`;
-    name?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Marketplace item connection object
+  /** MarketplaceProjectsSortInput defines how projects from listProjects should be sorted in marketplace. */
+  ['MarketplaceProjectsSortInput']: {
+    /** Sort by name */
+    name?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    /** Sort by id */
+    id?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    /** Sort by owner */
+    owner?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    /** Sort by visisbility */
+    public?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    /** Sort by slug */
+    slug?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    /** Sort by tag */
+    tags?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    /** Sorts projects by team.
 
-Used with paginated listing of projects */
-  ['MarketplaceItemConnection']: AliasType<{
-    /** Current connection page info */
-    pageInfo?: ValueTypes['PageInfo'];
-    /** List of market place items in connection */
-    projects?: ValueTypes['MarketplaceItem'];
-    __typename?: boolean | `@${string}`;
-  }>;
+Sort behaviour for projects by team is implemenation depednant. */
+    team?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    /** Sort projects by creation date */
+    createdAt?:
+      | ValueTypes['SortOrder']
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
   ['ChangeSubscriptionInput']: {
     subscriptionID: number | Variable<any, string>;
     subscriptionPlanID?: number | undefined | null | Variable<any, string>;
   };
+  /** A source object */
+  ['FakerSource']: AliasType<{
+    /** File checksum */
+    checksum?: boolean | `@${string}`;
+    contents?: boolean | `@${string}`;
+    /** Name of source file */
+    filename?: boolean | `@${string}`;
+    /** Return an url by which source file can be accessed */
+    getUrl?: boolean | `@${string}`;
+    /** Return last time the object was updated */
+    updatedAt?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['SubscriptionConnection']: AliasType<{
+    /** Current conenction page info */
+    pageInfo?: ValueTypes['PageInfo'];
+    /** List of subscriptions in connection */
+    subscriptions?: ValueTypes['Subscription'];
+    __typename?: boolean | `@${string}`;
+  }>;
   /** Project type */
   ['Project']: AliasType<{
-    /** Return config of cloud deployment */
-    cloudDeploymentConfig?: ValueTypes['CloudDeploymentConfig'];
-    cloudDeploymentStatus?: [{ streamID?: string | undefined | null | Variable<any, string> }, boolean | `@${string}`];
     /** Return creation time stamp of a project */
     createdAt?: boolean | `@${string}`;
     /** A database connection info */
@@ -913,16 +1112,82 @@ Can be null if project belongs to a user */
     upstream?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
-  /** PredictCheckout represents payment prediction for checkout data */
-  ['PredictCheckout']: AliasType<{
-    /** Predicted checkout price */
-    price?: boolean | `@${string}`;
-    /** Predicted number of trial days */
-    trialDays?: boolean | `@${string}`;
+  /** Editor user */
+  ['User']: AliasType<{
+    /** User's account type */
+    accountType?: boolean | `@${string}`;
+    /** Marketing consent. True if given, false if declined, null if never asked. */
+    consentGiven?: boolean | `@${string}`;
+    /** Marketing consent given at */
+    consentTimestamp?: boolean | `@${string}`;
+    /** Unique user id */
+    id?: boolean | `@${string}`;
+    /** User's namespace */
+    namespace?: ValueTypes['Namespace'];
+    stripeCustomerId?: boolean | `@${string}`;
+    /** User's subscriptions */
+    subscriptions?: ValueTypes['SubscriptionConnection'];
+    /** Unique username */
+    username?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Namespace is a root object containing projects belonging
+to a team or user */
+  ['Namespace']: AliasType<{
+    project?: [{ name: string | Variable<any, string> }, ValueTypes['Project']];
+    projects?: [
+      {
+        last?: string | undefined | null | Variable<any, string>;
+        limit?: number | undefined | null | Variable<any, string>;
+      },
+      ValueTypes['ProjectConnection'],
+    ];
+    /** True if namespace is public */
+    public?: boolean | `@${string}`;
+    /** Namespace part of the slug */
+    slug?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['InviteToken']: AliasType<{
+    createdAt?: boolean | `@${string}`;
+    domain?: boolean | `@${string}`;
+    expiration?: boolean | `@${string}`;
+    name?: boolean | `@${string}`;
+    removed?: boolean | `@${string}`;
+    role?: boolean | `@${string}`;
+    token?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Teams connection */
+  ['TeamConnection']: AliasType<{
+    /** Pagination info used in next fetch */
+    pageInfo?: ValueTypes['PageInfo'];
+    /** List of teams returned by current page in connection */
+    teams?: ValueTypes['Team'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** MarketplaceItem represents a project exposed in marketplace. */
+  ['MarketplaceItem']: AliasType<{
+    project?: ValueTypes['Project'];
+    upstream?: ValueTypes['MarketplaceUpstream'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** PaymentDate is a string in a format 'YYYY-MM-DD' */
+  ['PaymentDate']: unknown;
+  /** Paginated service account list */
+  ['ServiceAccountConnection']: AliasType<{
+    /** pageInfo for service accounts connection */
+    pageInfo?: ValueTypes['PageInfo'];
+    /** List of members in this connection */
+    serviceAccounts?: ValueTypes['ServiceAccount'];
     __typename?: boolean | `@${string}`;
   }>;
   /** ProjectsSortInput defines how projects from listProjects should be sorted. */
   ['ProjectsSortInput']: {
+    /** Sort by name */
+    name?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    /** Sort by id */
+    id?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
     /** Sort by owner */
     owner?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
     /** Sort by visisbility */
@@ -936,19 +1201,457 @@ Can be null if project belongs to a user */
 Sort behaviour for projects by team is implemenation depednant. */
     team?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
     /** Sort projects by creation date */
-    createdAt?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sort by name */
-    name?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sort by id */
-    id?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
+    createdAt?:
+      | ValueTypes['SortOrder']
+      | undefined
+      | null
+      | Variable<any, string>;
   };
-  /** RFC3339Date is a RFC3339 formated date-time string */
-  ['RFC3339Date']: unknown;
-  ['SubscriptionConnection']: AliasType<{
-    /** Current conenction page info */
+  /** Root query type */
+  ['Query']: AliasType<{
+    checkoutData?: [
+      { data: ValueTypes['CheckoutDataInput'] | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    /** Returns true if the user is logged in and has verified email */
+    emailVerified?: boolean | `@${string}`;
+    exchangeServiceAccountKey?: [
+      {
+        key: string | Variable<any, string>;
+        serviceAccount: string | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    fileServerCredentials?: [
+      { project?: string | undefined | null | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    findProjects?: [
+      {
+        last?: string | undefined | null | Variable<any, string>;
+        limit?: number | undefined | null | Variable<any, string>;
+        query: string | Variable<any, string>;
+      },
+      ValueTypes['ProjectConnection'],
+    ];
+    findProjectsByTag?: [
+      {
+        last?: string | undefined | null | Variable<any, string>;
+        limit?: number | undefined | null | Variable<any, string>;
+        tag: string | Variable<any, string>;
+      },
+      ValueTypes['ProjectConnection'],
+    ];
+    generateStripeBillingPortal?: [
+      { returnUrl: string | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    getNamespace?: [
+      { slug: string | Variable<any, string> },
+      ValueTypes['Namespace'],
+    ];
+    getProject?: [
+      { project: string | Variable<any, string> },
+      ValueTypes['Project'],
+    ];
+    getTeam?: [{ name: string | Variable<any, string> }, ValueTypes['Team']];
+    getUser?: [
+      { username: string | Variable<any, string> },
+      ValueTypes['User'],
+    ];
+    listProjects?: [
+      {
+        owned?: boolean | undefined | null | Variable<any, string>;
+        last?: string | undefined | null | Variable<any, string>;
+        limit?: number | undefined | null | Variable<any, string>;
+        sort?:
+          | Array<ValueTypes['ProjectsSortInput'] | undefined | null>
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes['ProjectConnection'],
+    ];
+    /** Marketplace is a space to share your projects */
+    marketplace?: ValueTypes['Marketplace'];
+    myTeams?: [
+      {
+        last?: string | undefined | null | Variable<any, string>;
+        limit?: number | undefined | null | Variable<any, string>;
+      },
+      ValueTypes['TeamConnection'],
+    ];
+    /** List user payments */
+    payments?: ValueTypes['Payment'];
+    predictCheckout?: [
+      { data: ValueTypes['PredictCheckoutInput'] | Variable<any, string> },
+      ValueTypes['PredictCheckout'],
+    ];
+    stripePaymentLink?: [
+      { data: ValueTypes['StripeCheckoutDataInput'] | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['NpmRegistryPackageInput']: {
+    registry?: string | undefined | null | Variable<any, string>;
+    package: string | Variable<any, string>;
+  };
+  /** Vat information of a user */
+  ['VatInput']: {
+    /** Vat company street address */
+    street?: string | undefined | null | Variable<any, string>;
+    /** Vat company city address */
+    city?: string | undefined | null | Variable<any, string>;
+    /** Vat company state address. Optional. */
+    state?: string | undefined | null | Variable<any, string>;
+    /** Vat company country address. */
+    country?: string | undefined | null | Variable<any, string>;
+    /** Vat company post code address. */
+    postCode?: string | undefined | null | Variable<any, string>;
+    /** Vat number */
+    number?: string | undefined | null | Variable<any, string>;
+    /** Vat company name */
+    companyName?: string | undefined | null | Variable<any, string>;
+  };
+  ['RenameFileInput']: {
+    src: string | Variable<any, string>;
+    dst: string | Variable<any, string>;
+  };
+  /** Connection object containing list of faker sources */
+  ['FakerSourceConnection']: AliasType<{
+    /** Connection pageInfo */
     pageInfo?: ValueTypes['PageInfo'];
-    /** List of subscriptions in connection */
-    subscriptions?: ValueTypes['Subscription'];
+    /** List of sources returned by connection */
+    sources?: ValueTypes['FakerSource'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** PredictCheckout represents payment prediction for checkout data */
+  ['PredictCheckout']: AliasType<{
+    /** Predicted checkout price */
+    price?: boolean | `@${string}`;
+    /** Predicted number of trial days */
+    trialDays?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Amount is a number that gives precise representation of real numbers */
+  ['Decimal']: unknown;
+  /** Temporary file for project */
+  ['TemporaryFile']: AliasType<{
+    /** String with url used in GET request */
+    getUrl?: boolean | `@${string}`;
+    /** String with url used in PUT request */
+    putUrl?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Marketplace item connection object
+
+Used with paginated listing of projects */
+  ['MarketplaceItemConnection']: AliasType<{
+    /** Current connection page info */
+    pageInfo?: ValueTypes['PageInfo'];
+    /** List of market place items in connection */
+    projects?: ValueTypes['MarketplaceItem'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['MarketplaceOps']: AliasType<{
+    addProject?: [
+      {
+        id: string | Variable<any, string>;
+        opts?:
+          | ValueTypes['AddProjectInput']
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    removeProject?: [
+      { id: string | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Team member role */
+  ['Role']: Role;
+  ['Mutation']: AliasType<{
+    changePassword?: [
+      {
+        oldPassword: string | Variable<any, string>;
+        newPassword: string | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    changeSubscription?: [
+      { in: ValueTypes['ChangeSubscriptionInput'] | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    consumeInviteToken?: [
+      { token: string | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    createTeam?: [
+      {
+        namespace: string | Variable<any, string>;
+        name: string | Variable<any, string>;
+      },
+      ValueTypes['TeamOps'],
+    ];
+    createUser?: [
+      {
+        namespace: string | Variable<any, string>;
+        public?: boolean | undefined | null | Variable<any, string>;
+      },
+      ValueTypes['User'],
+    ];
+    /** Delete account */
+    deleteAccount?: boolean | `@${string}`;
+    deployToFaker?: [
+      { id: string | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    /** Returns marketplace ops */
+    marketplace?: ValueTypes['MarketplaceOps'];
+    removeProject?: [
+      { project: string | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    /** Resend verification email */
+    resendVerificationEmail?: boolean | `@${string}`;
+    sync?: [
+      {
+        source: string | Variable<any, string>;
+        target: string | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    team?: [{ id: string | Variable<any, string> }, ValueTypes['TeamOps']];
+    updateProject?: [
+      {
+        in?:
+          | ValueTypes['UpdateProject']
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    updateSources?: [
+      {
+        project: string | Variable<any, string>;
+        sources?:
+          | Array<ValueTypes['NewSource']>
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes['SourceUploadInfo'],
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** type object node */
+  ['ProjectOps']: AliasType<{
+    addMember?: [
+      {
+        username: string | Variable<any, string>;
+        role: ValueTypes['Role'] | Variable<any, string>;
+        loginCallback?: string | undefined | null | Variable<any, string>;
+        serviceAccount?: boolean | undefined | null | Variable<any, string>;
+      },
+      ValueTypes['Member'],
+    ];
+    createTemporaryFile?: [
+      {
+        contentType?: string | undefined | null | Variable<any, string>;
+        contentLength?: number | undefined | null | Variable<any, string>;
+      },
+      ValueTypes['TemporaryFile'],
+    ];
+    /** Boolean object node */
+    delete?: boolean | `@${string}`;
+    /** deploy project to faker */
+    deployToFaker?: boolean | `@${string}`;
+    removeSources?: [
+      { files?: Array<string> | undefined | null | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    renameSources?: [
+      {
+        files?:
+          | Array<ValueTypes['RenameFileInput']>
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    update?: [
+      {
+        in?:
+          | ValueTypes['UpdateProject']
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Request header */
+  ['Header']: AliasType<{
+    /** Header name */
+    key?: boolean | `@${string}`;
+    /** Header value */
+    value?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Endpoint returnes a full path to the project without host */
+  ['Endpoint']: AliasType<{
+    /** Full project uri without host */
+    uri?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['UserConnection']: AliasType<{
+    /** Current connection page info */
+    pageInfo?: ValueTypes['PageInfo'];
+    /** List of projects in connection */
+    users?: ValueTypes['User'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['ServiceAccountApiKey']: AliasType<{
+    id?: boolean | `@${string}`;
+    key?: boolean | `@${string}`;
+    name?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['Marketplace']: AliasType<{
+    projects?: [
+      {
+        query?: string | undefined | null | Variable<any, string>;
+        last?: string | undefined | null | Variable<any, string>;
+        limit?: number | undefined | null | Variable<any, string>;
+        sort?:
+          | Array<ValueTypes['MarketplaceProjectsSortInput'] | undefined | null>
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes['MarketplaceItemConnection'],
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Team member ops */
+  ['MemberOps']: AliasType<{
+    /** Boolean object node */
+    delete?: boolean | `@${string}`;
+    update?: [
+      { role?: ValueTypes['Role'] | undefined | null | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** New source payload */
+  ['NewSource']: {
+    /** source file name */
+    filename?: string | undefined | null | Variable<any, string>;
+    /** Length of source in bytes */
+    contentLength?: number | undefined | null | Variable<any, string>;
+    /** Source mime type */
+    contentType?: string | undefined | null | Variable<any, string>;
+    /** Source checksum */
+    checksum?: string | undefined | null | Variable<any, string>;
+  };
+  /** Paginated members list */
+  ['MemberConnection']: AliasType<{
+    /** List of members in this connection */
+    members?: ValueTypes['Member'];
+    /** pageInfo for member connection */
+    pageInfo?: ValueTypes['PageInfo'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Team member */
+  ['Member']: AliasType<{
+    /** Member email */
+    email?: boolean | `@${string}`;
+    /** Member role */
+    role?: boolean | `@${string}`;
+    /** Service account */
+    serviceAccount?: boolean | `@${string}`;
+    /** Member username */
+    username?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['Subscription']: AliasType<{
+    /** Cancel subscription URL */
+    cancelURL?: boolean | `@${string}`;
+    /** Subscription expiration date */
+    expiration?: boolean | `@${string}`;
+    /** Number of seats in subscription */
+    quantity?: boolean | `@${string}`;
+    /** List of seats in subscription */
+    seats?: ValueTypes['UserConnection'];
+    /** Status of subscription */
+    status?: boolean | `@${string}`;
+    /** Subscription unique id */
+    subscriptionID?: boolean | `@${string}`;
+    /** Subscription plan unique id */
+    subscriptionPlanID?: boolean | `@${string}`;
+    /** Update subscription URL */
+    updateURL?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['ServiceAccount']: AliasType<{
+    description?: boolean | `@${string}`;
+    keys?: ValueTypes['ServiceAccountApiKey'];
+    name?: boolean | `@${string}`;
+    tags?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['FileServerCredentials']: unknown;
+  ['NpmRegistryPackage']: AliasType<{
+    package?: boolean | `@${string}`;
+    registry?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Customer data for checkout information */
+  ['CustomerInput']: {
+    /** Must be true for marketing to be allowed */
+    marketingConsent?: boolean | undefined | null | Variable<any, string>;
+    /** User's email address */
+    email?: string | undefined | null | Variable<any, string>;
+    /** User's country */
+    country?: string | undefined | null | Variable<any, string>;
+    /** User's post code */
+    postCode?: string | undefined | null | Variable<any, string>;
+  };
+  ['Payment']: AliasType<{
+    /** Amount paid */
+    amount?: boolean | `@${string}`;
+    /** Currency in which payment was made */
+    currency?: boolean | `@${string}`;
+    /** Date indicates a when the payment was made */
+    date?: boolean | `@${string}`;
+    /** URL from which user can download invoice */
+    receiptURL?: boolean | `@${string}`;
+    /** ID of subscription for which payment was made */
+    subscriptionID?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['AddProjectInput']: {
+    npmRegistryPackage?:
+      | ValueTypes['NpmRegistryPackageInput']
+      | undefined
+      | null
+      | Variable<any, string>;
+  };
+  /** Source upload info object */
+  ['SourceUploadInfo']: AliasType<{
+    /** Source file name */
+    filename?: boolean | `@${string}`;
+    /** List of headers that must be included in PUT request */
+    headers?: ValueTypes['Header'];
+    /** String with url used in PUT request */
+    putUrl?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** Checkout data needed to begin payment process */
@@ -960,53 +1663,161 @@ Sort behaviour for projects by team is implemenation depednant. */
     /** Optional discount coupon */
     coupon?: string | undefined | null | Variable<any, string>;
   };
-  /** Customer data for checkout information */
-  ['CustomerInput']: {
-    /** User's country */
-    country?: string | undefined | null | Variable<any, string>;
-    /** User's post code */
-    postCode?: string | undefined | null | Variable<any, string>;
-    /** Must be true for marketing to be allowed */
-    marketingConsent?: boolean | undefined | null | Variable<any, string>;
-    /** User's email address */
-    email?: string | undefined | null | Variable<any, string>;
+  /** Checkout data needed to begin payment process for stripe */
+  ['StripeCheckoutDataInput']: {
+    /** URL to which user should be redirected after successful transaction */
+    successURL?: string | undefined | null | Variable<any, string>;
+    /** price id of product on stripe */
+    PriceID: string | Variable<any, string>;
   };
-  /** A source object */
-  ['FakerSource']: AliasType<{
-    /** File checksum */
-    checksum?: boolean | `@${string}`;
-    contents?: boolean | `@${string}`;
-    /** Name of source file */
-    filename?: boolean | `@${string}`;
-    /** Return an url by which source file can be accessed */
-    getUrl?: boolean | `@${string}`;
-    /** Return last time the object was updated */
-    updatedAt?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Editor user */
-  ['User']: AliasType<{
-    /** User's account type */
-    accountType?: boolean | `@${string}`;
-    /** Marketing consent. True if given, false if declined, null if never asked. */
-    consentGiven?: boolean | `@${string}`;
-    /** Marketing consent given at */
-    consentTimestamp?: boolean | `@${string}`;
-    /** Unique user id */
+  /** Team operations */
+  ['TeamOps']: AliasType<{
+    addMember?: [
+      {
+        loginCallback?: string | undefined | null | Variable<any, string>;
+        username: string | Variable<any, string>;
+        role: ValueTypes['Role'] | Variable<any, string>;
+      },
+      ValueTypes['Member'],
+    ];
+    createProject?: [
+      {
+        name: string | Variable<any, string>;
+        public?: boolean | undefined | null | Variable<any, string>;
+      },
+      ValueTypes['Project'],
+    ];
+    createServiceAccount?: [
+      {
+        input?:
+          | ValueTypes['CreateServiceAccountInput']
+          | undefined
+          | null
+          | Variable<any, string>;
+      },
+      ValueTypes['ServiceAccount'],
+    ];
+    createServiceAccountApiKey?: [
+      {
+        name: string | Variable<any, string>;
+        serviceAccount: string | Variable<any, string>;
+      },
+      ValueTypes['ServiceAccountApiKey'],
+    ];
+    /** Delete team */
+    delete?: boolean | `@${string}`;
+    /** Unique team id */
     id?: boolean | `@${string}`;
-    /** User's namespace */
+    inviteToken?: [
+      {
+        role?: ValueTypes['Role'] | undefined | null | Variable<any, string>;
+        expiration?: number | undefined | null | Variable<any, string>;
+        domain?: string | undefined | null | Variable<any, string>;
+        name: string | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    member?: [
+      { username: string | Variable<any, string> },
+      ValueTypes['MemberOps'],
+    ];
+    members?: [
+      {
+        last?: string | undefined | null | Variable<any, string>;
+        limit?: number | undefined | null | Variable<any, string>;
+      },
+      ValueTypes['MemberConnection'],
+    ];
+    /** Team name */
+    name?: boolean | `@${string}`;
+    /** Team's namespace */
     namespace?: ValueTypes['Namespace'];
-    /** User's subscriptions */
-    subscriptions?: ValueTypes['SubscriptionConnection'];
-    /** Unique username */
-    username?: boolean | `@${string}`;
+    /** A plan ID of a plan associated with team */
+    planID?: boolean | `@${string}`;
+    project?: [
+      { id: string | Variable<any, string> },
+      ValueTypes['ProjectOps'],
+    ];
+    removeServiceAccount?: [
+      { name: string | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
+    removeServiceAccountApiKey?: [
+      {
+        serviceAccount: string | Variable<any, string>;
+        id: string | Variable<any, string>;
+      },
+      boolean | `@${string}`,
+    ];
+    removeToken?: [
+      { token: string | Variable<any, string> },
+      boolean | `@${string}`,
+    ];
     __typename?: boolean | `@${string}`;
   }>;
+  /** PageInfo contains information about connection page */
+  ['PageInfo']: AliasType<{
+    /** last element in connection */
+    last?: boolean | `@${string}`;
+    /** limit set while quering */
+    limit?: boolean | `@${string}`;
+    /** if next is false then client recieved all available data */
+    next?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Defines user's account type */
+  ['AccountType']: AccountType;
+  /** Sort order defines possible ordering of sorted outputs */
+  ['SortOrder']: SortOrder;
+  ['CreateServiceAccountInput']: {
+    description?: string | undefined | null | Variable<any, string>;
+    tags?: Array<string> | undefined | null | Variable<any, string>;
+  };
+  /** Project connection object
+
+Used with paginated listing of projects */
+  ['ProjectConnection']: AliasType<{
+    /** Current connection page info */
+    pageInfo?: ValueTypes['PageInfo'];
+    /** List of projects in connection */
+    projects?: ValueTypes['Project'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Checkout data needed to begin payment process */
+  ['CheckoutDataInput']: {
+    /** Customer data */
+    customer?:
+      | ValueTypes['CustomerInput']
+      | undefined
+      | null
+      | Variable<any, string>;
+    /** Vat data */
+    vat?: ValueTypes['VatInput'] | undefined | null | Variable<any, string>;
+    /** Optional discount coupon */
+    coupon?: string | undefined | null | Variable<any, string>;
+    /** URL to which user should be redirected after successful transaction */
+    successURL?: string | undefined | null | Variable<any, string>;
+    /** URL to which user should be redirected after failed transaction */
+    cancelURL?: string | undefined | null | Variable<any, string>;
+    /** An id of a chosen subscription plan */
+    planID: string | Variable<any, string>;
+    /** Quantity of subscriptions that user wants */
+    quantity?: number | undefined | null | Variable<any, string>;
+  };
+  ['MarketplaceUpstream']: AliasType<{
+    ['...on NpmRegistryPackage']: ValueTypes['NpmRegistryPackage'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** RFC3339Date is a RFC3339 formated date-time string */
+  ['RFC3339Date']: unknown;
   /** Team object */
   ['Team']: AliasType<{
     /** Unique team id */
     id?: boolean | `@${string}`;
-    member?: [{ username: string | Variable<any, string> }, ValueTypes['Member']];
+    member?: [
+      { username: string | Variable<any, string> },
+      ValueTypes['Member'],
+    ];
     members?: [
       {
         last?: string | undefined | null | Variable<any, string>;
@@ -1031,620 +1842,69 @@ Sort behaviour for projects by team is implemenation depednant. */
     tokens?: ValueTypes['InviteToken'];
     __typename?: boolean | `@${string}`;
   }>;
-  ['NpmRegistryPackage']: AliasType<{
-    package?: boolean | `@${string}`;
-    registry?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Temporary file for project */
-  ['TemporaryFile']: AliasType<{
-    /** String with url used in GET request */
-    getUrl?: boolean | `@${string}`;
-    /** String with url used in PUT request */
-    putUrl?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['DeployCodeToCloudURIKind']: DeployCodeToCloudURIKind;
-  ['MarketplaceOps']: AliasType<{
-    addProject?: [
-      {
-        id: string | Variable<any, string>;
-        opts?: ValueTypes['AddProjectInput'] | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`,
-    ];
-    removeProject?: [{ id: string | Variable<any, string> }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Teams connection */
-  ['TeamConnection']: AliasType<{
-    /** Pagination info used in next fetch */
-    pageInfo?: ValueTypes['PageInfo'];
-    /** List of teams returned by current page in connection */
-    teams?: ValueTypes['Team'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['MarketplaceUpstream']: AliasType<{
-    ['...on NpmRegistryPackage']: ValueTypes['NpmRegistryPackage'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Vat information of a user */
-  ['VatInput']: {
-    /** Vat company post code address. */
-    postCode?: string | undefined | null | Variable<any, string>;
-    /** Vat number */
-    number?: string | undefined | null | Variable<any, string>;
-    /** Vat company name */
-    companyName?: string | undefined | null | Variable<any, string>;
-    /** Vat company street address */
-    street?: string | undefined | null | Variable<any, string>;
-    /** Vat company city address */
-    city?: string | undefined | null | Variable<any, string>;
-    /** Vat company state address. Optional. */
-    state?: string | undefined | null | Variable<any, string>;
-    /** Vat company country address. */
-    country?: string | undefined | null | Variable<any, string>;
-  };
-  ['Secret']: {
-    name: string | Variable<any, string>;
-    value?: string | undefined | null | Variable<any, string>;
-  };
-  ['CloudCorsSetting']: AliasType<{
-    allowCredentials?: boolean | `@${string}`;
-    allowedHeaders?: boolean | `@${string}`;
-    allowedMethod?: boolean | `@${string}`;
-    allowedOrigins?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['CloudDeploymentStatus']: CloudDeploymentStatus;
-  /** Team member */
-  ['Member']: AliasType<{
-    /** Member email */
-    email?: boolean | `@${string}`;
-    /** Member role */
-    role?: boolean | `@${string}`;
-    /** Service account */
-    serviceAccount?: boolean | `@${string}`;
-    /** Member username */
-    username?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Amount is a number that gives precise representation of real numbers */
-  ['Decimal']: unknown;
   /** Update project payload */
   ['UpdateProject']: {
-    /** Set project visiblity */
-    public?: boolean | undefined | null | Variable<any, string>;
-    /** Link to upstream schema */
-    upstream?: string | undefined | null | Variable<any, string>;
     /** ID of project to be updated */
     project?: string | undefined | null | Variable<any, string>;
     /** New description for project */
     description?: string | undefined | null | Variable<any, string>;
     /** List of tags for project */
     tags?: Array<string> | undefined | null | Variable<any, string>;
+    /** Set project visiblity */
+    public?: boolean | undefined | null | Variable<any, string>;
+    /** Link to upstream schema */
+    upstream?: string | undefined | null | Variable<any, string>;
   };
-  ['CreateServiceAccountInput']: {
-    tags?: Array<string> | undefined | null | Variable<any, string>;
-    description?: string | undefined | null | Variable<any, string>;
-  };
-  /** Request header */
-  ['Header']: AliasType<{
-    /** Header name */
-    key?: boolean | `@${string}`;
-    /** Header value */
-    value?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['ServiceAccount']: AliasType<{
-    description?: boolean | `@${string}`;
-    keys?: ValueTypes['ServiceAccountApiKey'];
-    name?: boolean | `@${string}`;
-    tags?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Sort order defines possible ordering of sorted outputs */
-  ['SortOrder']: SortOrder;
-  ['AddProjectInput']: {
-    npmRegistryPackage?: ValueTypes['NpmRegistryPackageInput'] | undefined | null | Variable<any, string>;
-  };
-  /** New source payload */
-  ['NewSource']: {
-    /** Length of source in bytes */
-    contentLength?: number | undefined | null | Variable<any, string>;
-    /** Source mime type */
-    contentType?: string | undefined | null | Variable<any, string>;
-    /** Source checksum */
-    checksum?: string | undefined | null | Variable<any, string>;
-    /** source file name */
-    filename?: string | undefined | null | Variable<any, string>;
-  };
-  ['SchemaSubscription']: AliasType<{
-    watchJobStatus?: [{ streamID: string | Variable<any, string> }, boolean | `@${string}`];
-    watchLogs?: [{ streamID: string | Variable<any, string> }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Root query type */
-  ['Query']: AliasType<{
-    checkoutData?: [{ data: ValueTypes['CheckoutDataInput'] | Variable<any, string> }, boolean | `@${string}`];
-    /** Returns true if the user is logged in and has verified email */
-    emailVerified?: boolean | `@${string}`;
-    exchangeServiceAccountKey?: [
-      { serviceAccount: string | Variable<any, string>; key: string | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    fileServerCredentials?: [{ project?: string | undefined | null | Variable<any, string> }, boolean | `@${string}`];
-    findProjects?: [
-      {
-        query: string | Variable<any, string>;
-        last?: string | undefined | null | Variable<any, string>;
-        limit?: number | undefined | null | Variable<any, string>;
-      },
-      ValueTypes['ProjectConnection'],
-    ];
-    findProjectsByTag?: [
-      {
-        limit?: number | undefined | null | Variable<any, string>;
-        tag: string | Variable<any, string>;
-        last?: string | undefined | null | Variable<any, string>;
-      },
-      ValueTypes['ProjectConnection'],
-    ];
-    getNamespace?: [{ slug: string | Variable<any, string> }, ValueTypes['Namespace']];
-    getProject?: [{ project: string | Variable<any, string> }, ValueTypes['Project']];
-    getTeam?: [{ name: string | Variable<any, string> }, ValueTypes['Team']];
-    getUser?: [{ username: string | Variable<any, string> }, ValueTypes['User']];
-    listProjects?: [
-      {
-        owned?: boolean | undefined | null | Variable<any, string>;
-        last?: string | undefined | null | Variable<any, string>;
-        limit?: number | undefined | null | Variable<any, string>;
-        sort?: Array<ValueTypes['ProjectsSortInput'] | undefined | null> | undefined | null | Variable<any, string>;
-      },
-      ValueTypes['ProjectConnection'],
-    ];
-    /** Marketplace is a space to share your projects */
-    marketplace?: ValueTypes['Marketplace'];
-    myTeams?: [
-      {
-        last?: string | undefined | null | Variable<any, string>;
-        limit?: number | undefined | null | Variable<any, string>;
-      },
-      ValueTypes['TeamConnection'],
-    ];
-    /** List user payments */
-    payments?: ValueTypes['Payment'];
-    predictCheckout?: [
-      { data: ValueTypes['PredictCheckoutInput'] | Variable<any, string> },
-      ValueTypes['PredictCheckout'],
-    ];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** PageInfo contains information about connection page */
-  ['PageInfo']: AliasType<{
-    /** last element in connection */
-    last?: boolean | `@${string}`;
-    /** limit set while quering */
-    limit?: boolean | `@${string}`;
-    /** if next is false then client recieved all available data */
-    next?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['RenameFileInput']: {
-    src: string | Variable<any, string>;
-    dst: string | Variable<any, string>;
-  };
-  /** Project connection object
-
-Used with paginated listing of projects */
-  ['ProjectConnection']: AliasType<{
-    /** Current connection page info */
-    pageInfo?: ValueTypes['PageInfo'];
-    /** List of projects in connection */
-    projects?: ValueTypes['Project'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Connection object containing list of faker sources */
-  ['FakerSourceConnection']: AliasType<{
-    /** Connection pageInfo */
-    pageInfo?: ValueTypes['PageInfo'];
-    /** List of sources returned by connection */
-    sources?: ValueTypes['FakerSource'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['UserConnection']: AliasType<{
-    /** Current connection page info */
-    pageInfo?: ValueTypes['PageInfo'];
-    /** List of projects in connection */
-    users?: ValueTypes['User'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['FileServerCredentials']: unknown;
-  ['Marketplace']: AliasType<{
-    projects?: [
-      {
-        query?: string | undefined | null | Variable<any, string>;
-        last?: string | undefined | null | Variable<any, string>;
-        limit?: number | undefined | null | Variable<any, string>;
-        sort?:
-          | Array<ValueTypes['MarketplaceProjectsSortInput'] | undefined | null>
-          | undefined
-          | null
-          | Variable<any, string>;
-      },
-      ValueTypes['MarketplaceItemConnection'],
-    ];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Checkout data needed to begin payment process */
-  ['CheckoutDataInput']: {
-    /** URL to which user should be redirected after failed transaction */
-    cancelURL?: string | undefined | null | Variable<any, string>;
-    /** An id of a chosen subscription plan */
-    planID: string | Variable<any, string>;
-    /** Quantity of subscriptions that user wants */
-    quantity?: number | undefined | null | Variable<any, string>;
-    /** Customer data */
-    customer?: ValueTypes['CustomerInput'] | undefined | null | Variable<any, string>;
-    /** Vat data */
-    vat?: ValueTypes['VatInput'] | undefined | null | Variable<any, string>;
-    /** Optional discount coupon */
-    coupon?: string | undefined | null | Variable<any, string>;
-    /** URL to which user should be redirected after successful transaction */
-    successURL?: string | undefined | null | Variable<any, string>;
-  };
-  /** PaymentDate is a string in a format 'YYYY-MM-DD' */
-  ['PaymentDate']: unknown;
-  /** Team operations */
-  ['TeamOps']: AliasType<{
-    addMember?: [
-      {
-        loginCallback?: string | undefined | null | Variable<any, string>;
-        username: string | Variable<any, string>;
-        role: ValueTypes['Role'] | Variable<any, string>;
-      },
-      ValueTypes['Member'],
-    ];
-    createProject?: [
-      { public?: boolean | undefined | null | Variable<any, string>; name: string | Variable<any, string> },
-      ValueTypes['Project'],
-    ];
-    createServiceAccount?: [
-      { input?: ValueTypes['CreateServiceAccountInput'] | undefined | null | Variable<any, string> },
-      ValueTypes['ServiceAccount'],
-    ];
-    createServiceAccountApiKey?: [
-      { serviceAccount: string | Variable<any, string>; name: string | Variable<any, string> },
-      ValueTypes['ServiceAccountApiKey'],
-    ];
-    /** Delete team */
-    delete?: boolean | `@${string}`;
-    /** Unique team id */
-    id?: boolean | `@${string}`;
-    inviteToken?: [
-      {
-        name: string | Variable<any, string>;
-        role?: ValueTypes['Role'] | undefined | null | Variable<any, string>;
-        expiration?: number | undefined | null | Variable<any, string>;
-        domain?: string | undefined | null | Variable<any, string>;
-      },
-      boolean | `@${string}`,
-    ];
-    member?: [{ username: string | Variable<any, string> }, ValueTypes['MemberOps']];
-    members?: [
-      {
-        last?: string | undefined | null | Variable<any, string>;
-        limit?: number | undefined | null | Variable<any, string>;
-      },
-      ValueTypes['MemberConnection'],
-    ];
-    /** Team name */
-    name?: boolean | `@${string}`;
-    /** Team's namespace */
-    namespace?: ValueTypes['Namespace'];
-    /** A plan ID of a plan associated with team */
-    planID?: boolean | `@${string}`;
-    project?: [{ id: string | Variable<any, string> }, ValueTypes['ProjectOps']];
-    removeServiceAccount?: [{ name: string | Variable<any, string> }, boolean | `@${string}`];
-    removeServiceAccountApiKey?: [
-      { serviceAccount: string | Variable<any, string>; id: string | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    removeToken?: [{ token: string | Variable<any, string> }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Paginated service account list */
-  ['ServiceAccountConnection']: AliasType<{
-    /** pageInfo for service accounts connection */
-    pageInfo?: ValueTypes['PageInfo'];
-    /** List of members in this connection */
-    serviceAccounts?: ValueTypes['ServiceAccount'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Team member ops */
-  ['MemberOps']: AliasType<{
-    /** Boolean object node */
-    delete?: boolean | `@${string}`;
-    update?: [{ role?: ValueTypes['Role'] | undefined | null | Variable<any, string> }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['CloudDeploymentConfig']: AliasType<{
-    cors?: ValueTypes['CloudCorsSetting'];
-    secrets?: ValueTypes['SecretOutput'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Endpoint returnes a full path to the project without host */
-  ['Endpoint']: AliasType<{
-    /** Full project uri without host */
-    uri?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['Subscription']: AliasType<{
-    /** Cancel subscription URL */
-    cancelURL?: boolean | `@${string}`;
-    /** Subscription expiration date */
-    expiration?: boolean | `@${string}`;
-    /** Number of seats in subscription */
-    quantity?: boolean | `@${string}`;
-    /** List of seats in subscription */
-    seats?: ValueTypes['UserConnection'];
-    /** Status of subscription */
-    status?: boolean | `@${string}`;
-    /** Subscription unique id */
-    subscriptionID?: boolean | `@${string}`;
-    /** Subscription plan unique id */
-    subscriptionPlanID?: boolean | `@${string}`;
-    /** Update subscription URL */
-    updateURL?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['Mutation']: AliasType<{
-    changePassword?: [
-      { oldPassword: string | Variable<any, string>; newPassword: string | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    changeSubscription?: [
-      { in: ValueTypes['ChangeSubscriptionInput'] | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    consumeInviteToken?: [{ token: string | Variable<any, string> }, boolean | `@${string}`];
-    createCloudDeployment?: [{ id: string | Variable<any, string> }, boolean | `@${string}`];
-    createProject?: [
-      { public?: boolean | undefined | null | Variable<any, string>; name: string | Variable<any, string> },
-      ValueTypes['Project'],
-    ];
-    createTeam?: [
-      { namespace: string | Variable<any, string>; name: string | Variable<any, string> },
-      ValueTypes['TeamOps'],
-    ];
-    createUser?: [
-      { namespace: string | Variable<any, string>; public?: boolean | undefined | null | Variable<any, string> },
-      ValueTypes['User'],
-    ];
-    /** Delete account */
-    deleteAccount?: boolean | `@${string}`;
-    deployCodeToCloud?: [
-      { id: string | Variable<any, string>; opts: ValueTypes['DeployCodeToCloudInput'] | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    deployToFaker?: [{ id: string | Variable<any, string> }, boolean | `@${string}`];
-    /** Returns marketplace ops */
-    marketplace?: ValueTypes['MarketplaceOps'];
-    removeCloudDeployment?: [{ id: string | Variable<any, string> }, boolean | `@${string}`];
-    removeProject?: [{ project: string | Variable<any, string> }, boolean | `@${string}`];
-    /** Resend verification email */
-    resendVerificationEmail?: boolean | `@${string}`;
-    runtimeLogs?: [{ id: string | Variable<any, string> }, boolean | `@${string}`];
-    setCloudDeploymentConfig?: [
-      {
-        id: string | Variable<any, string>;
-        input: ValueTypes['SetCloudDeploymentConfigInput'] | Variable<any, string>;
-      },
-      boolean | `@${string}`,
-    ];
-    sync?: [{ source: string | Variable<any, string>; target: string | Variable<any, string> }, boolean | `@${string}`];
-    team?: [{ id: string | Variable<any, string> }, ValueTypes['TeamOps']];
-    updateProject?: [
-      { in?: ValueTypes['UpdateProject'] | undefined | null | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    updateSources?: [
-      {
-        sources?: Array<ValueTypes['NewSource']> | undefined | null | Variable<any, string>;
-        project: string | Variable<any, string>;
-      },
-      ValueTypes['SourceUploadInfo'],
-    ];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['SetCloudDeploymentConfigCorsInput']: {
-    allowCredentials?: boolean | undefined | null | Variable<any, string>;
-    allowedOrigins?: Array<string> | undefined | null | Variable<any, string>;
-    allowedHeaders?: Array<string> | undefined | null | Variable<any, string>;
-    allowedMethods?: Array<string> | undefined | null | Variable<any, string>;
-  };
-  ['DeployCodeToCloudInput']: {
-    kind?: ValueTypes['DeployCodeToCloudURIKind'] | undefined | null | Variable<any, string>;
-    env?: ValueTypes['DeployCodeToCloudEnv'] | undefined | null | Variable<any, string>;
-    secrets?: Array<ValueTypes['Secret']> | undefined | null | Variable<any, string>;
-    node14Opts?: ValueTypes['DeployCodeToCloudNode14Opts'] | undefined | null | Variable<any, string>;
-    codeURI: string | Variable<any, string>;
-  };
-  /** type object node */
-  ['ProjectOps']: AliasType<{
-    addMember?: [
-      {
-        username: string | Variable<any, string>;
-        role: ValueTypes['Role'] | Variable<any, string>;
-        loginCallback?: string | undefined | null | Variable<any, string>;
-        serviceAccount?: boolean | undefined | null | Variable<any, string>;
-      },
-      ValueTypes['Member'],
-    ];
-    /** Create project in cloud */
-    createCloudDeployment?: boolean | `@${string}`;
-    createTemporaryFile?: [
-      {
-        contentType?: string | undefined | null | Variable<any, string>;
-        contentLength?: number | undefined | null | Variable<any, string>;
-      },
-      ValueTypes['TemporaryFile'],
-    ];
-    /** Boolean object node */
-    delete?: boolean | `@${string}`;
-    deployCodeToCloud?: [
-      { opts: ValueTypes['DeployCodeToCloudInput'] | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    /** deploy project to faker */
-    deployToFaker?: boolean | `@${string}`;
-    /** Remove deployment from cloud */
-    removeCloudDeployment?: boolean | `@${string}`;
-    removeSources?: [{ files?: Array<string> | undefined | null | Variable<any, string> }, boolean | `@${string}`];
-    renameSources?: [
-      { files?: Array<ValueTypes['RenameFileInput']> | undefined | null | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    /** Runtime logs request for project */
-    runtimeLogs?: boolean | `@${string}`;
-    setCloudDeploymentConfig?: [
-      { input: ValueTypes['SetCloudDeploymentConfigInput'] | Variable<any, string> },
-      boolean | `@${string}`,
-    ];
-    update?: [{ in?: ValueTypes['UpdateProject'] | undefined | null | Variable<any, string> }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['SetCloudDeploymentConfigInput']: {
-    secrets?: Array<ValueTypes['Secret']> | undefined | null | Variable<any, string>;
-    cors?: ValueTypes['SetCloudDeploymentConfigCorsInput'] | undefined | null | Variable<any, string>;
-  };
-  ['DeployCodeToCloudEnv']: DeployCodeToCloudEnv;
-  ['SecretOutput']: AliasType<{
-    name?: boolean | `@${string}`;
-    value?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Namespace is a root object containing projects belonging
-to a team or user */
-  ['Namespace']: AliasType<{
-    project?: [{ name: string | Variable<any, string> }, ValueTypes['Project']];
-    projects?: [
-      {
-        last?: string | undefined | null | Variable<any, string>;
-        limit?: number | undefined | null | Variable<any, string>;
-      },
-      ValueTypes['ProjectConnection'],
-    ];
-    /** True if namespace is public */
-    public?: boolean | `@${string}`;
-    /** Namespace part of the slug */
-    slug?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** MarketplaceProjectsSortInput defines how projects from listProjects should be sorted in marketplace. */
-  ['MarketplaceProjectsSortInput']: {
-    /** Sort by owner */
-    owner?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sort by visisbility */
-    public?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sort by slug */
-    slug?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sort by tag */
-    tags?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sorts projects by team.
-
-Sort behaviour for projects by team is implemenation depednant. */
-    team?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sort projects by creation date */
-    createdAt?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sort by name */
-    name?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-    /** Sort by id */
-    id?: ValueTypes['SortOrder'] | undefined | null | Variable<any, string>;
-  };
-  /** MarketplaceItem represents a project exposed in marketplace. */
-  ['MarketplaceItem']: AliasType<{
-    project?: ValueTypes['Project'];
-    upstream?: ValueTypes['MarketplaceUpstream'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['Payment']: AliasType<{
-    /** Amount paid */
-    amount?: boolean | `@${string}`;
-    /** Currency in which payment was made */
-    currency?: boolean | `@${string}`;
-    /** Date indicates a when the payment was made */
-    date?: boolean | `@${string}`;
-    /** URL from which user can download invoice */
-    receiptURL?: boolean | `@${string}`;
-    /** ID of subscription for which payment was made */
-    subscriptionID?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Team member role */
-  ['Role']: Role;
-  /** Paginated members list */
-  ['MemberConnection']: AliasType<{
-    /** List of members in this connection */
-    members?: ValueTypes['Member'];
-    /** pageInfo for member connection */
-    pageInfo?: ValueTypes['PageInfo'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['InviteToken']: AliasType<{
-    domain?: boolean | `@${string}`;
-    name?: boolean | `@${string}`;
-    removed?: boolean | `@${string}`;
-    token?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['NpmRegistryPackageInput']: {
-    registry?: string | undefined | null | Variable<any, string>;
-    package: string | Variable<any, string>;
-  };
-  /** Source upload info object */
-  ['SourceUploadInfo']: AliasType<{
-    /** Source file name */
-    filename?: boolean | `@${string}`;
-    /** List of headers that must be included in PUT request */
-    headers?: ValueTypes['Header'];
-    /** String with url used in PUT request */
-    putUrl?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
 };
 
 export type ResolverInputTypes = {
-  ['DeployCodeToCloudNode14Opts']: {
-    buildScript?: string | undefined | null;
-  };
-  /** Defines user's account type */
-  ['AccountType']: AccountType;
-  ['ServiceAccountApiKey']: AliasType<{
-    id?: boolean | `@${string}`;
-    key?: boolean | `@${string}`;
-    name?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Marketplace item connection object
+  /** MarketplaceProjectsSortInput defines how projects from listProjects should be sorted in marketplace. */
+  ['MarketplaceProjectsSortInput']: {
+    /** Sort by name */
+    name?: ResolverInputTypes['SortOrder'] | undefined | null;
+    /** Sort by id */
+    id?: ResolverInputTypes['SortOrder'] | undefined | null;
+    /** Sort by owner */
+    owner?: ResolverInputTypes['SortOrder'] | undefined | null;
+    /** Sort by visisbility */
+    public?: ResolverInputTypes['SortOrder'] | undefined | null;
+    /** Sort by slug */
+    slug?: ResolverInputTypes['SortOrder'] | undefined | null;
+    /** Sort by tag */
+    tags?: ResolverInputTypes['SortOrder'] | undefined | null;
+    /** Sorts projects by team.
 
-Used with paginated listing of projects */
-  ['MarketplaceItemConnection']: AliasType<{
-    /** Current connection page info */
-    pageInfo?: ResolverInputTypes['PageInfo'];
-    /** List of market place items in connection */
-    projects?: ResolverInputTypes['MarketplaceItem'];
-    __typename?: boolean | `@${string}`;
-  }>;
+Sort behaviour for projects by team is implemenation depednant. */
+    team?: ResolverInputTypes['SortOrder'] | undefined | null;
+    /** Sort projects by creation date */
+    createdAt?: ResolverInputTypes['SortOrder'] | undefined | null;
+  };
   ['ChangeSubscriptionInput']: {
     subscriptionID: number;
     subscriptionPlanID?: number | undefined | null;
   };
+  /** A source object */
+  ['FakerSource']: AliasType<{
+    /** File checksum */
+    checksum?: boolean | `@${string}`;
+    contents?: boolean | `@${string}`;
+    /** Name of source file */
+    filename?: boolean | `@${string}`;
+    /** Return an url by which source file can be accessed */
+    getUrl?: boolean | `@${string}`;
+    /** Return last time the object was updated */
+    updatedAt?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['SubscriptionConnection']: AliasType<{
+    /** Current conenction page info */
+    pageInfo?: ResolverInputTypes['PageInfo'];
+    /** List of subscriptions in connection */
+    subscriptions?: ResolverInputTypes['Subscription'];
+    __typename?: boolean | `@${string}`;
+  }>;
   /** Project type */
   ['Project']: AliasType<{
-    /** Return config of cloud deployment */
-    cloudDeploymentConfig?: ResolverInputTypes['CloudDeploymentConfig'];
-    cloudDeploymentStatus?: [{ streamID?: string | undefined | null }, boolean | `@${string}`];
     /** Return creation time stamp of a project */
     createdAt?: boolean | `@${string}`;
     /** A database connection info */
@@ -1693,16 +1953,79 @@ Can be null if project belongs to a user */
     upstream?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
-  /** PredictCheckout represents payment prediction for checkout data */
-  ['PredictCheckout']: AliasType<{
-    /** Predicted checkout price */
-    price?: boolean | `@${string}`;
-    /** Predicted number of trial days */
-    trialDays?: boolean | `@${string}`;
+  /** Editor user */
+  ['User']: AliasType<{
+    /** User's account type */
+    accountType?: boolean | `@${string}`;
+    /** Marketing consent. True if given, false if declined, null if never asked. */
+    consentGiven?: boolean | `@${string}`;
+    /** Marketing consent given at */
+    consentTimestamp?: boolean | `@${string}`;
+    /** Unique user id */
+    id?: boolean | `@${string}`;
+    /** User's namespace */
+    namespace?: ResolverInputTypes['Namespace'];
+    stripeCustomerId?: boolean | `@${string}`;
+    /** User's subscriptions */
+    subscriptions?: ResolverInputTypes['SubscriptionConnection'];
+    /** Unique username */
+    username?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Namespace is a root object containing projects belonging
+to a team or user */
+  ['Namespace']: AliasType<{
+    project?: [{ name: string }, ResolverInputTypes['Project']];
+    projects?: [
+      { last?: string | undefined | null; limit?: number | undefined | null },
+      ResolverInputTypes['ProjectConnection'],
+    ];
+    /** True if namespace is public */
+    public?: boolean | `@${string}`;
+    /** Namespace part of the slug */
+    slug?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['InviteToken']: AliasType<{
+    createdAt?: boolean | `@${string}`;
+    domain?: boolean | `@${string}`;
+    expiration?: boolean | `@${string}`;
+    name?: boolean | `@${string}`;
+    removed?: boolean | `@${string}`;
+    role?: boolean | `@${string}`;
+    token?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Teams connection */
+  ['TeamConnection']: AliasType<{
+    /** Pagination info used in next fetch */
+    pageInfo?: ResolverInputTypes['PageInfo'];
+    /** List of teams returned by current page in connection */
+    teams?: ResolverInputTypes['Team'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** MarketplaceItem represents a project exposed in marketplace. */
+  ['MarketplaceItem']: AliasType<{
+    project?: ResolverInputTypes['Project'];
+    upstream?: ResolverInputTypes['MarketplaceUpstream'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** PaymentDate is a string in a format 'YYYY-MM-DD' */
+  ['PaymentDate']: unknown;
+  /** Paginated service account list */
+  ['ServiceAccountConnection']: AliasType<{
+    /** pageInfo for service accounts connection */
+    pageInfo?: ResolverInputTypes['PageInfo'];
+    /** List of members in this connection */
+    serviceAccounts?: ResolverInputTypes['ServiceAccount'];
     __typename?: boolean | `@${string}`;
   }>;
   /** ProjectsSortInput defines how projects from listProjects should be sorted. */
   ['ProjectsSortInput']: {
+    /** Sort by name */
+    name?: ResolverInputTypes['SortOrder'] | undefined | null;
+    /** Sort by id */
+    id?: ResolverInputTypes['SortOrder'] | undefined | null;
     /** Sort by owner */
     owner?: ResolverInputTypes['SortOrder'] | undefined | null;
     /** Sort by visisbility */
@@ -1717,18 +2040,387 @@ Sort behaviour for projects by team is implemenation depednant. */
     team?: ResolverInputTypes['SortOrder'] | undefined | null;
     /** Sort projects by creation date */
     createdAt?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sort by name */
-    name?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sort by id */
-    id?: ResolverInputTypes['SortOrder'] | undefined | null;
   };
-  /** RFC3339Date is a RFC3339 formated date-time string */
-  ['RFC3339Date']: unknown;
-  ['SubscriptionConnection']: AliasType<{
-    /** Current conenction page info */
+  /** Root query type */
+  ['Query']: AliasType<{
+    checkoutData?: [
+      { data: ResolverInputTypes['CheckoutDataInput'] },
+      boolean | `@${string}`,
+    ];
+    /** Returns true if the user is logged in and has verified email */
+    emailVerified?: boolean | `@${string}`;
+    exchangeServiceAccountKey?: [
+      { key: string; serviceAccount: string },
+      boolean | `@${string}`,
+    ];
+    fileServerCredentials?: [
+      { project?: string | undefined | null },
+      boolean | `@${string}`,
+    ];
+    findProjects?: [
+      {
+        last?: string | undefined | null;
+        limit?: number | undefined | null;
+        query: string;
+      },
+      ResolverInputTypes['ProjectConnection'],
+    ];
+    findProjectsByTag?: [
+      {
+        last?: string | undefined | null;
+        limit?: number | undefined | null;
+        tag: string;
+      },
+      ResolverInputTypes['ProjectConnection'],
+    ];
+    generateStripeBillingPortal?: [
+      { returnUrl: string },
+      boolean | `@${string}`,
+    ];
+    getNamespace?: [{ slug: string }, ResolverInputTypes['Namespace']];
+    getProject?: [{ project: string }, ResolverInputTypes['Project']];
+    getTeam?: [{ name: string }, ResolverInputTypes['Team']];
+    getUser?: [{ username: string }, ResolverInputTypes['User']];
+    listProjects?: [
+      {
+        owned?: boolean | undefined | null;
+        last?: string | undefined | null;
+        limit?: number | undefined | null;
+        sort?:
+          | Array<ResolverInputTypes['ProjectsSortInput'] | undefined | null>
+          | undefined
+          | null;
+      },
+      ResolverInputTypes['ProjectConnection'],
+    ];
+    /** Marketplace is a space to share your projects */
+    marketplace?: ResolverInputTypes['Marketplace'];
+    myTeams?: [
+      { last?: string | undefined | null; limit?: number | undefined | null },
+      ResolverInputTypes['TeamConnection'],
+    ];
+    /** List user payments */
+    payments?: ResolverInputTypes['Payment'];
+    predictCheckout?: [
+      { data: ResolverInputTypes['PredictCheckoutInput'] },
+      ResolverInputTypes['PredictCheckout'],
+    ];
+    stripePaymentLink?: [
+      { data: ResolverInputTypes['StripeCheckoutDataInput'] },
+      boolean | `@${string}`,
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['NpmRegistryPackageInput']: {
+    registry?: string | undefined | null;
+    package: string;
+  };
+  /** Vat information of a user */
+  ['VatInput']: {
+    /** Vat company street address */
+    street?: string | undefined | null;
+    /** Vat company city address */
+    city?: string | undefined | null;
+    /** Vat company state address. Optional. */
+    state?: string | undefined | null;
+    /** Vat company country address. */
+    country?: string | undefined | null;
+    /** Vat company post code address. */
+    postCode?: string | undefined | null;
+    /** Vat number */
+    number?: string | undefined | null;
+    /** Vat company name */
+    companyName?: string | undefined | null;
+  };
+  ['RenameFileInput']: {
+    src: string;
+    dst: string;
+  };
+  /** Connection object containing list of faker sources */
+  ['FakerSourceConnection']: AliasType<{
+    /** Connection pageInfo */
     pageInfo?: ResolverInputTypes['PageInfo'];
-    /** List of subscriptions in connection */
-    subscriptions?: ResolverInputTypes['Subscription'];
+    /** List of sources returned by connection */
+    sources?: ResolverInputTypes['FakerSource'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** PredictCheckout represents payment prediction for checkout data */
+  ['PredictCheckout']: AliasType<{
+    /** Predicted checkout price */
+    price?: boolean | `@${string}`;
+    /** Predicted number of trial days */
+    trialDays?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Amount is a number that gives precise representation of real numbers */
+  ['Decimal']: unknown;
+  /** Temporary file for project */
+  ['TemporaryFile']: AliasType<{
+    /** String with url used in GET request */
+    getUrl?: boolean | `@${string}`;
+    /** String with url used in PUT request */
+    putUrl?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Marketplace item connection object
+
+Used with paginated listing of projects */
+  ['MarketplaceItemConnection']: AliasType<{
+    /** Current connection page info */
+    pageInfo?: ResolverInputTypes['PageInfo'];
+    /** List of market place items in connection */
+    projects?: ResolverInputTypes['MarketplaceItem'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['MarketplaceOps']: AliasType<{
+    addProject?: [
+      {
+        id: string;
+        opts?: ResolverInputTypes['AddProjectInput'] | undefined | null;
+      },
+      boolean | `@${string}`,
+    ];
+    removeProject?: [{ id: string }, boolean | `@${string}`];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Team member role */
+  ['Role']: Role;
+  ['Mutation']: AliasType<{
+    changePassword?: [
+      { oldPassword: string; newPassword: string },
+      boolean | `@${string}`,
+    ];
+    changeSubscription?: [
+      { in: ResolverInputTypes['ChangeSubscriptionInput'] },
+      boolean | `@${string}`,
+    ];
+    consumeInviteToken?: [{ token: string }, boolean | `@${string}`];
+    createTeam?: [
+      { namespace: string; name: string },
+      ResolverInputTypes['TeamOps'],
+    ];
+    createUser?: [
+      { namespace: string; public?: boolean | undefined | null },
+      ResolverInputTypes['User'],
+    ];
+    /** Delete account */
+    deleteAccount?: boolean | `@${string}`;
+    deployToFaker?: [{ id: string }, boolean | `@${string}`];
+    /** Returns marketplace ops */
+    marketplace?: ResolverInputTypes['MarketplaceOps'];
+    removeProject?: [{ project: string }, boolean | `@${string}`];
+    /** Resend verification email */
+    resendVerificationEmail?: boolean | `@${string}`;
+    sync?: [{ source: string; target: string }, boolean | `@${string}`];
+    team?: [{ id: string }, ResolverInputTypes['TeamOps']];
+    updateProject?: [
+      { in?: ResolverInputTypes['UpdateProject'] | undefined | null },
+      boolean | `@${string}`,
+    ];
+    updateSources?: [
+      {
+        project: string;
+        sources?: Array<ResolverInputTypes['NewSource']> | undefined | null;
+      },
+      ResolverInputTypes['SourceUploadInfo'],
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** type object node */
+  ['ProjectOps']: AliasType<{
+    addMember?: [
+      {
+        username: string;
+        role: ResolverInputTypes['Role'];
+        loginCallback?: string | undefined | null;
+        serviceAccount?: boolean | undefined | null;
+      },
+      ResolverInputTypes['Member'],
+    ];
+    createTemporaryFile?: [
+      {
+        contentType?: string | undefined | null;
+        contentLength?: number | undefined | null;
+      },
+      ResolverInputTypes['TemporaryFile'],
+    ];
+    /** Boolean object node */
+    delete?: boolean | `@${string}`;
+    /** deploy project to faker */
+    deployToFaker?: boolean | `@${string}`;
+    removeSources?: [
+      { files?: Array<string> | undefined | null },
+      boolean | `@${string}`,
+    ];
+    renameSources?: [
+      {
+        files?: Array<ResolverInputTypes['RenameFileInput']> | undefined | null;
+      },
+      boolean | `@${string}`,
+    ];
+    update?: [
+      { in?: ResolverInputTypes['UpdateProject'] | undefined | null },
+      boolean | `@${string}`,
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Request header */
+  ['Header']: AliasType<{
+    /** Header name */
+    key?: boolean | `@${string}`;
+    /** Header value */
+    value?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Endpoint returnes a full path to the project without host */
+  ['Endpoint']: AliasType<{
+    /** Full project uri without host */
+    uri?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['UserConnection']: AliasType<{
+    /** Current connection page info */
+    pageInfo?: ResolverInputTypes['PageInfo'];
+    /** List of projects in connection */
+    users?: ResolverInputTypes['User'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['ServiceAccountApiKey']: AliasType<{
+    id?: boolean | `@${string}`;
+    key?: boolean | `@${string}`;
+    name?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['Marketplace']: AliasType<{
+    projects?: [
+      {
+        query?: string | undefined | null;
+        last?: string | undefined | null;
+        limit?: number | undefined | null;
+        sort?:
+          | Array<
+              | ResolverInputTypes['MarketplaceProjectsSortInput']
+              | undefined
+              | null
+            >
+          | undefined
+          | null;
+      },
+      ResolverInputTypes['MarketplaceItemConnection'],
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Team member ops */
+  ['MemberOps']: AliasType<{
+    /** Boolean object node */
+    delete?: boolean | `@${string}`;
+    update?: [
+      { role?: ResolverInputTypes['Role'] | undefined | null },
+      boolean | `@${string}`,
+    ];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** New source payload */
+  ['NewSource']: {
+    /** source file name */
+    filename?: string | undefined | null;
+    /** Length of source in bytes */
+    contentLength?: number | undefined | null;
+    /** Source mime type */
+    contentType?: string | undefined | null;
+    /** Source checksum */
+    checksum?: string | undefined | null;
+  };
+  /** Paginated members list */
+  ['MemberConnection']: AliasType<{
+    /** List of members in this connection */
+    members?: ResolverInputTypes['Member'];
+    /** pageInfo for member connection */
+    pageInfo?: ResolverInputTypes['PageInfo'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Team member */
+  ['Member']: AliasType<{
+    /** Member email */
+    email?: boolean | `@${string}`;
+    /** Member role */
+    role?: boolean | `@${string}`;
+    /** Service account */
+    serviceAccount?: boolean | `@${string}`;
+    /** Member username */
+    username?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['Subscription']: AliasType<{
+    /** Cancel subscription URL */
+    cancelURL?: boolean | `@${string}`;
+    /** Subscription expiration date */
+    expiration?: boolean | `@${string}`;
+    /** Number of seats in subscription */
+    quantity?: boolean | `@${string}`;
+    /** List of seats in subscription */
+    seats?: ResolverInputTypes['UserConnection'];
+    /** Status of subscription */
+    status?: boolean | `@${string}`;
+    /** Subscription unique id */
+    subscriptionID?: boolean | `@${string}`;
+    /** Subscription plan unique id */
+    subscriptionPlanID?: boolean | `@${string}`;
+    /** Update subscription URL */
+    updateURL?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['ServiceAccount']: AliasType<{
+    description?: boolean | `@${string}`;
+    keys?: ResolverInputTypes['ServiceAccountApiKey'];
+    name?: boolean | `@${string}`;
+    tags?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['FileServerCredentials']: unknown;
+  ['NpmRegistryPackage']: AliasType<{
+    package?: boolean | `@${string}`;
+    registry?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Customer data for checkout information */
+  ['CustomerInput']: {
+    /** Must be true for marketing to be allowed */
+    marketingConsent?: boolean | undefined | null;
+    /** User's email address */
+    email?: string | undefined | null;
+    /** User's country */
+    country?: string | undefined | null;
+    /** User's post code */
+    postCode?: string | undefined | null;
+  };
+  ['Payment']: AliasType<{
+    /** Amount paid */
+    amount?: boolean | `@${string}`;
+    /** Currency in which payment was made */
+    currency?: boolean | `@${string}`;
+    /** Date indicates a when the payment was made */
+    date?: boolean | `@${string}`;
+    /** URL from which user can download invoice */
+    receiptURL?: boolean | `@${string}`;
+    /** ID of subscription for which payment was made */
+    subscriptionID?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  ['AddProjectInput']: {
+    npmRegistryPackage?:
+      | ResolverInputTypes['NpmRegistryPackageInput']
+      | undefined
+      | null;
+  };
+  /** Source upload info object */
+  ['SourceUploadInfo']: AliasType<{
+    /** Source file name */
+    filename?: boolean | `@${string}`;
+    /** List of headers that must be included in PUT request */
+    headers?: ResolverInputTypes['Header'];
+    /** String with url used in PUT request */
+    putUrl?: boolean | `@${string}`;
     __typename?: boolean | `@${string}`;
   }>;
   /** Checkout data needed to begin payment process */
@@ -1740,48 +2432,124 @@ Sort behaviour for projects by team is implemenation depednant. */
     /** Optional discount coupon */
     coupon?: string | undefined | null;
   };
-  /** Customer data for checkout information */
-  ['CustomerInput']: {
-    /** User's country */
-    country?: string | undefined | null;
-    /** User's post code */
-    postCode?: string | undefined | null;
-    /** Must be true for marketing to be allowed */
-    marketingConsent?: boolean | undefined | null;
-    /** User's email address */
-    email?: string | undefined | null;
+  /** Checkout data needed to begin payment process for stripe */
+  ['StripeCheckoutDataInput']: {
+    /** URL to which user should be redirected after successful transaction */
+    successURL?: string | undefined | null;
+    /** price id of product on stripe */
+    PriceID: string;
   };
-  /** A source object */
-  ['FakerSource']: AliasType<{
-    /** File checksum */
-    checksum?: boolean | `@${string}`;
-    contents?: boolean | `@${string}`;
-    /** Name of source file */
-    filename?: boolean | `@${string}`;
-    /** Return an url by which source file can be accessed */
-    getUrl?: boolean | `@${string}`;
-    /** Return last time the object was updated */
-    updatedAt?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Editor user */
-  ['User']: AliasType<{
-    /** User's account type */
-    accountType?: boolean | `@${string}`;
-    /** Marketing consent. True if given, false if declined, null if never asked. */
-    consentGiven?: boolean | `@${string}`;
-    /** Marketing consent given at */
-    consentTimestamp?: boolean | `@${string}`;
-    /** Unique user id */
+  /** Team operations */
+  ['TeamOps']: AliasType<{
+    addMember?: [
+      {
+        loginCallback?: string | undefined | null;
+        username: string;
+        role: ResolverInputTypes['Role'];
+      },
+      ResolverInputTypes['Member'],
+    ];
+    createProject?: [
+      { name: string; public?: boolean | undefined | null },
+      ResolverInputTypes['Project'],
+    ];
+    createServiceAccount?: [
+      {
+        input?:
+          | ResolverInputTypes['CreateServiceAccountInput']
+          | undefined
+          | null;
+      },
+      ResolverInputTypes['ServiceAccount'],
+    ];
+    createServiceAccountApiKey?: [
+      { name: string; serviceAccount: string },
+      ResolverInputTypes['ServiceAccountApiKey'],
+    ];
+    /** Delete team */
+    delete?: boolean | `@${string}`;
+    /** Unique team id */
     id?: boolean | `@${string}`;
-    /** User's namespace */
+    inviteToken?: [
+      {
+        role?: ResolverInputTypes['Role'] | undefined | null;
+        expiration?: number | undefined | null;
+        domain?: string | undefined | null;
+        name: string;
+      },
+      boolean | `@${string}`,
+    ];
+    member?: [{ username: string }, ResolverInputTypes['MemberOps']];
+    members?: [
+      { last?: string | undefined | null; limit?: number | undefined | null },
+      ResolverInputTypes['MemberConnection'],
+    ];
+    /** Team name */
+    name?: boolean | `@${string}`;
+    /** Team's namespace */
     namespace?: ResolverInputTypes['Namespace'];
-    /** User's subscriptions */
-    subscriptions?: ResolverInputTypes['SubscriptionConnection'];
-    /** Unique username */
-    username?: boolean | `@${string}`;
+    /** A plan ID of a plan associated with team */
+    planID?: boolean | `@${string}`;
+    project?: [{ id: string }, ResolverInputTypes['ProjectOps']];
+    removeServiceAccount?: [{ name: string }, boolean | `@${string}`];
+    removeServiceAccountApiKey?: [
+      { serviceAccount: string; id: string },
+      boolean | `@${string}`,
+    ];
+    removeToken?: [{ token: string }, boolean | `@${string}`];
     __typename?: boolean | `@${string}`;
   }>;
+  /** PageInfo contains information about connection page */
+  ['PageInfo']: AliasType<{
+    /** last element in connection */
+    last?: boolean | `@${string}`;
+    /** limit set while quering */
+    limit?: boolean | `@${string}`;
+    /** if next is false then client recieved all available data */
+    next?: boolean | `@${string}`;
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Defines user's account type */
+  ['AccountType']: AccountType;
+  /** Sort order defines possible ordering of sorted outputs */
+  ['SortOrder']: SortOrder;
+  ['CreateServiceAccountInput']: {
+    description?: string | undefined | null;
+    tags?: Array<string> | undefined | null;
+  };
+  /** Project connection object
+
+Used with paginated listing of projects */
+  ['ProjectConnection']: AliasType<{
+    /** Current connection page info */
+    pageInfo?: ResolverInputTypes['PageInfo'];
+    /** List of projects in connection */
+    projects?: ResolverInputTypes['Project'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** Checkout data needed to begin payment process */
+  ['CheckoutDataInput']: {
+    /** Customer data */
+    customer?: ResolverInputTypes['CustomerInput'] | undefined | null;
+    /** Vat data */
+    vat?: ResolverInputTypes['VatInput'] | undefined | null;
+    /** Optional discount coupon */
+    coupon?: string | undefined | null;
+    /** URL to which user should be redirected after successful transaction */
+    successURL?: string | undefined | null;
+    /** URL to which user should be redirected after failed transaction */
+    cancelURL?: string | undefined | null;
+    /** An id of a chosen subscription plan */
+    planID: string;
+    /** Quantity of subscriptions that user wants */
+    quantity?: number | undefined | null;
+  };
+  ['MarketplaceUpstream']: AliasType<{
+    NpmRegistryPackage?: ResolverInputTypes['NpmRegistryPackage'];
+    __typename?: boolean | `@${string}`;
+  }>;
+  /** RFC3339Date is a RFC3339 formated date-time string */
+  ['RFC3339Date']: unknown;
   /** Team object */
   ['Team']: AliasType<{
     /** Unique team id */
@@ -1805,539 +2573,72 @@ Sort behaviour for projects by team is implemenation depednant. */
     tokens?: ResolverInputTypes['InviteToken'];
     __typename?: boolean | `@${string}`;
   }>;
-  ['NpmRegistryPackage']: AliasType<{
-    package?: boolean | `@${string}`;
-    registry?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Temporary file for project */
-  ['TemporaryFile']: AliasType<{
-    /** String with url used in GET request */
-    getUrl?: boolean | `@${string}`;
-    /** String with url used in PUT request */
-    putUrl?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['DeployCodeToCloudURIKind']: DeployCodeToCloudURIKind;
-  ['MarketplaceOps']: AliasType<{
-    addProject?: [
-      { id: string; opts?: ResolverInputTypes['AddProjectInput'] | undefined | null },
-      boolean | `@${string}`,
-    ];
-    removeProject?: [{ id: string }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Teams connection */
-  ['TeamConnection']: AliasType<{
-    /** Pagination info used in next fetch */
-    pageInfo?: ResolverInputTypes['PageInfo'];
-    /** List of teams returned by current page in connection */
-    teams?: ResolverInputTypes['Team'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['MarketplaceUpstream']: AliasType<{
-    NpmRegistryPackage?: ResolverInputTypes['NpmRegistryPackage'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Vat information of a user */
-  ['VatInput']: {
-    /** Vat company post code address. */
-    postCode?: string | undefined | null;
-    /** Vat number */
-    number?: string | undefined | null;
-    /** Vat company name */
-    companyName?: string | undefined | null;
-    /** Vat company street address */
-    street?: string | undefined | null;
-    /** Vat company city address */
-    city?: string | undefined | null;
-    /** Vat company state address. Optional. */
-    state?: string | undefined | null;
-    /** Vat company country address. */
-    country?: string | undefined | null;
-  };
-  ['Secret']: {
-    name: string;
-    value?: string | undefined | null;
-  };
-  ['CloudCorsSetting']: AliasType<{
-    allowCredentials?: boolean | `@${string}`;
-    allowedHeaders?: boolean | `@${string}`;
-    allowedMethod?: boolean | `@${string}`;
-    allowedOrigins?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['CloudDeploymentStatus']: CloudDeploymentStatus;
-  /** Team member */
-  ['Member']: AliasType<{
-    /** Member email */
-    email?: boolean | `@${string}`;
-    /** Member role */
-    role?: boolean | `@${string}`;
-    /** Service account */
-    serviceAccount?: boolean | `@${string}`;
-    /** Member username */
-    username?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Amount is a number that gives precise representation of real numbers */
-  ['Decimal']: unknown;
   /** Update project payload */
   ['UpdateProject']: {
-    /** Set project visiblity */
-    public?: boolean | undefined | null;
-    /** Link to upstream schema */
-    upstream?: string | undefined | null;
     /** ID of project to be updated */
     project?: string | undefined | null;
     /** New description for project */
     description?: string | undefined | null;
     /** List of tags for project */
     tags?: Array<string> | undefined | null;
+    /** Set project visiblity */
+    public?: boolean | undefined | null;
+    /** Link to upstream schema */
+    upstream?: string | undefined | null;
   };
-  ['CreateServiceAccountInput']: {
-    tags?: Array<string> | undefined | null;
-    description?: string | undefined | null;
-  };
-  /** Request header */
-  ['Header']: AliasType<{
-    /** Header name */
-    key?: boolean | `@${string}`;
-    /** Header value */
-    value?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['ServiceAccount']: AliasType<{
-    description?: boolean | `@${string}`;
-    keys?: ResolverInputTypes['ServiceAccountApiKey'];
-    name?: boolean | `@${string}`;
-    tags?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Sort order defines possible ordering of sorted outputs */
-  ['SortOrder']: SortOrder;
-  ['AddProjectInput']: {
-    npmRegistryPackage?: ResolverInputTypes['NpmRegistryPackageInput'] | undefined | null;
-  };
-  /** New source payload */
-  ['NewSource']: {
-    /** Length of source in bytes */
-    contentLength?: number | undefined | null;
-    /** Source mime type */
-    contentType?: string | undefined | null;
-    /** Source checksum */
-    checksum?: string | undefined | null;
-    /** source file name */
-    filename?: string | undefined | null;
-  };
-  ['SchemaSubscription']: AliasType<{
-    watchJobStatus?: [{ streamID: string }, boolean | `@${string}`];
-    watchLogs?: [{ streamID: string }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Root query type */
-  ['Query']: AliasType<{
-    checkoutData?: [{ data: ResolverInputTypes['CheckoutDataInput'] }, boolean | `@${string}`];
-    /** Returns true if the user is logged in and has verified email */
-    emailVerified?: boolean | `@${string}`;
-    exchangeServiceAccountKey?: [{ serviceAccount: string; key: string }, boolean | `@${string}`];
-    fileServerCredentials?: [{ project?: string | undefined | null }, boolean | `@${string}`];
-    findProjects?: [
-      { query: string; last?: string | undefined | null; limit?: number | undefined | null },
-      ResolverInputTypes['ProjectConnection'],
-    ];
-    findProjectsByTag?: [
-      { limit?: number | undefined | null; tag: string; last?: string | undefined | null },
-      ResolverInputTypes['ProjectConnection'],
-    ];
-    getNamespace?: [{ slug: string }, ResolverInputTypes['Namespace']];
-    getProject?: [{ project: string }, ResolverInputTypes['Project']];
-    getTeam?: [{ name: string }, ResolverInputTypes['Team']];
-    getUser?: [{ username: string }, ResolverInputTypes['User']];
-    listProjects?: [
-      {
-        owned?: boolean | undefined | null;
-        last?: string | undefined | null;
-        limit?: number | undefined | null;
-        sort?: Array<ResolverInputTypes['ProjectsSortInput'] | undefined | null> | undefined | null;
-      },
-      ResolverInputTypes['ProjectConnection'],
-    ];
-    /** Marketplace is a space to share your projects */
-    marketplace?: ResolverInputTypes['Marketplace'];
-    myTeams?: [
-      { last?: string | undefined | null; limit?: number | undefined | null },
-      ResolverInputTypes['TeamConnection'],
-    ];
-    /** List user payments */
-    payments?: ResolverInputTypes['Payment'];
-    predictCheckout?: [{ data: ResolverInputTypes['PredictCheckoutInput'] }, ResolverInputTypes['PredictCheckout']];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** PageInfo contains information about connection page */
-  ['PageInfo']: AliasType<{
-    /** last element in connection */
-    last?: boolean | `@${string}`;
-    /** limit set while quering */
-    limit?: boolean | `@${string}`;
-    /** if next is false then client recieved all available data */
-    next?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['RenameFileInput']: {
-    src: string;
-    dst: string;
-  };
-  /** Project connection object
-
-Used with paginated listing of projects */
-  ['ProjectConnection']: AliasType<{
-    /** Current connection page info */
-    pageInfo?: ResolverInputTypes['PageInfo'];
-    /** List of projects in connection */
-    projects?: ResolverInputTypes['Project'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Connection object containing list of faker sources */
-  ['FakerSourceConnection']: AliasType<{
-    /** Connection pageInfo */
-    pageInfo?: ResolverInputTypes['PageInfo'];
-    /** List of sources returned by connection */
-    sources?: ResolverInputTypes['FakerSource'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['UserConnection']: AliasType<{
-    /** Current connection page info */
-    pageInfo?: ResolverInputTypes['PageInfo'];
-    /** List of projects in connection */
-    users?: ResolverInputTypes['User'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['FileServerCredentials']: unknown;
-  ['Marketplace']: AliasType<{
-    projects?: [
-      {
-        query?: string | undefined | null;
-        last?: string | undefined | null;
-        limit?: number | undefined | null;
-        sort?: Array<ResolverInputTypes['MarketplaceProjectsSortInput'] | undefined | null> | undefined | null;
-      },
-      ResolverInputTypes['MarketplaceItemConnection'],
-    ];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Checkout data needed to begin payment process */
-  ['CheckoutDataInput']: {
-    /** URL to which user should be redirected after failed transaction */
-    cancelURL?: string | undefined | null;
-    /** An id of a chosen subscription plan */
-    planID: string;
-    /** Quantity of subscriptions that user wants */
-    quantity?: number | undefined | null;
-    /** Customer data */
-    customer?: ResolverInputTypes['CustomerInput'] | undefined | null;
-    /** Vat data */
-    vat?: ResolverInputTypes['VatInput'] | undefined | null;
-    /** Optional discount coupon */
-    coupon?: string | undefined | null;
-    /** URL to which user should be redirected after successful transaction */
-    successURL?: string | undefined | null;
-  };
-  /** PaymentDate is a string in a format 'YYYY-MM-DD' */
-  ['PaymentDate']: unknown;
-  /** Team operations */
-  ['TeamOps']: AliasType<{
-    addMember?: [
-      { loginCallback?: string | undefined | null; username: string; role: ResolverInputTypes['Role'] },
-      ResolverInputTypes['Member'],
-    ];
-    createProject?: [{ public?: boolean | undefined | null; name: string }, ResolverInputTypes['Project']];
-    createServiceAccount?: [
-      { input?: ResolverInputTypes['CreateServiceAccountInput'] | undefined | null },
-      ResolverInputTypes['ServiceAccount'],
-    ];
-    createServiceAccountApiKey?: [{ serviceAccount: string; name: string }, ResolverInputTypes['ServiceAccountApiKey']];
-    /** Delete team */
-    delete?: boolean | `@${string}`;
-    /** Unique team id */
-    id?: boolean | `@${string}`;
-    inviteToken?: [
-      {
-        name: string;
-        role?: ResolverInputTypes['Role'] | undefined | null;
-        expiration?: number | undefined | null;
-        domain?: string | undefined | null;
-      },
-      boolean | `@${string}`,
-    ];
-    member?: [{ username: string }, ResolverInputTypes['MemberOps']];
-    members?: [
-      { last?: string | undefined | null; limit?: number | undefined | null },
-      ResolverInputTypes['MemberConnection'],
-    ];
-    /** Team name */
-    name?: boolean | `@${string}`;
-    /** Team's namespace */
-    namespace?: ResolverInputTypes['Namespace'];
-    /** A plan ID of a plan associated with team */
-    planID?: boolean | `@${string}`;
-    project?: [{ id: string }, ResolverInputTypes['ProjectOps']];
-    removeServiceAccount?: [{ name: string }, boolean | `@${string}`];
-    removeServiceAccountApiKey?: [{ serviceAccount: string; id: string }, boolean | `@${string}`];
-    removeToken?: [{ token: string }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Paginated service account list */
-  ['ServiceAccountConnection']: AliasType<{
-    /** pageInfo for service accounts connection */
-    pageInfo?: ResolverInputTypes['PageInfo'];
-    /** List of members in this connection */
-    serviceAccounts?: ResolverInputTypes['ServiceAccount'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Team member ops */
-  ['MemberOps']: AliasType<{
-    /** Boolean object node */
-    delete?: boolean | `@${string}`;
-    update?: [{ role?: ResolverInputTypes['Role'] | undefined | null }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['CloudDeploymentConfig']: AliasType<{
-    cors?: ResolverInputTypes['CloudCorsSetting'];
-    secrets?: ResolverInputTypes['SecretOutput'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Endpoint returnes a full path to the project without host */
-  ['Endpoint']: AliasType<{
-    /** Full project uri without host */
-    uri?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['Subscription']: AliasType<{
-    /** Cancel subscription URL */
-    cancelURL?: boolean | `@${string}`;
-    /** Subscription expiration date */
-    expiration?: boolean | `@${string}`;
-    /** Number of seats in subscription */
-    quantity?: boolean | `@${string}`;
-    /** List of seats in subscription */
-    seats?: ResolverInputTypes['UserConnection'];
-    /** Status of subscription */
-    status?: boolean | `@${string}`;
-    /** Subscription unique id */
-    subscriptionID?: boolean | `@${string}`;
-    /** Subscription plan unique id */
-    subscriptionPlanID?: boolean | `@${string}`;
-    /** Update subscription URL */
-    updateURL?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['Mutation']: AliasType<{
-    changePassword?: [{ oldPassword: string; newPassword: string }, boolean | `@${string}`];
-    changeSubscription?: [{ in: ResolverInputTypes['ChangeSubscriptionInput'] }, boolean | `@${string}`];
-    consumeInviteToken?: [{ token: string }, boolean | `@${string}`];
-    createCloudDeployment?: [{ id: string }, boolean | `@${string}`];
-    createProject?: [{ public?: boolean | undefined | null; name: string }, ResolverInputTypes['Project']];
-    createTeam?: [{ namespace: string; name: string }, ResolverInputTypes['TeamOps']];
-    createUser?: [{ namespace: string; public?: boolean | undefined | null }, ResolverInputTypes['User']];
-    /** Delete account */
-    deleteAccount?: boolean | `@${string}`;
-    deployCodeToCloud?: [{ id: string; opts: ResolverInputTypes['DeployCodeToCloudInput'] }, boolean | `@${string}`];
-    deployToFaker?: [{ id: string }, boolean | `@${string}`];
-    /** Returns marketplace ops */
-    marketplace?: ResolverInputTypes['MarketplaceOps'];
-    removeCloudDeployment?: [{ id: string }, boolean | `@${string}`];
-    removeProject?: [{ project: string }, boolean | `@${string}`];
-    /** Resend verification email */
-    resendVerificationEmail?: boolean | `@${string}`;
-    runtimeLogs?: [{ id: string }, boolean | `@${string}`];
-    setCloudDeploymentConfig?: [
-      { id: string; input: ResolverInputTypes['SetCloudDeploymentConfigInput'] },
-      boolean | `@${string}`,
-    ];
-    sync?: [{ source: string; target: string }, boolean | `@${string}`];
-    team?: [{ id: string }, ResolverInputTypes['TeamOps']];
-    updateProject?: [{ in?: ResolverInputTypes['UpdateProject'] | undefined | null }, boolean | `@${string}`];
-    updateSources?: [
-      { sources?: Array<ResolverInputTypes['NewSource']> | undefined | null; project: string },
-      ResolverInputTypes['SourceUploadInfo'],
-    ];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['SetCloudDeploymentConfigCorsInput']: {
-    allowCredentials?: boolean | undefined | null;
-    allowedOrigins?: Array<string> | undefined | null;
-    allowedHeaders?: Array<string> | undefined | null;
-    allowedMethods?: Array<string> | undefined | null;
-  };
-  ['DeployCodeToCloudInput']: {
-    kind?: ResolverInputTypes['DeployCodeToCloudURIKind'] | undefined | null;
-    env?: ResolverInputTypes['DeployCodeToCloudEnv'] | undefined | null;
-    secrets?: Array<ResolverInputTypes['Secret']> | undefined | null;
-    node14Opts?: ResolverInputTypes['DeployCodeToCloudNode14Opts'] | undefined | null;
-    codeURI: string;
-  };
-  /** type object node */
-  ['ProjectOps']: AliasType<{
-    addMember?: [
-      {
-        username: string;
-        role: ResolverInputTypes['Role'];
-        loginCallback?: string | undefined | null;
-        serviceAccount?: boolean | undefined | null;
-      },
-      ResolverInputTypes['Member'],
-    ];
-    /** Create project in cloud */
-    createCloudDeployment?: boolean | `@${string}`;
-    createTemporaryFile?: [
-      { contentType?: string | undefined | null; contentLength?: number | undefined | null },
-      ResolverInputTypes['TemporaryFile'],
-    ];
-    /** Boolean object node */
-    delete?: boolean | `@${string}`;
-    deployCodeToCloud?: [{ opts: ResolverInputTypes['DeployCodeToCloudInput'] }, boolean | `@${string}`];
-    /** deploy project to faker */
-    deployToFaker?: boolean | `@${string}`;
-    /** Remove deployment from cloud */
-    removeCloudDeployment?: boolean | `@${string}`;
-    removeSources?: [{ files?: Array<string> | undefined | null }, boolean | `@${string}`];
-    renameSources?: [
-      { files?: Array<ResolverInputTypes['RenameFileInput']> | undefined | null },
-      boolean | `@${string}`,
-    ];
-    /** Runtime logs request for project */
-    runtimeLogs?: boolean | `@${string}`;
-    setCloudDeploymentConfig?: [{ input: ResolverInputTypes['SetCloudDeploymentConfigInput'] }, boolean | `@${string}`];
-    update?: [{ in?: ResolverInputTypes['UpdateProject'] | undefined | null }, boolean | `@${string}`];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['SetCloudDeploymentConfigInput']: {
-    secrets?: Array<ResolverInputTypes['Secret']> | undefined | null;
-    cors?: ResolverInputTypes['SetCloudDeploymentConfigCorsInput'] | undefined | null;
-  };
-  ['DeployCodeToCloudEnv']: DeployCodeToCloudEnv;
-  ['SecretOutput']: AliasType<{
-    name?: boolean | `@${string}`;
-    value?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Namespace is a root object containing projects belonging
-to a team or user */
-  ['Namespace']: AliasType<{
-    project?: [{ name: string }, ResolverInputTypes['Project']];
-    projects?: [
-      { last?: string | undefined | null; limit?: number | undefined | null },
-      ResolverInputTypes['ProjectConnection'],
-    ];
-    /** True if namespace is public */
-    public?: boolean | `@${string}`;
-    /** Namespace part of the slug */
-    slug?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** MarketplaceProjectsSortInput defines how projects from listProjects should be sorted in marketplace. */
-  ['MarketplaceProjectsSortInput']: {
-    /** Sort by owner */
-    owner?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sort by visisbility */
-    public?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sort by slug */
-    slug?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sort by tag */
-    tags?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sorts projects by team.
-
-Sort behaviour for projects by team is implemenation depednant. */
-    team?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sort projects by creation date */
-    createdAt?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sort by name */
-    name?: ResolverInputTypes['SortOrder'] | undefined | null;
-    /** Sort by id */
-    id?: ResolverInputTypes['SortOrder'] | undefined | null;
-  };
-  /** MarketplaceItem represents a project exposed in marketplace. */
-  ['MarketplaceItem']: AliasType<{
-    project?: ResolverInputTypes['Project'];
-    upstream?: ResolverInputTypes['MarketplaceUpstream'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['Payment']: AliasType<{
-    /** Amount paid */
-    amount?: boolean | `@${string}`;
-    /** Currency in which payment was made */
-    currency?: boolean | `@${string}`;
-    /** Date indicates a when the payment was made */
-    date?: boolean | `@${string}`;
-    /** URL from which user can download invoice */
-    receiptURL?: boolean | `@${string}`;
-    /** ID of subscription for which payment was made */
-    subscriptionID?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  /** Team member role */
-  ['Role']: Role;
-  /** Paginated members list */
-  ['MemberConnection']: AliasType<{
-    /** List of members in this connection */
-    members?: ResolverInputTypes['Member'];
-    /** pageInfo for member connection */
-    pageInfo?: ResolverInputTypes['PageInfo'];
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['InviteToken']: AliasType<{
-    domain?: boolean | `@${string}`;
-    name?: boolean | `@${string}`;
-    removed?: boolean | `@${string}`;
-    token?: boolean | `@${string}`;
-    __typename?: boolean | `@${string}`;
-  }>;
-  ['NpmRegistryPackageInput']: {
-    registry?: string | undefined | null;
-    package: string;
-  };
-  /** Source upload info object */
-  ['SourceUploadInfo']: AliasType<{
-    /** Source file name */
-    filename?: boolean | `@${string}`;
-    /** List of headers that must be included in PUT request */
-    headers?: ResolverInputTypes['Header'];
-    /** String with url used in PUT request */
-    putUrl?: boolean | `@${string}`;
+  ['schema']: AliasType<{
+    query?: ResolverInputTypes['Query'];
+    mutation?: ResolverInputTypes['Mutation'];
     __typename?: boolean | `@${string}`;
   }>;
 };
 
 export type ModelTypes = {
-  ['DeployCodeToCloudNode14Opts']: {
-    buildScript?: string | undefined;
-  };
-  ['AccountType']: AccountType;
-  ['ServiceAccountApiKey']: {
-    id: string;
-    key: string;
-    name: string;
-  };
-  /** Marketplace item connection object
+  /** MarketplaceProjectsSortInput defines how projects from listProjects should be sorted in marketplace. */
+  ['MarketplaceProjectsSortInput']: {
+    /** Sort by name */
+    name?: ModelTypes['SortOrder'] | undefined;
+    /** Sort by id */
+    id?: ModelTypes['SortOrder'] | undefined;
+    /** Sort by owner */
+    owner?: ModelTypes['SortOrder'] | undefined;
+    /** Sort by visisbility */
+    public?: ModelTypes['SortOrder'] | undefined;
+    /** Sort by slug */
+    slug?: ModelTypes['SortOrder'] | undefined;
+    /** Sort by tag */
+    tags?: ModelTypes['SortOrder'] | undefined;
+    /** Sorts projects by team.
 
-Used with paginated listing of projects */
-  ['MarketplaceItemConnection']: {
-    /** Current connection page info */
-    pageInfo: ModelTypes['PageInfo'];
-    /** List of market place items in connection */
-    projects?: Array<ModelTypes['MarketplaceItem']> | undefined;
+Sort behaviour for projects by team is implemenation depednant. */
+    team?: ModelTypes['SortOrder'] | undefined;
+    /** Sort projects by creation date */
+    createdAt?: ModelTypes['SortOrder'] | undefined;
   };
   ['ChangeSubscriptionInput']: {
     subscriptionID: number;
     subscriptionPlanID?: number | undefined;
   };
+  /** A source object */
+  ['FakerSource']: {
+    /** File checksum */
+    checksum?: string | undefined;
+    contents?: string | undefined;
+    /** Name of source file */
+    filename?: string | undefined;
+    /** Return an url by which source file can be accessed */
+    getUrl?: string | undefined;
+    /** Return last time the object was updated */
+    updatedAt?: string | undefined;
+  };
+  ['SubscriptionConnection']: {
+    /** Current conenction page info */
+    pageInfo: ModelTypes['PageInfo'];
+    /** List of subscriptions in connection */
+    subscriptions?: Array<ModelTypes['Subscription']> | undefined;
+  };
   /** Project type */
   ['Project']: {
-    /** Return config of cloud deployment */
-    cloudDeploymentConfig?: ModelTypes['CloudDeploymentConfig'] | undefined;
-    /** Return status of cloud deployment */
-    cloudDeploymentStatus?: ModelTypes['CloudDeploymentStatus'] | undefined;
     /** Return creation time stamp of a project */
     createdAt?: ModelTypes['RFC3339Date'] | undefined;
     /** A database connection info */
@@ -2385,15 +2686,76 @@ Can be null if project belongs to a user */
     /** A link to upstream URL */
     upstream?: string | undefined;
   };
-  /** PredictCheckout represents payment prediction for checkout data */
-  ['PredictCheckout']: {
-    /** Predicted checkout price */
-    price: number;
-    /** Predicted number of trial days */
-    trialDays?: number | undefined;
+  /** Editor user */
+  ['User']: {
+    /** User's account type */
+    accountType: ModelTypes['AccountType'];
+    /** Marketing consent. True if given, false if declined, null if never asked. */
+    consentGiven?: boolean | undefined;
+    /** Marketing consent given at */
+    consentTimestamp?: number | undefined;
+    /** Unique user id */
+    id?: string | undefined;
+    /** User's namespace */
+    namespace?: ModelTypes['Namespace'] | undefined;
+    stripeCustomerId?: string | undefined;
+    /** User's subscriptions */
+    subscriptions?: ModelTypes['SubscriptionConnection'] | undefined;
+    /** Unique username */
+    username?: string | undefined;
+  };
+  /** Namespace is a root object containing projects belonging
+to a team or user */
+  ['Namespace']: {
+    /** Return project by name from namespace */
+    project?: ModelTypes['Project'] | undefined;
+    /** Returns a project connection object which contains a projects belonging to namespace
+
+last is a string returned by previous call to Namespace.projects
+
+limit sets a limit on how many objects can be returned */
+    projects?: ModelTypes['ProjectConnection'] | undefined;
+    /** True if namespace is public */
+    public?: boolean | undefined;
+    /** Namespace part of the slug */
+    slug?: string | undefined;
+  };
+  ['InviteToken']: {
+    createdAt?: string | undefined;
+    domain?: string | undefined;
+    expiration?: string | undefined;
+    name: string;
+    removed?: boolean | undefined;
+    role?: ModelTypes['Role'] | undefined;
+    token?: string | undefined;
+  };
+  /** Teams connection */
+  ['TeamConnection']: {
+    /** Pagination info used in next fetch */
+    pageInfo: ModelTypes['PageInfo'];
+    /** List of teams returned by current page in connection */
+    teams?: Array<ModelTypes['Team']> | undefined;
+  };
+  /** MarketplaceItem represents a project exposed in marketplace. */
+  ['MarketplaceItem']: {
+    project?: ModelTypes['Project'] | undefined;
+    upstream?: ModelTypes['MarketplaceUpstream'] | undefined;
+  };
+  /** PaymentDate is a string in a format 'YYYY-MM-DD' */
+  ['PaymentDate']: any;
+  /** Paginated service account list */
+  ['ServiceAccountConnection']: {
+    /** pageInfo for service accounts connection */
+    pageInfo: ModelTypes['PageInfo'];
+    /** List of members in this connection */
+    serviceAccounts?: Array<ModelTypes['ServiceAccount']> | undefined;
   };
   /** ProjectsSortInput defines how projects from listProjects should be sorted. */
   ['ProjectsSortInput']: {
+    /** Sort by name */
+    name?: ModelTypes['SortOrder'] | undefined;
+    /** Sort by id */
+    id?: ModelTypes['SortOrder'] | undefined;
     /** Sort by owner */
     owner?: ModelTypes['SortOrder'] | undefined;
     /** Sort by visisbility */
@@ -2408,202 +2770,6 @@ Sort behaviour for projects by team is implemenation depednant. */
     team?: ModelTypes['SortOrder'] | undefined;
     /** Sort projects by creation date */
     createdAt?: ModelTypes['SortOrder'] | undefined;
-    /** Sort by name */
-    name?: ModelTypes['SortOrder'] | undefined;
-    /** Sort by id */
-    id?: ModelTypes['SortOrder'] | undefined;
-  };
-  /** RFC3339Date is a RFC3339 formated date-time string */
-  ['RFC3339Date']: any;
-  ['SubscriptionConnection']: {
-    /** Current conenction page info */
-    pageInfo: ModelTypes['PageInfo'];
-    /** List of subscriptions in connection */
-    subscriptions?: Array<ModelTypes['Subscription']> | undefined;
-  };
-  /** Checkout data needed to begin payment process */
-  ['PredictCheckoutInput']: {
-    /** An id of a chosen subscription plan */
-    planID: string;
-    /** Quantity of subscriptions that user wants */
-    quantity?: number | undefined;
-    /** Optional discount coupon */
-    coupon?: string | undefined;
-  };
-  /** Customer data for checkout information */
-  ['CustomerInput']: {
-    /** User's country */
-    country?: string | undefined;
-    /** User's post code */
-    postCode?: string | undefined;
-    /** Must be true for marketing to be allowed */
-    marketingConsent?: boolean | undefined;
-    /** User's email address */
-    email?: string | undefined;
-  };
-  /** A source object */
-  ['FakerSource']: {
-    /** File checksum */
-    checksum?: string | undefined;
-    contents?: string | undefined;
-    /** Name of source file */
-    filename?: string | undefined;
-    /** Return an url by which source file can be accessed */
-    getUrl?: string | undefined;
-    /** Return last time the object was updated */
-    updatedAt?: string | undefined;
-  };
-  /** Editor user */
-  ['User']: {
-    /** User's account type */
-    accountType: ModelTypes['AccountType'];
-    /** Marketing consent. True if given, false if declined, null if never asked. */
-    consentGiven?: boolean | undefined;
-    /** Marketing consent given at */
-    consentTimestamp?: number | undefined;
-    /** Unique user id */
-    id?: string | undefined;
-    /** User's namespace */
-    namespace?: ModelTypes['Namespace'] | undefined;
-    /** User's subscriptions */
-    subscriptions?: ModelTypes['SubscriptionConnection'] | undefined;
-    /** Unique username */
-    username?: string | undefined;
-  };
-  /** Team object */
-  ['Team']: {
-    /** Unique team id */
-    id?: string | undefined;
-    /** type object node */
-    member?: ModelTypes['Member'] | undefined;
-    /** Paginated list of members in team */
-    members?: ModelTypes['MemberConnection'] | undefined;
-    /** Team name */
-    name: string;
-    /** Team's namespace */
-    namespace: ModelTypes['Namespace'];
-    /** A plan ID of a plan associated with team */
-    planID?: number | undefined;
-    /** List service accounts in team */
-    serviceAccounts?: ModelTypes['ServiceAccountConnection'] | undefined;
-    /** List invite tokens */
-    tokens?: Array<ModelTypes['InviteToken']> | undefined;
-  };
-  ['NpmRegistryPackage']: {
-    package: string;
-    registry?: string | undefined;
-  };
-  /** Temporary file for project */
-  ['TemporaryFile']: {
-    /** String with url used in GET request */
-    getUrl: string;
-    /** String with url used in PUT request */
-    putUrl: string;
-  };
-  ['DeployCodeToCloudURIKind']: DeployCodeToCloudURIKind;
-  ['MarketplaceOps']: {
-    /** Add project to market place */
-    addProject?: boolean | undefined;
-    /** Remove project from market place */
-    removeProject?: boolean | undefined;
-  };
-  /** Teams connection */
-  ['TeamConnection']: {
-    /** Pagination info used in next fetch */
-    pageInfo: ModelTypes['PageInfo'];
-    /** List of teams returned by current page in connection */
-    teams?: Array<ModelTypes['Team']> | undefined;
-  };
-  ['MarketplaceUpstream']: ModelTypes['NpmRegistryPackage'];
-  /** Vat information of a user */
-  ['VatInput']: {
-    /** Vat company post code address. */
-    postCode?: string | undefined;
-    /** Vat number */
-    number?: string | undefined;
-    /** Vat company name */
-    companyName?: string | undefined;
-    /** Vat company street address */
-    street?: string | undefined;
-    /** Vat company city address */
-    city?: string | undefined;
-    /** Vat company state address. Optional. */
-    state?: string | undefined;
-    /** Vat company country address. */
-    country?: string | undefined;
-  };
-  ['Secret']: {
-    name: string;
-    value?: string | undefined;
-  };
-  ['CloudCorsSetting']: {
-    allowCredentials?: boolean | undefined;
-    allowedHeaders?: Array<string> | undefined;
-    allowedMethod?: Array<string> | undefined;
-    allowedOrigins?: Array<string> | undefined;
-  };
-  ['CloudDeploymentStatus']: CloudDeploymentStatus;
-  /** Team member */
-  ['Member']: {
-    /** Member email */
-    email?: string | undefined;
-    /** Member role */
-    role?: ModelTypes['Role'] | undefined;
-    /** Service account */
-    serviceAccount?: boolean | undefined;
-    /** Member username */
-    username?: string | undefined;
-  };
-  /** Amount is a number that gives precise representation of real numbers */
-  ['Decimal']: any;
-  /** Update project payload */
-  ['UpdateProject']: {
-    /** Set project visiblity */
-    public?: boolean | undefined;
-    /** Link to upstream schema */
-    upstream?: string | undefined;
-    /** ID of project to be updated */
-    project?: string | undefined;
-    /** New description for project */
-    description?: string | undefined;
-    /** List of tags for project */
-    tags?: Array<string> | undefined;
-  };
-  ['CreateServiceAccountInput']: {
-    tags?: Array<string> | undefined;
-    description?: string | undefined;
-  };
-  /** Request header */
-  ['Header']: {
-    /** Header name */
-    key: string;
-    /** Header value */
-    value?: string | undefined;
-  };
-  ['ServiceAccount']: {
-    description?: string | undefined;
-    keys?: Array<ModelTypes['ServiceAccountApiKey']> | undefined;
-    name: string;
-    tags?: Array<string> | undefined;
-  };
-  ['SortOrder']: SortOrder;
-  ['AddProjectInput']: {
-    npmRegistryPackage?: ModelTypes['NpmRegistryPackageInput'] | undefined;
-  };
-  /** New source payload */
-  ['NewSource']: {
-    /** Length of source in bytes */
-    contentLength?: number | undefined;
-    /** Source mime type */
-    contentType?: string | undefined;
-    /** Source checksum */
-    checksum?: string | undefined;
-    /** source file name */
-    filename?: string | undefined;
-  };
-  ['SchemaSubscription']: {
-    watchJobStatus?: ModelTypes['CloudDeploymentStatus'] | undefined;
-    watchLogs?: string | undefined;
   };
   /** Root query type */
   ['Query']: {
@@ -2634,6 +2800,8 @@ last is an id of the last project returned by previous call
 
 limit limits the number of returned projects */
     findProjectsByTag?: ModelTypes['ProjectConnection'] | undefined;
+    /** generate link to stripe billing portal */
+    generateStripeBillingPortal?: string | undefined;
     /** Return namespace matching slug */
     getNamespace?: ModelTypes['Namespace'] | undefined;
     /** Return project by id */
@@ -2658,28 +2826,33 @@ limit limits the number of returned projects */
     payments?: Array<ModelTypes['Payment'] | undefined> | undefined;
     /** Calculate checkout information */
     predictCheckout?: ModelTypes['PredictCheckout'] | undefined;
+    /** Stripe endpoint to start payment flow */
+    stripePaymentLink?: string | undefined;
   };
-  /** PageInfo contains information about connection page */
-  ['PageInfo']: {
-    /** last element in connection */
-    last?: string | undefined;
-    /** limit set while quering */
-    limit?: number | undefined;
-    /** if next is false then client recieved all available data */
-    next?: boolean | undefined;
+  ['NpmRegistryPackageInput']: {
+    registry?: string | undefined;
+    package: string;
+  };
+  /** Vat information of a user */
+  ['VatInput']: {
+    /** Vat company street address */
+    street?: string | undefined;
+    /** Vat company city address */
+    city?: string | undefined;
+    /** Vat company state address. Optional. */
+    state?: string | undefined;
+    /** Vat company country address. */
+    country?: string | undefined;
+    /** Vat company post code address. */
+    postCode?: string | undefined;
+    /** Vat number */
+    number?: string | undefined;
+    /** Vat company name */
+    companyName?: string | undefined;
   };
   ['RenameFileInput']: {
     src: string;
     dst: string;
-  };
-  /** Project connection object
-
-Used with paginated listing of projects */
-  ['ProjectConnection']: {
-    /** Current connection page info */
-    pageInfo: ModelTypes['PageInfo'];
-    /** List of projects in connection */
-    projects?: Array<ModelTypes['Project']> | undefined;
   };
   /** Connection object containing list of faker sources */
   ['FakerSourceConnection']: {
@@ -2688,13 +2861,116 @@ Used with paginated listing of projects */
     /** List of sources returned by connection */
     sources?: Array<ModelTypes['FakerSource']> | undefined;
   };
+  /** PredictCheckout represents payment prediction for checkout data */
+  ['PredictCheckout']: {
+    /** Predicted checkout price */
+    price: number;
+    /** Predicted number of trial days */
+    trialDays?: number | undefined;
+  };
+  /** Amount is a number that gives precise representation of real numbers */
+  ['Decimal']: any;
+  /** Temporary file for project */
+  ['TemporaryFile']: {
+    /** String with url used in GET request */
+    getUrl: string;
+    /** String with url used in PUT request */
+    putUrl: string;
+  };
+  /** Marketplace item connection object
+
+Used with paginated listing of projects */
+  ['MarketplaceItemConnection']: {
+    /** Current connection page info */
+    pageInfo: ModelTypes['PageInfo'];
+    /** List of market place items in connection */
+    projects?: Array<ModelTypes['MarketplaceItem']> | undefined;
+  };
+  ['MarketplaceOps']: {
+    /** Add project to market place */
+    addProject?: boolean | undefined;
+    /** Remove project from market place */
+    removeProject?: boolean | undefined;
+  };
+  ['Role']: Role;
+  ['Mutation']: {
+    /** Change user password */
+    changePassword?: boolean | undefined;
+    /** Changes subscription settings for user */
+    changeSubscription?: boolean | undefined;
+    /** Consume invite token */
+    consumeInviteToken?: boolean | undefined;
+    /** Create new team */
+    createTeam?: ModelTypes['TeamOps'] | undefined;
+    /** Create new user
+
+namespace name for a user
+
+public is user namespace public */
+    createUser: ModelTypes['User'];
+    /** Delete account */
+    deleteAccount?: boolean | undefined;
+    /** deploy project to faker */
+    deployToFaker?: boolean | undefined;
+    /** Returns marketplace ops */
+    marketplace?: ModelTypes['MarketplaceOps'] | undefined;
+    /** Remove project by id */
+    removeProject?: boolean | undefined;
+    /** Resend verification email */
+    resendVerificationEmail?: boolean | undefined;
+    /** Synhronises the target project with source. It overrides existing files
+of target with files of sources. It does not remove files from target that do not
+exist in source. */
+    sync?: boolean | undefined;
+    /** type object node */
+    team?: ModelTypes['TeamOps'] | undefined;
+    /** Modify project */
+    updateProject?: boolean | undefined;
+    /** Add sources to the project */
+    updateSources?:
+      | Array<ModelTypes['SourceUploadInfo'] | undefined>
+      | undefined;
+  };
+  /** type object node */
+  ['ProjectOps']: {
+    /** Add member to the project */
+    addMember?: ModelTypes['Member'] | undefined;
+    /** Create temporary file for project */
+    createTemporaryFile?: ModelTypes['TemporaryFile'] | undefined;
+    /** Boolean object node */
+    delete?: boolean | undefined;
+    /** deploy project to faker */
+    deployToFaker?: boolean | undefined;
+    /** remove files from project */
+    removeSources?: boolean | undefined;
+    /** rename files in project */
+    renameSources?: boolean | undefined;
+    /** Boolean object node */
+    update?: boolean | undefined;
+  };
+  /** Request header */
+  ['Header']: {
+    /** Header name */
+    key: string;
+    /** Header value */
+    value?: string | undefined;
+  };
+  /** Endpoint returnes a full path to the project without host */
+  ['Endpoint']: {
+    /** Full project uri without host */
+    uri?: string | undefined;
+  };
   ['UserConnection']: {
     /** Current connection page info */
     pageInfo: ModelTypes['PageInfo'];
     /** List of projects in connection */
     users?: Array<ModelTypes['User']> | undefined;
   };
-  ['FileServerCredentials']: any;
+  ['ServiceAccountApiKey']: {
+    id: string;
+    key: string;
+    name: string;
+  };
   ['Marketplace']: {
     /** Returns a project connection
 
@@ -2705,25 +2981,122 @@ last is an id of the last project returned by previous call
 limit limits the number of returned projects */
     projects?: ModelTypes['MarketplaceItemConnection'] | undefined;
   };
-  /** Checkout data needed to begin payment process */
-  ['CheckoutDataInput']: {
-    /** URL to which user should be redirected after failed transaction */
+  /** Team member ops */
+  ['MemberOps']: {
+    /** Boolean object node */
+    delete?: boolean | undefined;
+    /** Boolean object node */
+    update?: boolean | undefined;
+  };
+  /** New source payload */
+  ['NewSource']: {
+    /** source file name */
+    filename?: string | undefined;
+    /** Length of source in bytes */
+    contentLength?: number | undefined;
+    /** Source mime type */
+    contentType?: string | undefined;
+    /** Source checksum */
+    checksum?: string | undefined;
+  };
+  /** Paginated members list */
+  ['MemberConnection']: {
+    /** List of members in this connection */
+    members?: Array<ModelTypes['Member']> | undefined;
+    /** pageInfo for member connection */
+    pageInfo: ModelTypes['PageInfo'];
+  };
+  /** Team member */
+  ['Member']: {
+    /** Member email */
+    email?: string | undefined;
+    /** Member role */
+    role?: ModelTypes['Role'] | undefined;
+    /** Service account */
+    serviceAccount?: boolean | undefined;
+    /** Member username */
+    username?: string | undefined;
+  };
+  ['Subscription']: {
+    /** Cancel subscription URL */
     cancelURL?: string | undefined;
+    /** Subscription expiration date */
+    expiration?: string | undefined;
+    /** Number of seats in subscription */
+    quantity?: number | undefined;
+    /** List of seats in subscription */
+    seats?: ModelTypes['UserConnection'] | undefined;
+    /** Status of subscription */
+    status?: string | undefined;
+    /** Subscription unique id */
+    subscriptionID?: number | undefined;
+    /** Subscription plan unique id */
+    subscriptionPlanID?: number | undefined;
+    /** Update subscription URL */
+    updateURL?: string | undefined;
+  };
+  ['ServiceAccount']: {
+    description?: string | undefined;
+    keys?: Array<ModelTypes['ServiceAccountApiKey']> | undefined;
+    name: string;
+    tags?: Array<string> | undefined;
+  };
+  ['FileServerCredentials']: any;
+  ['NpmRegistryPackage']: {
+    package: string;
+    registry?: string | undefined;
+  };
+  /** Customer data for checkout information */
+  ['CustomerInput']: {
+    /** Must be true for marketing to be allowed */
+    marketingConsent?: boolean | undefined;
+    /** User's email address */
+    email?: string | undefined;
+    /** User's country */
+    country?: string | undefined;
+    /** User's post code */
+    postCode?: string | undefined;
+  };
+  ['Payment']: {
+    /** Amount paid */
+    amount?: ModelTypes['Decimal'] | undefined;
+    /** Currency in which payment was made */
+    currency?: string | undefined;
+    /** Date indicates a when the payment was made */
+    date?: ModelTypes['PaymentDate'] | undefined;
+    /** URL from which user can download invoice */
+    receiptURL?: string | undefined;
+    /** ID of subscription for which payment was made */
+    subscriptionID?: number | undefined;
+  };
+  ['AddProjectInput']: {
+    npmRegistryPackage?: ModelTypes['NpmRegistryPackageInput'] | undefined;
+  };
+  /** Source upload info object */
+  ['SourceUploadInfo']: {
+    /** Source file name */
+    filename?: string | undefined;
+    /** List of headers that must be included in PUT request */
+    headers?: Array<ModelTypes['Header'] | undefined> | undefined;
+    /** String with url used in PUT request */
+    putUrl: string;
+  };
+  /** Checkout data needed to begin payment process */
+  ['PredictCheckoutInput']: {
     /** An id of a chosen subscription plan */
     planID: string;
     /** Quantity of subscriptions that user wants */
     quantity?: number | undefined;
-    /** Customer data */
-    customer?: ModelTypes['CustomerInput'] | undefined;
-    /** Vat data */
-    vat?: ModelTypes['VatInput'] | undefined;
     /** Optional discount coupon */
     coupon?: string | undefined;
+  };
+  /** Checkout data needed to begin payment process for stripe */
+  ['StripeCheckoutDataInput']: {
     /** URL to which user should be redirected after successful transaction */
     successURL?: string | undefined;
+    /** price id of product on stripe */
+    PriceID: string;
   };
-  /** PaymentDate is a string in a format 'YYYY-MM-DD' */
-  ['PaymentDate']: any;
   /** Team operations */
   ['TeamOps']: {
     /** Add member to the team */
@@ -2763,264 +3136,137 @@ domain - Limits users to those who have verified email from domain */
     /** Removes a token making it unusable for future usages */
     removeToken?: string | undefined;
   };
-  /** Paginated service account list */
-  ['ServiceAccountConnection']: {
-    /** pageInfo for service accounts connection */
+  /** PageInfo contains information about connection page */
+  ['PageInfo']: {
+    /** last element in connection */
+    last?: string | undefined;
+    /** limit set while quering */
+    limit?: number | undefined;
+    /** if next is false then client recieved all available data */
+    next?: boolean | undefined;
+  };
+  ['AccountType']: AccountType;
+  ['SortOrder']: SortOrder;
+  ['CreateServiceAccountInput']: {
+    description?: string | undefined;
+    tags?: Array<string> | undefined;
+  };
+  /** Project connection object
+
+Used with paginated listing of projects */
+  ['ProjectConnection']: {
+    /** Current connection page info */
     pageInfo: ModelTypes['PageInfo'];
-    /** List of members in this connection */
-    serviceAccounts?: Array<ModelTypes['ServiceAccount']> | undefined;
+    /** List of projects in connection */
+    projects?: Array<ModelTypes['Project']> | undefined;
   };
-  /** Team member ops */
-  ['MemberOps']: {
-    /** Boolean object node */
-    delete?: boolean | undefined;
-    /** Boolean object node */
-    update?: boolean | undefined;
-  };
-  ['CloudDeploymentConfig']: {
-    cors?: ModelTypes['CloudCorsSetting'] | undefined;
-    secrets?: Array<ModelTypes['SecretOutput']> | undefined;
-  };
-  /** Endpoint returnes a full path to the project without host */
-  ['Endpoint']: {
-    /** Full project uri without host */
-    uri?: string | undefined;
-  };
-  ['Subscription']: {
-    /** Cancel subscription URL */
+  /** Checkout data needed to begin payment process */
+  ['CheckoutDataInput']: {
+    /** Customer data */
+    customer?: ModelTypes['CustomerInput'] | undefined;
+    /** Vat data */
+    vat?: ModelTypes['VatInput'] | undefined;
+    /** Optional discount coupon */
+    coupon?: string | undefined;
+    /** URL to which user should be redirected after successful transaction */
+    successURL?: string | undefined;
+    /** URL to which user should be redirected after failed transaction */
     cancelURL?: string | undefined;
-    /** Subscription expiration date */
-    expiration?: string | undefined;
-    /** Number of seats in subscription */
+    /** An id of a chosen subscription plan */
+    planID: string;
+    /** Quantity of subscriptions that user wants */
     quantity?: number | undefined;
-    /** List of seats in subscription */
-    seats?: ModelTypes['UserConnection'] | undefined;
-    /** Status of subscription */
-    status?: string | undefined;
-    /** Subscription unique id */
-    subscriptionID?: number | undefined;
-    /** Subscription plan unique id */
-    subscriptionPlanID?: number | undefined;
-    /** Update subscription URL */
-    updateURL?: string | undefined;
   };
-  ['Mutation']: {
-    /** Change user password */
-    changePassword?: boolean | undefined;
-    /** Changes subscription settings for user */
-    changeSubscription?: boolean | undefined;
-    /** Consume invite token */
-    consumeInviteToken?: boolean | undefined;
-    /** Create project in cloud */
-    createCloudDeployment?: string | undefined;
-    /** Create new user project
-
-public if true project is public
-
-name is project name */
-    createProject: ModelTypes['Project'];
-    /** Create new team */
-    createTeam?: ModelTypes['TeamOps'] | undefined;
-    /** Create new user
-
-namespace name for a user
-
-public is user namespace public */
-    createUser: ModelTypes['User'];
-    /** Delete account */
-    deleteAccount?: boolean | undefined;
-    /** Deploy code to the project in cloud */
-    deployCodeToCloud?: string | undefined;
-    /** deploy project to faker */
-    deployToFaker?: boolean | undefined;
-    /** Returns marketplace ops */
-    marketplace?: ModelTypes['MarketplaceOps'] | undefined;
-    /** Remove project from cloud */
-    removeCloudDeployment?: string | undefined;
-    /** Remove project by id */
-    removeProject?: boolean | undefined;
-    /** Resend verification email */
-    resendVerificationEmail?: boolean | undefined;
-    /** Runtime logs request for project */
-    runtimeLogs?: string | undefined;
-    /** Set cloud deployment config */
-    setCloudDeploymentConfig?: boolean | undefined;
-    /** Synhronises the target project with source. It overrides existing files
-of target with files of sources. It does not remove files from target that do not
-exist in source. */
-    sync?: boolean | undefined;
+  ['MarketplaceUpstream']: ModelTypes['NpmRegistryPackage'];
+  /** RFC3339Date is a RFC3339 formated date-time string */
+  ['RFC3339Date']: any;
+  /** Team object */
+  ['Team']: {
+    /** Unique team id */
+    id?: string | undefined;
     /** type object node */
-    team?: ModelTypes['TeamOps'] | undefined;
-    /** Modify project */
-    updateProject?: boolean | undefined;
-    /** Add sources to the project */
-    updateSources?: Array<ModelTypes['SourceUploadInfo'] | undefined> | undefined;
-  };
-  ['SetCloudDeploymentConfigCorsInput']: {
-    allowCredentials?: boolean | undefined;
-    allowedOrigins?: Array<string> | undefined;
-    allowedHeaders?: Array<string> | undefined;
-    allowedMethods?: Array<string> | undefined;
-  };
-  ['DeployCodeToCloudInput']: {
-    kind?: ModelTypes['DeployCodeToCloudURIKind'] | undefined;
-    env?: ModelTypes['DeployCodeToCloudEnv'] | undefined;
-    secrets?: Array<ModelTypes['Secret']> | undefined;
-    node14Opts?: ModelTypes['DeployCodeToCloudNode14Opts'] | undefined;
-    codeURI: string;
-  };
-  /** type object node */
-  ['ProjectOps']: {
-    /** Add member to the project */
-    addMember?: ModelTypes['Member'] | undefined;
-    /** Create project in cloud */
-    createCloudDeployment?: string | undefined;
-    /** Create temporary file for project */
-    createTemporaryFile?: ModelTypes['TemporaryFile'] | undefined;
-    /** Boolean object node */
-    delete?: boolean | undefined;
-    /** Deploy code to the project in cloud */
-    deployCodeToCloud?: string | undefined;
-    /** deploy project to faker */
-    deployToFaker?: boolean | undefined;
-    /** Remove deployment from cloud */
-    removeCloudDeployment?: string | undefined;
-    /** remove files from project */
-    removeSources?: boolean | undefined;
-    /** rename files in project */
-    renameSources?: boolean | undefined;
-    /** Runtime logs request for project */
-    runtimeLogs?: string | undefined;
-    /** Set cloud deployment config */
-    setCloudDeploymentConfig?: boolean | undefined;
-    /** Boolean object node */
-    update?: boolean | undefined;
-  };
-  ['SetCloudDeploymentConfigInput']: {
-    secrets?: Array<ModelTypes['Secret']> | undefined;
-    cors?: ModelTypes['SetCloudDeploymentConfigCorsInput'] | undefined;
-  };
-  ['DeployCodeToCloudEnv']: DeployCodeToCloudEnv;
-  ['SecretOutput']: {
+    member?: ModelTypes['Member'] | undefined;
+    /** Paginated list of members in team */
+    members?: ModelTypes['MemberConnection'] | undefined;
+    /** Team name */
     name: string;
-    value?: string | undefined;
+    /** Team's namespace */
+    namespace: ModelTypes['Namespace'];
+    /** A plan ID of a plan associated with team */
+    planID?: number | undefined;
+    /** List service accounts in team */
+    serviceAccounts?: ModelTypes['ServiceAccountConnection'] | undefined;
+    /** List invite tokens */
+    tokens?: Array<ModelTypes['InviteToken']> | undefined;
   };
-  /** Namespace is a root object containing projects belonging
-to a team or user */
-  ['Namespace']: {
-    /** Return project by name from namespace */
-    project?: ModelTypes['Project'] | undefined;
-    /** Returns a project connection object which contains a projects belonging to namespace
-
-last is a string returned by previous call to Namespace.projects
-
-limit sets a limit on how many objects can be returned */
-    projects?: ModelTypes['ProjectConnection'] | undefined;
-    /** True if namespace is public */
+  /** Update project payload */
+  ['UpdateProject']: {
+    /** ID of project to be updated */
+    project?: string | undefined;
+    /** New description for project */
+    description?: string | undefined;
+    /** List of tags for project */
+    tags?: Array<string> | undefined;
+    /** Set project visiblity */
     public?: boolean | undefined;
-    /** Namespace part of the slug */
-    slug?: string | undefined;
+    /** Link to upstream schema */
+    upstream?: string | undefined;
   };
-  /** MarketplaceProjectsSortInput defines how projects from listProjects should be sorted in marketplace. */
-  ['MarketplaceProjectsSortInput']: {
-    /** Sort by owner */
-    owner?: ModelTypes['SortOrder'] | undefined;
-    /** Sort by visisbility */
-    public?: ModelTypes['SortOrder'] | undefined;
-    /** Sort by slug */
-    slug?: ModelTypes['SortOrder'] | undefined;
-    /** Sort by tag */
-    tags?: ModelTypes['SortOrder'] | undefined;
-    /** Sorts projects by team.
-
-Sort behaviour for projects by team is implemenation depednant. */
-    team?: ModelTypes['SortOrder'] | undefined;
-    /** Sort projects by creation date */
-    createdAt?: ModelTypes['SortOrder'] | undefined;
-    /** Sort by name */
-    name?: ModelTypes['SortOrder'] | undefined;
-    /** Sort by id */
-    id?: ModelTypes['SortOrder'] | undefined;
-  };
-  /** MarketplaceItem represents a project exposed in marketplace. */
-  ['MarketplaceItem']: {
-    project?: ModelTypes['Project'] | undefined;
-    upstream?: ModelTypes['MarketplaceUpstream'] | undefined;
-  };
-  ['Payment']: {
-    /** Amount paid */
-    amount?: ModelTypes['Decimal'] | undefined;
-    /** Currency in which payment was made */
-    currency?: string | undefined;
-    /** Date indicates a when the payment was made */
-    date?: ModelTypes['PaymentDate'] | undefined;
-    /** URL from which user can download invoice */
-    receiptURL?: string | undefined;
-    /** ID of subscription for which payment was made */
-    subscriptionID?: number | undefined;
-  };
-  ['Role']: Role;
-  /** Paginated members list */
-  ['MemberConnection']: {
-    /** List of members in this connection */
-    members?: Array<ModelTypes['Member']> | undefined;
-    /** pageInfo for member connection */
-    pageInfo: ModelTypes['PageInfo'];
-  };
-  ['InviteToken']: {
-    domain?: string | undefined;
-    name: string;
-    removed?: boolean | undefined;
-    token?: string | undefined;
-  };
-  ['NpmRegistryPackageInput']: {
-    registry?: string | undefined;
-    package: string;
-  };
-  /** Source upload info object */
-  ['SourceUploadInfo']: {
-    /** Source file name */
-    filename?: string | undefined;
-    /** List of headers that must be included in PUT request */
-    headers?: Array<ModelTypes['Header'] | undefined> | undefined;
-    /** String with url used in PUT request */
-    putUrl: string;
+  ['schema']: {
+    query?: ModelTypes['Query'] | undefined;
+    mutation?: ModelTypes['Mutation'] | undefined;
   };
 };
 
 export type GraphQLTypes = {
-  ['DeployCodeToCloudNode14Opts']: {
-    buildScript?: string | undefined;
-  };
-  /** Defines user's account type */
-  ['AccountType']: AccountType;
-  ['ServiceAccountApiKey']: {
-    __typename: 'ServiceAccountApiKey';
-    id: string;
-    key: string;
-    name: string;
-  };
-  /** Marketplace item connection object
+  /** MarketplaceProjectsSortInput defines how projects from listProjects should be sorted in marketplace. */
+  ['MarketplaceProjectsSortInput']: {
+    /** Sort by name */
+    name?: GraphQLTypes['SortOrder'] | undefined;
+    /** Sort by id */
+    id?: GraphQLTypes['SortOrder'] | undefined;
+    /** Sort by owner */
+    owner?: GraphQLTypes['SortOrder'] | undefined;
+    /** Sort by visisbility */
+    public?: GraphQLTypes['SortOrder'] | undefined;
+    /** Sort by slug */
+    slug?: GraphQLTypes['SortOrder'] | undefined;
+    /** Sort by tag */
+    tags?: GraphQLTypes['SortOrder'] | undefined;
+    /** Sorts projects by team.
 
-Used with paginated listing of projects */
-  ['MarketplaceItemConnection']: {
-    __typename: 'MarketplaceItemConnection';
-    /** Current connection page info */
-    pageInfo: GraphQLTypes['PageInfo'];
-    /** List of market place items in connection */
-    projects?: Array<GraphQLTypes['MarketplaceItem']> | undefined;
+Sort behaviour for projects by team is implemenation depednant. */
+    team?: GraphQLTypes['SortOrder'] | undefined;
+    /** Sort projects by creation date */
+    createdAt?: GraphQLTypes['SortOrder'] | undefined;
   };
   ['ChangeSubscriptionInput']: {
     subscriptionID: number;
     subscriptionPlanID?: number | undefined;
   };
+  /** A source object */
+  ['FakerSource']: {
+    __typename: 'FakerSource';
+    /** File checksum */
+    checksum?: string | undefined;
+    contents?: string | undefined;
+    /** Name of source file */
+    filename?: string | undefined;
+    /** Return an url by which source file can be accessed */
+    getUrl?: string | undefined;
+    /** Return last time the object was updated */
+    updatedAt?: string | undefined;
+  };
+  ['SubscriptionConnection']: {
+    __typename: 'SubscriptionConnection';
+    /** Current conenction page info */
+    pageInfo: GraphQLTypes['PageInfo'];
+    /** List of subscriptions in connection */
+    subscriptions?: Array<GraphQLTypes['Subscription']> | undefined;
+  };
   /** Project type */
   ['Project']: {
     __typename: 'Project';
-    /** Return config of cloud deployment */
-    cloudDeploymentConfig?: GraphQLTypes['CloudDeploymentConfig'] | undefined;
-    /** Return status of cloud deployment */
-    cloudDeploymentStatus?: GraphQLTypes['CloudDeploymentStatus'] | undefined;
     /** Return creation time stamp of a project */
     createdAt?: GraphQLTypes['RFC3339Date'] | undefined;
     /** A database connection info */
@@ -3068,16 +3314,82 @@ Can be null if project belongs to a user */
     /** A link to upstream URL */
     upstream?: string | undefined;
   };
-  /** PredictCheckout represents payment prediction for checkout data */
-  ['PredictCheckout']: {
-    __typename: 'PredictCheckout';
-    /** Predicted checkout price */
-    price: number;
-    /** Predicted number of trial days */
-    trialDays?: number | undefined;
+  /** Editor user */
+  ['User']: {
+    __typename: 'User';
+    /** User's account type */
+    accountType: GraphQLTypes['AccountType'];
+    /** Marketing consent. True if given, false if declined, null if never asked. */
+    consentGiven?: boolean | undefined;
+    /** Marketing consent given at */
+    consentTimestamp?: number | undefined;
+    /** Unique user id */
+    id?: string | undefined;
+    /** User's namespace */
+    namespace?: GraphQLTypes['Namespace'] | undefined;
+    stripeCustomerId?: string | undefined;
+    /** User's subscriptions */
+    subscriptions?: GraphQLTypes['SubscriptionConnection'] | undefined;
+    /** Unique username */
+    username?: string | undefined;
+  };
+  /** Namespace is a root object containing projects belonging
+to a team or user */
+  ['Namespace']: {
+    __typename: 'Namespace';
+    /** Return project by name from namespace */
+    project?: GraphQLTypes['Project'] | undefined;
+    /** Returns a project connection object which contains a projects belonging to namespace
+
+last is a string returned by previous call to Namespace.projects
+
+limit sets a limit on how many objects can be returned */
+    projects?: GraphQLTypes['ProjectConnection'] | undefined;
+    /** True if namespace is public */
+    public?: boolean | undefined;
+    /** Namespace part of the slug */
+    slug?: string | undefined;
+  };
+  ['InviteToken']: {
+    __typename: 'InviteToken';
+    createdAt?: string | undefined;
+    domain?: string | undefined;
+    expiration?: string | undefined;
+    name: string;
+    removed?: boolean | undefined;
+    role?: GraphQLTypes['Role'] | undefined;
+    token?: string | undefined;
+  };
+  /** Teams connection */
+  ['TeamConnection']: {
+    __typename: 'TeamConnection';
+    /** Pagination info used in next fetch */
+    pageInfo: GraphQLTypes['PageInfo'];
+    /** List of teams returned by current page in connection */
+    teams?: Array<GraphQLTypes['Team']> | undefined;
+  };
+  /** MarketplaceItem represents a project exposed in marketplace. */
+  ['MarketplaceItem']: {
+    __typename: 'MarketplaceItem';
+    project?: GraphQLTypes['Project'] | undefined;
+    upstream?: GraphQLTypes['MarketplaceUpstream'] | undefined;
+  };
+  /** PaymentDate is a string in a format 'YYYY-MM-DD' */
+  ['PaymentDate']: 'scalar' & { name: 'PaymentDate' };
+  /** Paginated service account list */
+  ['ServiceAccountConnection']: {
+    __typename: 'ServiceAccountConnection';
+    /** pageInfo for service accounts connection */
+    pageInfo: GraphQLTypes['PageInfo'];
+    /** List of members in this connection */
+    serviceAccounts?: Array<GraphQLTypes['ServiceAccount']> | undefined;
   };
   /** ProjectsSortInput defines how projects from listProjects should be sorted. */
   ['ProjectsSortInput']: {
+    /** Sort by name */
+    name?: GraphQLTypes['SortOrder'] | undefined;
+    /** Sort by id */
+    id?: GraphQLTypes['SortOrder'] | undefined;
     /** Sort by owner */
     owner?: GraphQLTypes['SortOrder'] | undefined;
     /** Sort by visisbility */
@@ -3092,219 +3404,6 @@ Sort behaviour for projects by team is implemenation depednant. */
     team?: GraphQLTypes['SortOrder'] | undefined;
     /** Sort projects by creation date */
     createdAt?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sort by name */
-    name?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sort by id */
-    id?: GraphQLTypes['SortOrder'] | undefined;
-  };
-  /** RFC3339Date is a RFC3339 formated date-time string */
-  ['RFC3339Date']: 'scalar' & { name: 'RFC3339Date' };
-  ['SubscriptionConnection']: {
-    __typename: 'SubscriptionConnection';
-    /** Current conenction page info */
-    pageInfo: GraphQLTypes['PageInfo'];
-    /** List of subscriptions in connection */
-    subscriptions?: Array<GraphQLTypes['Subscription']> | undefined;
-  };
-  /** Checkout data needed to begin payment process */
-  ['PredictCheckoutInput']: {
-    /** An id of a chosen subscription plan */
-    planID: string;
-    /** Quantity of subscriptions that user wants */
-    quantity?: number | undefined;
-    /** Optional discount coupon */
-    coupon?: string | undefined;
-  };
-  /** Customer data for checkout information */
-  ['CustomerInput']: {
-    /** User's country */
-    country?: string | undefined;
-    /** User's post code */
-    postCode?: string | undefined;
-    /** Must be true for marketing to be allowed */
-    marketingConsent?: boolean | undefined;
-    /** User's email address */
-    email?: string | undefined;
-  };
-  /** A source object */
-  ['FakerSource']: {
-    __typename: 'FakerSource';
-    /** File checksum */
-    checksum?: string | undefined;
-    contents?: string | undefined;
-    /** Name of source file */
-    filename?: string | undefined;
-    /** Return an url by which source file can be accessed */
-    getUrl?: string | undefined;
-    /** Return last time the object was updated */
-    updatedAt?: string | undefined;
-  };
-  /** Editor user */
-  ['User']: {
-    __typename: 'User';
-    /** User's account type */
-    accountType: GraphQLTypes['AccountType'];
-    /** Marketing consent. True if given, false if declined, null if never asked. */
-    consentGiven?: boolean | undefined;
-    /** Marketing consent given at */
-    consentTimestamp?: number | undefined;
-    /** Unique user id */
-    id?: string | undefined;
-    /** User's namespace */
-    namespace?: GraphQLTypes['Namespace'] | undefined;
-    /** User's subscriptions */
-    subscriptions?: GraphQLTypes['SubscriptionConnection'] | undefined;
-    /** Unique username */
-    username?: string | undefined;
-  };
-  /** Team object */
-  ['Team']: {
-    __typename: 'Team';
-    /** Unique team id */
-    id?: string | undefined;
-    /** type object node */
-    member?: GraphQLTypes['Member'] | undefined;
-    /** Paginated list of members in team */
-    members?: GraphQLTypes['MemberConnection'] | undefined;
-    /** Team name */
-    name: string;
-    /** Team's namespace */
-    namespace: GraphQLTypes['Namespace'];
-    /** A plan ID of a plan associated with team */
-    planID?: number | undefined;
-    /** List service accounts in team */
-    serviceAccounts?: GraphQLTypes['ServiceAccountConnection'] | undefined;
-    /** List invite tokens */
-    tokens?: Array<GraphQLTypes['InviteToken']> | undefined;
-  };
-  ['NpmRegistryPackage']: {
-    __typename: 'NpmRegistryPackage';
-    package: string;
-    registry?: string | undefined;
-  };
-  /** Temporary file for project */
-  ['TemporaryFile']: {
-    __typename: 'TemporaryFile';
-    /** String with url used in GET request */
-    getUrl: string;
-    /** String with url used in PUT request */
-    putUrl: string;
-  };
-  ['DeployCodeToCloudURIKind']: DeployCodeToCloudURIKind;
-  ['MarketplaceOps']: {
-    __typename: 'MarketplaceOps';
-    /** Add project to market place */
-    addProject?: boolean | undefined;
-    /** Remove project from market place */
-    removeProject?: boolean | undefined;
-  };
-  /** Teams connection */
-  ['TeamConnection']: {
-    __typename: 'TeamConnection';
-    /** Pagination info used in next fetch */
-    pageInfo: GraphQLTypes['PageInfo'];
-    /** List of teams returned by current page in connection */
-    teams?: Array<GraphQLTypes['Team']> | undefined;
-  };
-  ['MarketplaceUpstream']: {
-    __typename: 'NpmRegistryPackage';
-    ['...on NpmRegistryPackage']: '__union' & GraphQLTypes['NpmRegistryPackage'];
-  };
-  /** Vat information of a user */
-  ['VatInput']: {
-    /** Vat company post code address. */
-    postCode?: string | undefined;
-    /** Vat number */
-    number?: string | undefined;
-    /** Vat company name */
-    companyName?: string | undefined;
-    /** Vat company street address */
-    street?: string | undefined;
-    /** Vat company city address */
-    city?: string | undefined;
-    /** Vat company state address. Optional. */
-    state?: string | undefined;
-    /** Vat company country address. */
-    country?: string | undefined;
-  };
-  ['Secret']: {
-    name: string;
-    value?: string | undefined;
-  };
-  ['CloudCorsSetting']: {
-    __typename: 'CloudCorsSetting';
-    allowCredentials?: boolean | undefined;
-    allowedHeaders?: Array<string> | undefined;
-    allowedMethod?: Array<string> | undefined;
-    allowedOrigins?: Array<string> | undefined;
-  };
-  ['CloudDeploymentStatus']: CloudDeploymentStatus;
-  /** Team member */
-  ['Member']: {
-    __typename: 'Member';
-    /** Member email */
-    email?: string | undefined;
-    /** Member role */
-    role?: GraphQLTypes['Role'] | undefined;
-    /** Service account */
-    serviceAccount?: boolean | undefined;
-    /** Member username */
-    username?: string | undefined;
-  };
-  /** Amount is a number that gives precise representation of real numbers */
-  ['Decimal']: 'scalar' & { name: 'Decimal' };
-  /** Update project payload */
-  ['UpdateProject']: {
-    /** Set project visiblity */
-    public?: boolean | undefined;
-    /** Link to upstream schema */
-    upstream?: string | undefined;
-    /** ID of project to be updated */
-    project?: string | undefined;
-    /** New description for project */
-    description?: string | undefined;
-    /** List of tags for project */
-    tags?: Array<string> | undefined;
-  };
-  ['CreateServiceAccountInput']: {
-    tags?: Array<string> | undefined;
-    description?: string | undefined;
-  };
-  /** Request header */
-  ['Header']: {
-    __typename: 'Header';
-    /** Header name */
-    key: string;
-    /** Header value */
-    value?: string | undefined;
-  };
-  ['ServiceAccount']: {
-    __typename: 'ServiceAccount';
-    description?: string | undefined;
-    keys?: Array<GraphQLTypes['ServiceAccountApiKey']> | undefined;
-    name: string;
-    tags?: Array<string> | undefined;
-  };
-  /** Sort order defines possible ordering of sorted outputs */
-  ['SortOrder']: SortOrder;
-  ['AddProjectInput']: {
-    npmRegistryPackage?: GraphQLTypes['NpmRegistryPackageInput'] | undefined;
-  };
-  /** New source payload */
-  ['NewSource']: {
-    /** Length of source in bytes */
-    contentLength?: number | undefined;
-    /** Source mime type */
-    contentType?: string | undefined;
-    /** Source checksum */
-    checksum?: string | undefined;
-    /** source file name */
-    filename?: string | undefined;
-  };
-  ['SchemaSubscription']: {
-    __typename: 'SchemaSubscription';
-    watchJobStatus?: GraphQLTypes['CloudDeploymentStatus'] | undefined;
-    watchLogs?: string | undefined;
   };
   /** Root query type */
   ['Query']: {
@@ -3336,6 +3435,8 @@ last is an id of the last project returned by previous call
 
 limit limits the number of returned projects */
     findProjectsByTag?: GraphQLTypes['ProjectConnection'] | undefined;
+    /** generate link to stripe billing portal */
+    generateStripeBillingPortal?: string | undefined;
     /** Return namespace matching slug */
     getNamespace?: GraphQLTypes['Namespace'] | undefined;
     /** Return project by id */
@@ -3360,30 +3461,33 @@ limit limits the number of returned projects */
     payments?: Array<GraphQLTypes['Payment'] | undefined> | undefined;
     /** Calculate checkout information */
     predictCheckout?: GraphQLTypes['PredictCheckout'] | undefined;
+    /** Stripe endpoint to start payment flow */
+    stripePaymentLink?: string | undefined;
   };
-  /** PageInfo contains information about connection page */
-  ['PageInfo']: {
-    __typename: 'PageInfo';
-    /** last element in connection */
-    last?: string | undefined;
-    /** limit set while quering */
-    limit?: number | undefined;
-    /** if next is false then client recieved all available data */
-    next?: boolean | undefined;
+  ['NpmRegistryPackageInput']: {
+    registry?: string | undefined;
+    package: string;
+  };
+  /** Vat information of a user */
+  ['VatInput']: {
+    /** Vat company street address */
+    street?: string | undefined;
+    /** Vat company city address */
+    city?: string | undefined;
+    /** Vat company state address. Optional. */
+    state?: string | undefined;
+    /** Vat company country address. */
+    country?: string | undefined;
+    /** Vat company post code address. */
+    postCode?: string | undefined;
+    /** Vat number */
+    number?: string | undefined;
+    /** Vat company name */
+    companyName?: string | undefined;
   };
   ['RenameFileInput']: {
     src: string;
     dst: string;
-  };
-  /** Project connection object
-
-Used with paginated listing of projects */
-  ['ProjectConnection']: {
-    __typename: 'ProjectConnection';
-    /** Current connection page info */
-    pageInfo: GraphQLTypes['PageInfo'];
-    /** List of projects in connection */
-    projects?: Array<GraphQLTypes['Project']> | undefined;
   };
   /** Connection object containing list of faker sources */
   ['FakerSourceConnection']: {
@@ -3393,6 +3497,114 @@ Used with paginated listing of projects */
     /** List of sources returned by connection */
     sources?: Array<GraphQLTypes['FakerSource']> | undefined;
   };
+  /** PredictCheckout represents payment prediction for checkout data */
+  ['PredictCheckout']: {
+    __typename: 'PredictCheckout';
+    /** Predicted checkout price */
+    price: number;
+    /** Predicted number of trial days */
+    trialDays?: number | undefined;
+  };
+  /** Amount is a number that gives precise representation of real numbers */
+  ['Decimal']: 'scalar' & { name: 'Decimal' };
+  /** Temporary file for project */
+  ['TemporaryFile']: {
+    __typename: 'TemporaryFile';
+    /** String with url used in GET request */
+    getUrl: string;
+    /** String with url used in PUT request */
+    putUrl: string;
+  };
+  /** Marketplace item connection object
+
+Used with paginated listing of projects */
+  ['MarketplaceItemConnection']: {
+    __typename: 'MarketplaceItemConnection';
+    /** Current connection page info */
+    pageInfo: GraphQLTypes['PageInfo'];
+    /** List of market place items in connection */
+    projects?: Array<GraphQLTypes['MarketplaceItem']> | undefined;
+  };
+  ['MarketplaceOps']: {
+    __typename: 'MarketplaceOps';
+    /** Add project to market place */
+    addProject?: boolean | undefined;
+    /** Remove project from market place */
+    removeProject?: boolean | undefined;
+  };
+  /** Team member role */
+  ['Role']: Role;
+  ['Mutation']: {
+    __typename: 'Mutation';
+    /** Change user password */
+    changePassword?: boolean | undefined;
+    /** Changes subscription settings for user */
+    changeSubscription?: boolean | undefined;
+    /** Consume invite token */
+    consumeInviteToken?: boolean | undefined;
+    /** Create new team */
+    createTeam?: GraphQLTypes['TeamOps'] | undefined;
+    /** Create new user
+
+namespace name for a user
+
+public is user namespace public */
+    createUser: GraphQLTypes['User'];
+    /** Delete account */
+    deleteAccount?: boolean | undefined;
+    /** deploy project to faker */
+    deployToFaker?: boolean | undefined;
+    /** Returns marketplace ops */
+    marketplace?: GraphQLTypes['MarketplaceOps'] | undefined;
+    /** Remove project by id */
+    removeProject?: boolean | undefined;
+    /** Resend verification email */
+    resendVerificationEmail?: boolean | undefined;
+    /** Synhronises the target project with source. It overrides existing files
+of target with files of sources. It does not remove files from target that do not
+exist in source. */
+    sync?: boolean | undefined;
+    /** type object node */
+    team?: GraphQLTypes['TeamOps'] | undefined;
+    /** Modify project */
+    updateProject?: boolean | undefined;
+    /** Add sources to the project */
+    updateSources?:
+      | Array<GraphQLTypes['SourceUploadInfo'] | undefined>
+      | undefined;
+  };
+  /** type object node */
+  ['ProjectOps']: {
+    __typename: 'ProjectOps';
+    /** Add member to the project */
+    addMember?: GraphQLTypes['Member'] | undefined;
+    /** Create temporary file for project */
+    createTemporaryFile?: GraphQLTypes['TemporaryFile'] | undefined;
+    /** Boolean object node */
+    delete?: boolean | undefined;
+    /** deploy project to faker */
+    deployToFaker?: boolean | undefined;
+    /** remove files from project */
+    removeSources?: boolean | undefined;
+    /** rename files in project */
+    renameSources?: boolean | undefined;
+    /** Boolean object node */
+    update?: boolean | undefined;
+  };
+  /** Request header */
+  ['Header']: {
+    __typename: 'Header';
+    /** Header name */
+    key: string;
+    /** Header value */
+    value?: string | undefined;
+  };
+  /** Endpoint returnes a full path to the project without host */
+  ['Endpoint']: {
+    __typename: 'Endpoint';
+    /** Full project uri without host */
+    uri?: string | undefined;
+  };
   ['UserConnection']: {
     __typename: 'UserConnection';
     /** Current connection page info */
@@ -3400,7 +3612,12 @@ Used with paginated listing of projects */
     /** List of projects in connection */
     users?: Array<GraphQLTypes['User']> | undefined;
   };
-  ['FileServerCredentials']: 'scalar' & { name: 'FileServerCredentials' };
+  ['ServiceAccountApiKey']: {
+    __typename: 'ServiceAccountApiKey';
+    id: string;
+    key: string;
+    name: string;
+  };
   ['Marketplace']: {
     __typename: 'Marketplace';
     /** Returns a project connection
@@ -3412,25 +3629,130 @@ last is an id of the last project returned by previous call
 limit limits the number of returned projects */
     projects?: GraphQLTypes['MarketplaceItemConnection'] | undefined;
   };
-  /** Checkout data needed to begin payment process */
-  ['CheckoutDataInput']: {
-    /** URL to which user should be redirected after failed transaction */
+  /** Team member ops */
+  ['MemberOps']: {
+    __typename: 'MemberOps';
+    /** Boolean object node */
+    delete?: boolean | undefined;
+    /** Boolean object node */
+    update?: boolean | undefined;
+  };
+  /** New source payload */
+  ['NewSource']: {
+    /** source file name */
+    filename?: string | undefined;
+    /** Length of source in bytes */
+    contentLength?: number | undefined;
+    /** Source mime type */
+    contentType?: string | undefined;
+    /** Source checksum */
+    checksum?: string | undefined;
+  };
+  /** Paginated members list */
+  ['MemberConnection']: {
+    __typename: 'MemberConnection';
+    /** List of members in this connection */
+    members?: Array<GraphQLTypes['Member']> | undefined;
+    /** pageInfo for member connection */
+    pageInfo: GraphQLTypes['PageInfo'];
+  };
+  /** Team member */
+  ['Member']: {
+    __typename: 'Member';
+    /** Member email */
+    email?: string | undefined;
+    /** Member role */
+    role?: GraphQLTypes['Role'] | undefined;
+    /** Service account */
+    serviceAccount?: boolean | undefined;
+    /** Member username */
+    username?: string | undefined;
+  };
+  ['Subscription']: {
+    __typename: 'Subscription';
+    /** Cancel subscription URL */
     cancelURL?: string | undefined;
+    /** Subscription expiration date */
+    expiration?: string | undefined;
+    /** Number of seats in subscription */
+    quantity?: number | undefined;
+    /** List of seats in subscription */
+    seats?: GraphQLTypes['UserConnection'] | undefined;
+    /** Status of subscription */
+    status?: string | undefined;
+    /** Subscription unique id */
+    subscriptionID?: number | undefined;
+    /** Subscription plan unique id */
+    subscriptionPlanID?: number | undefined;
+    /** Update subscription URL */
+    updateURL?: string | undefined;
+  };
+  ['ServiceAccount']: {
+    __typename: 'ServiceAccount';
+    description?: string | undefined;
+    keys?: Array<GraphQLTypes['ServiceAccountApiKey']> | undefined;
+    name: string;
+    tags?: Array<string> | undefined;
+  };
+  ['FileServerCredentials']: 'scalar' & { name: 'FileServerCredentials' };
+  ['NpmRegistryPackage']: {
+    __typename: 'NpmRegistryPackage';
+    package: string;
+    registry?: string | undefined;
+  };
+  /** Customer data for checkout information */
+  ['CustomerInput']: {
+    /** Must be true for marketing to be allowed */
+    marketingConsent?: boolean | undefined;
+    /** User's email address */
+    email?: string | undefined;
+    /** User's country */
+    country?: string | undefined;
+    /** User's post code */
+    postCode?: string | undefined;
+  };
+  ['Payment']: {
+    __typename: 'Payment';
+    /** Amount paid */
+    amount?: GraphQLTypes['Decimal'] | undefined;
+    /** Currency in which payment was made */
+    currency?: string | undefined;
+    /** Date indicates a when the payment was made */
+    date?: GraphQLTypes['PaymentDate'] | undefined;
+    /** URL from which user can download invoice */
+    receiptURL?: string | undefined;
+    /** ID of subscription for which payment was made */
+    subscriptionID?: number | undefined;
+  };
+  ['AddProjectInput']: {
+    npmRegistryPackage?: GraphQLTypes['NpmRegistryPackageInput'] | undefined;
+  };
+  /** Source upload info object */
+  ['SourceUploadInfo']: {
+    __typename: 'SourceUploadInfo';
+    /** Source file name */
+    filename?: string | undefined;
+    /** List of headers that must be included in PUT request */
+    headers?: Array<GraphQLTypes['Header'] | undefined> | undefined;
+    /** String with url used in PUT request */
+    putUrl: string;
+  };
+  /** Checkout data needed to begin payment process */
+  ['PredictCheckoutInput']: {
     /** An id of a chosen subscription plan */
     planID: string;
     /** Quantity of subscriptions that user wants */
     quantity?: number | undefined;
-    /** Customer data */
-    customer?: GraphQLTypes['CustomerInput'] | undefined;
-    /** Vat data */
-    vat?: GraphQLTypes['VatInput'] | undefined;
     /** Optional discount coupon */
     coupon?: string | undefined;
+  };
+  /** Checkout data needed to begin payment process for stripe */
+  ['StripeCheckoutDataInput']: {
     /** URL to which user should be redirected after successful transaction */
     successURL?: string | undefined;
+    /** price id of product on stripe */
+    PriceID: string;
   };
-  /** PaymentDate is a string in a format 'YYYY-MM-DD' */
-  ['PaymentDate']: 'scalar' & { name: 'PaymentDate' };
   /** Team operations */
   ['TeamOps']: {
     __typename: 'TeamOps';
@@ -3441,7 +3763,9 @@ limit limits the number of returned projects */
     /** Add service account to the team */
     createServiceAccount?: GraphQLTypes['ServiceAccount'] | undefined;
     /** Create service account api key */
-    createServiceAccountApiKey?: GraphQLTypes['ServiceAccountApiKey'] | undefined;
+    createServiceAccountApiKey?:
+      | GraphQLTypes['ServiceAccountApiKey']
+      | undefined;
     /** Delete team */
     delete?: boolean | undefined;
     /** Unique team id */
@@ -3471,304 +3795,132 @@ domain - Limits users to those who have verified email from domain */
     /** Removes a token making it unusable for future usages */
     removeToken?: string | undefined;
   };
-  /** Paginated service account list */
-  ['ServiceAccountConnection']: {
-    __typename: 'ServiceAccountConnection';
-    /** pageInfo for service accounts connection */
+  /** PageInfo contains information about connection page */
+  ['PageInfo']: {
+    __typename: 'PageInfo';
+    /** last element in connection */
+    last?: string | undefined;
+    /** limit set while quering */
+    limit?: number | undefined;
+    /** if next is false then client recieved all available data */
+    next?: boolean | undefined;
+  };
+  /** Defines user's account type */
+  ['AccountType']: AccountType;
+  /** Sort order defines possible ordering of sorted outputs */
+  ['SortOrder']: SortOrder;
+  ['CreateServiceAccountInput']: {
+    description?: string | undefined;
+    tags?: Array<string> | undefined;
+  };
+  /** Project connection object
+
+Used with paginated listing of projects */
+  ['ProjectConnection']: {
+    __typename: 'ProjectConnection';
+    /** Current connection page info */
     pageInfo: GraphQLTypes['PageInfo'];
-    /** List of members in this connection */
-    serviceAccounts?: Array<GraphQLTypes['ServiceAccount']> | undefined;
+    /** List of projects in connection */
+    projects?: Array<GraphQLTypes['Project']> | undefined;
   };
-  /** Team member ops */
-  ['MemberOps']: {
-    __typename: 'MemberOps';
-    /** Boolean object node */
-    delete?: boolean | undefined;
-    /** Boolean object node */
-    update?: boolean | undefined;
-  };
-  ['CloudDeploymentConfig']: {
-    __typename: 'CloudDeploymentConfig';
-    cors?: GraphQLTypes['CloudCorsSetting'] | undefined;
-    secrets?: Array<GraphQLTypes['SecretOutput']> | undefined;
-  };
-  /** Endpoint returnes a full path to the project without host */
-  ['Endpoint']: {
-    __typename: 'Endpoint';
-    /** Full project uri without host */
-    uri?: string | undefined;
-  };
-  ['Subscription']: {
-    __typename: 'Subscription';
-    /** Cancel subscription URL */
+  /** Checkout data needed to begin payment process */
+  ['CheckoutDataInput']: {
+    /** Customer data */
+    customer?: GraphQLTypes['CustomerInput'] | undefined;
+    /** Vat data */
+    vat?: GraphQLTypes['VatInput'] | undefined;
+    /** Optional discount coupon */
+    coupon?: string | undefined;
+    /** URL to which user should be redirected after successful transaction */
+    successURL?: string | undefined;
+    /** URL to which user should be redirected after failed transaction */
     cancelURL?: string | undefined;
-    /** Subscription expiration date */
-    expiration?: string | undefined;
-    /** Number of seats in subscription */
+    /** An id of a chosen subscription plan */
+    planID: string;
+    /** Quantity of subscriptions that user wants */
     quantity?: number | undefined;
-    /** List of seats in subscription */
-    seats?: GraphQLTypes['UserConnection'] | undefined;
-    /** Status of subscription */
-    status?: string | undefined;
-    /** Subscription unique id */
-    subscriptionID?: number | undefined;
-    /** Subscription plan unique id */
-    subscriptionPlanID?: number | undefined;
-    /** Update subscription URL */
-    updateURL?: string | undefined;
   };
-  ['Mutation']: {
-    __typename: 'Mutation';
-    /** Change user password */
-    changePassword?: boolean | undefined;
-    /** Changes subscription settings for user */
-    changeSubscription?: boolean | undefined;
-    /** Consume invite token */
-    consumeInviteToken?: boolean | undefined;
-    /** Create project in cloud */
-    createCloudDeployment?: string | undefined;
-    /** Create new user project
-
-public if true project is public
-
-name is project name */
-    createProject: GraphQLTypes['Project'];
-    /** Create new team */
-    createTeam?: GraphQLTypes['TeamOps'] | undefined;
-    /** Create new user
-
-namespace name for a user
-
-public is user namespace public */
-    createUser: GraphQLTypes['User'];
-    /** Delete account */
-    deleteAccount?: boolean | undefined;
-    /** Deploy code to the project in cloud */
-    deployCodeToCloud?: string | undefined;
-    /** deploy project to faker */
-    deployToFaker?: boolean | undefined;
-    /** Returns marketplace ops */
-    marketplace?: GraphQLTypes['MarketplaceOps'] | undefined;
-    /** Remove project from cloud */
-    removeCloudDeployment?: string | undefined;
-    /** Remove project by id */
-    removeProject?: boolean | undefined;
-    /** Resend verification email */
-    resendVerificationEmail?: boolean | undefined;
-    /** Runtime logs request for project */
-    runtimeLogs?: string | undefined;
-    /** Set cloud deployment config */
-    setCloudDeploymentConfig?: boolean | undefined;
-    /** Synhronises the target project with source. It overrides existing files
-of target with files of sources. It does not remove files from target that do not
-exist in source. */
-    sync?: boolean | undefined;
+  ['MarketplaceUpstream']: {
+    __typename: 'NpmRegistryPackage';
+    ['...on NpmRegistryPackage']: '__union' &
+      GraphQLTypes['NpmRegistryPackage'];
+  };
+  /** RFC3339Date is a RFC3339 formated date-time string */
+  ['RFC3339Date']: 'scalar' & { name: 'RFC3339Date' };
+  /** Team object */
+  ['Team']: {
+    __typename: 'Team';
+    /** Unique team id */
+    id?: string | undefined;
     /** type object node */
-    team?: GraphQLTypes['TeamOps'] | undefined;
-    /** Modify project */
-    updateProject?: boolean | undefined;
-    /** Add sources to the project */
-    updateSources?: Array<GraphQLTypes['SourceUploadInfo'] | undefined> | undefined;
-  };
-  ['SetCloudDeploymentConfigCorsInput']: {
-    allowCredentials?: boolean | undefined;
-    allowedOrigins?: Array<string> | undefined;
-    allowedHeaders?: Array<string> | undefined;
-    allowedMethods?: Array<string> | undefined;
-  };
-  ['DeployCodeToCloudInput']: {
-    kind?: GraphQLTypes['DeployCodeToCloudURIKind'] | undefined;
-    env?: GraphQLTypes['DeployCodeToCloudEnv'] | undefined;
-    secrets?: Array<GraphQLTypes['Secret']> | undefined;
-    node14Opts?: GraphQLTypes['DeployCodeToCloudNode14Opts'] | undefined;
-    codeURI: string;
-  };
-  /** type object node */
-  ['ProjectOps']: {
-    __typename: 'ProjectOps';
-    /** Add member to the project */
-    addMember?: GraphQLTypes['Member'] | undefined;
-    /** Create project in cloud */
-    createCloudDeployment?: string | undefined;
-    /** Create temporary file for project */
-    createTemporaryFile?: GraphQLTypes['TemporaryFile'] | undefined;
-    /** Boolean object node */
-    delete?: boolean | undefined;
-    /** Deploy code to the project in cloud */
-    deployCodeToCloud?: string | undefined;
-    /** deploy project to faker */
-    deployToFaker?: boolean | undefined;
-    /** Remove deployment from cloud */
-    removeCloudDeployment?: string | undefined;
-    /** remove files from project */
-    removeSources?: boolean | undefined;
-    /** rename files in project */
-    renameSources?: boolean | undefined;
-    /** Runtime logs request for project */
-    runtimeLogs?: string | undefined;
-    /** Set cloud deployment config */
-    setCloudDeploymentConfig?: boolean | undefined;
-    /** Boolean object node */
-    update?: boolean | undefined;
-  };
-  ['SetCloudDeploymentConfigInput']: {
-    secrets?: Array<GraphQLTypes['Secret']> | undefined;
-    cors?: GraphQLTypes['SetCloudDeploymentConfigCorsInput'] | undefined;
-  };
-  ['DeployCodeToCloudEnv']: DeployCodeToCloudEnv;
-  ['SecretOutput']: {
-    __typename: 'SecretOutput';
+    member?: GraphQLTypes['Member'] | undefined;
+    /** Paginated list of members in team */
+    members?: GraphQLTypes['MemberConnection'] | undefined;
+    /** Team name */
     name: string;
-    value?: string | undefined;
+    /** Team's namespace */
+    namespace: GraphQLTypes['Namespace'];
+    /** A plan ID of a plan associated with team */
+    planID?: number | undefined;
+    /** List service accounts in team */
+    serviceAccounts?: GraphQLTypes['ServiceAccountConnection'] | undefined;
+    /** List invite tokens */
+    tokens?: Array<GraphQLTypes['InviteToken']> | undefined;
   };
-  /** Namespace is a root object containing projects belonging
-to a team or user */
-  ['Namespace']: {
-    __typename: 'Namespace';
-    /** Return project by name from namespace */
-    project?: GraphQLTypes['Project'] | undefined;
-    /** Returns a project connection object which contains a projects belonging to namespace
-
-last is a string returned by previous call to Namespace.projects
-
-limit sets a limit on how many objects can be returned */
-    projects?: GraphQLTypes['ProjectConnection'] | undefined;
-    /** True if namespace is public */
+  /** Update project payload */
+  ['UpdateProject']: {
+    /** ID of project to be updated */
+    project?: string | undefined;
+    /** New description for project */
+    description?: string | undefined;
+    /** List of tags for project */
+    tags?: Array<string> | undefined;
+    /** Set project visiblity */
     public?: boolean | undefined;
-    /** Namespace part of the slug */
-    slug?: string | undefined;
-  };
-  /** MarketplaceProjectsSortInput defines how projects from listProjects should be sorted in marketplace. */
-  ['MarketplaceProjectsSortInput']: {
-    /** Sort by owner */
-    owner?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sort by visisbility */
-    public?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sort by slug */
-    slug?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sort by tag */
-    tags?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sorts projects by team.
-
-Sort behaviour for projects by team is implemenation depednant. */
-    team?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sort projects by creation date */
-    createdAt?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sort by name */
-    name?: GraphQLTypes['SortOrder'] | undefined;
-    /** Sort by id */
-    id?: GraphQLTypes['SortOrder'] | undefined;
-  };
-  /** MarketplaceItem represents a project exposed in marketplace. */
-  ['MarketplaceItem']: {
-    __typename: 'MarketplaceItem';
-    project?: GraphQLTypes['Project'] | undefined;
-    upstream?: GraphQLTypes['MarketplaceUpstream'] | undefined;
-  };
-  ['Payment']: {
-    __typename: 'Payment';
-    /** Amount paid */
-    amount?: GraphQLTypes['Decimal'] | undefined;
-    /** Currency in which payment was made */
-    currency?: string | undefined;
-    /** Date indicates a when the payment was made */
-    date?: GraphQLTypes['PaymentDate'] | undefined;
-    /** URL from which user can download invoice */
-    receiptURL?: string | undefined;
-    /** ID of subscription for which payment was made */
-    subscriptionID?: number | undefined;
-  };
-  /** Team member role */
-  ['Role']: Role;
-  /** Paginated members list */
-  ['MemberConnection']: {
-    __typename: 'MemberConnection';
-    /** List of members in this connection */
-    members?: Array<GraphQLTypes['Member']> | undefined;
-    /** pageInfo for member connection */
-    pageInfo: GraphQLTypes['PageInfo'];
-  };
-  ['InviteToken']: {
-    __typename: 'InviteToken';
-    domain?: string | undefined;
-    name: string;
-    removed?: boolean | undefined;
-    token?: string | undefined;
-  };
-  ['NpmRegistryPackageInput']: {
-    registry?: string | undefined;
-    package: string;
-  };
-  /** Source upload info object */
-  ['SourceUploadInfo']: {
-    __typename: 'SourceUploadInfo';
-    /** Source file name */
-    filename?: string | undefined;
-    /** List of headers that must be included in PUT request */
-    headers?: Array<GraphQLTypes['Header'] | undefined> | undefined;
-    /** String with url used in PUT request */
-    putUrl: string;
+    /** Link to upstream schema */
+    upstream?: string | undefined;
   };
 };
+/** Team member role */
+export const enum Role {
+  CONTRIBUTOR = 'CONTRIBUTOR',
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  EDITOR = 'EDITOR',
+  VIEWER = 'VIEWER',
+}
 /** Defines user's account type */
 export const enum AccountType {
   FREE = 'FREE',
+  BASIC = 'BASIC',
   PREMIUM = 'PREMIUM',
-}
-export const enum DeployCodeToCloudURIKind {
-  ZIP = 'ZIP',
-  PROJECT_FILES = 'PROJECT_FILES',
-}
-export const enum CloudDeploymentStatus {
-  RUNNING = 'RUNNING',
-  SUCCEEDED = 'SUCCEEDED',
-  FAILED = 'FAILED',
-  STARTING = 'STARTING',
 }
 /** Sort order defines possible ordering of sorted outputs */
 export const enum SortOrder {
   Ascending = 'Ascending',
   Descending = 'Descending',
 }
-export const enum DeployCodeToCloudEnv {
-  NODE14 = 'NODE14',
-}
-/** Team member role */
-export const enum Role {
-  OWNER = 'OWNER',
-  ADMIN = 'ADMIN',
-  EDITOR = 'EDITOR',
-  VIEWER = 'VIEWER',
-  CONTRIBUTOR = 'CONTRIBUTOR',
-}
 
 type ZEUS_VARIABLES = {
-  ['DeployCodeToCloudNode14Opts']: ValueTypes['DeployCodeToCloudNode14Opts'];
-  ['AccountType']: ValueTypes['AccountType'];
-  ['ChangeSubscriptionInput']: ValueTypes['ChangeSubscriptionInput'];
-  ['ProjectsSortInput']: ValueTypes['ProjectsSortInput'];
-  ['RFC3339Date']: ValueTypes['RFC3339Date'];
-  ['PredictCheckoutInput']: ValueTypes['PredictCheckoutInput'];
-  ['CustomerInput']: ValueTypes['CustomerInput'];
-  ['DeployCodeToCloudURIKind']: ValueTypes['DeployCodeToCloudURIKind'];
-  ['VatInput']: ValueTypes['VatInput'];
-  ['Secret']: ValueTypes['Secret'];
-  ['CloudDeploymentStatus']: ValueTypes['CloudDeploymentStatus'];
-  ['Decimal']: ValueTypes['Decimal'];
-  ['UpdateProject']: ValueTypes['UpdateProject'];
-  ['CreateServiceAccountInput']: ValueTypes['CreateServiceAccountInput'];
-  ['SortOrder']: ValueTypes['SortOrder'];
-  ['AddProjectInput']: ValueTypes['AddProjectInput'];
-  ['NewSource']: ValueTypes['NewSource'];
-  ['RenameFileInput']: ValueTypes['RenameFileInput'];
-  ['FileServerCredentials']: ValueTypes['FileServerCredentials'];
-  ['CheckoutDataInput']: ValueTypes['CheckoutDataInput'];
-  ['PaymentDate']: ValueTypes['PaymentDate'];
-  ['SetCloudDeploymentConfigCorsInput']: ValueTypes['SetCloudDeploymentConfigCorsInput'];
-  ['DeployCodeToCloudInput']: ValueTypes['DeployCodeToCloudInput'];
-  ['SetCloudDeploymentConfigInput']: ValueTypes['SetCloudDeploymentConfigInput'];
-  ['DeployCodeToCloudEnv']: ValueTypes['DeployCodeToCloudEnv'];
   ['MarketplaceProjectsSortInput']: ValueTypes['MarketplaceProjectsSortInput'];
-  ['Role']: ValueTypes['Role'];
+  ['ChangeSubscriptionInput']: ValueTypes['ChangeSubscriptionInput'];
+  ['PaymentDate']: ValueTypes['PaymentDate'];
+  ['ProjectsSortInput']: ValueTypes['ProjectsSortInput'];
   ['NpmRegistryPackageInput']: ValueTypes['NpmRegistryPackageInput'];
+  ['VatInput']: ValueTypes['VatInput'];
+  ['RenameFileInput']: ValueTypes['RenameFileInput'];
+  ['Decimal']: ValueTypes['Decimal'];
+  ['Role']: ValueTypes['Role'];
+  ['NewSource']: ValueTypes['NewSource'];
+  ['FileServerCredentials']: ValueTypes['FileServerCredentials'];
+  ['CustomerInput']: ValueTypes['CustomerInput'];
+  ['AddProjectInput']: ValueTypes['AddProjectInput'];
+  ['PredictCheckoutInput']: ValueTypes['PredictCheckoutInput'];
+  ['StripeCheckoutDataInput']: ValueTypes['StripeCheckoutDataInput'];
+  ['AccountType']: ValueTypes['AccountType'];
+  ['SortOrder']: ValueTypes['SortOrder'];
+  ['CreateServiceAccountInput']: ValueTypes['CreateServiceAccountInput'];
+  ['CheckoutDataInput']: ValueTypes['CheckoutDataInput'];
+  ['RFC3339Date']: ValueTypes['RFC3339Date'];
+  ['UpdateProject']: ValueTypes['UpdateProject'];
 };

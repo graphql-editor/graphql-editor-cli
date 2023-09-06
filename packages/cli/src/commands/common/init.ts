@@ -8,6 +8,7 @@ export const initConfiguration = async ({
   namespace?: string;
   project?: string;
   version?: string;
+  schemaDir?: string | null;
 }): Promise<void> => {
   Config.configure(
     {

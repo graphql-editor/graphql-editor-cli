@@ -3,7 +3,7 @@ import { HandleTemplates } from '@/common/index.js';
 import { Editor } from '@/Editor.js';
 import path from 'path';
 
-export const CommandSchema = async ({
+export const CommandSchemaPull = async ({
   schemaDir,
   namespace,
   project,
