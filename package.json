@@ -21,7 +21,7 @@
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "graphql-editor-cli": "^0.8.8",
+    "graphql-editor-cli": "^0.8.9",
     "impuddle": "0.0.2",
     "prettier": "^2.7.1",
     "ttypescript": "^1.5.13",

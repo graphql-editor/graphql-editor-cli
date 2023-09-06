@@ -3,7 +3,7 @@ import { projectOptions, confOptions, ConfOptions } from '@/common/promptOptions
 import { Config, ConfigurationOptions } from '@/Configuration/index.js';
 import { CommandModule } from 'yargs';
 import { CommandSchemaPull } from './pull.js';
-import { CommandSchemaPush } from './push.js';
+// import { CommandSchemaPush } from './push.js';
 
 const schemaOptions: ConfOptions = {
   ...projectOptions,
@@ -34,21 +34,21 @@ export default {
           );
         },
       )
-      .command(
-        'push',
-        'Deploy GraphQL schema as latest',
-        async (yargs) => {
-          yargs.options(confOptions(schemaOptions));
-        },
-        async (argv) => {
-          await Auth.login().then(Config.setTokenOptions);
-          await CommandSchemaPush(
-            argv as Pick<
-              ConfigurationOptions,
-              'namespace' | 'project' | 'projectVersion' | 'schemaDir'
-            >,
-          );
-        },
-      );
+    // .command(
+    //   'push',
+    //   'Deploy GraphQL schema as latest',
+    //   async (yargs) => {
+    //     yargs.options(confOptions(schemaOptions));
+    //   },
+    //   async (argv) => {
+    //     await Auth.login().then(Config.setTokenOptions);
+    //     await CommandSchemaPush(
+    //       argv as Pick<
+    //         ConfigurationOptions,
+    //         'namespace' | 'project' | 'projectVersion' | 'schemaDir'
+    //       >,
+    //     );
+    //   },
+    // );
   },
 } as CommandModule;
