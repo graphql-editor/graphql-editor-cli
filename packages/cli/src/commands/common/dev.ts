@@ -9,12 +9,38 @@ import { getEnvFile } from '@/common/envs.js';
 
 let killing = false;
 let changingFile = false;
+const MAX_NEST = 10;
+
+const traverseDirToRoot = (iteration: number) => {
+  const execDir = process.cwd().split('/');
+  let finalPath = '';
+  for (let index = 0; index < execDir.length - iteration; index++) {
+    finalPath += execDir[index];
+  }
+  return finalPath[1] === '/' ? finalPath.substring(1) : finalPath;
+};
+
+const tryRunStuccoWithDynamicPath = async () => {
+  for (let index = 0; index < MAX_NEST; index++) {
+    const basePath = traverseDirToRoot(index);
+    if (basePath.length === 0) {
+      break;
+    }
+    try {
+      const { onCloseStucco, onCreateStucco } = await stuccoRun({
+        basePath: basePath,
+        schemaPath: path.join(process.cwd(), DEPLOY_FILE),
+        configPath: path.join(process.cwd(), STUCCO_FILE),
+      });
+      return { onCloseStucco, onCreateStucco };
+    } catch (e) {}
+  }
+  throw new Error('cannot find stucco binary');
+};
 
 export const CommandDev = async () => {
-  const { onCloseStucco, onCreateStucco } = await stuccoRun({
-    schemaPath: path.join(process.cwd(), DEPLOY_FILE),
-    configPath: path.join(process.cwd(), STUCCO_FILE),
-  });
+  const { onCloseStucco, onCreateStucco } = await tryRunStuccoWithDynamicPath();
+
   const tsServer = typescriptServer({
     searchPath: './',
     onCreate: async () => {
