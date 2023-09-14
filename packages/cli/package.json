@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-cli",
-  "version": "0.8.9",
+  "version": "0.9.0",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/api.js",
   "author": "Artur Czemiel",

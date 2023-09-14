@@ -21,7 +21,6 @@ import { confOptions, projectOptions } from '@/common/promptOptions.js';
 import { CommandPrune } from '@/commands/common/prune.js';
 import { CommandInspect } from '@/commands/common/inspect.js';
 import { pushStuccoJson } from '@/commands/cloud/pushStuccoJson.js';
-import { cwd } from 'process';
 
 welcome().then(() => {
   new Configuration();
