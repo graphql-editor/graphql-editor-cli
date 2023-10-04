@@ -55,9 +55,7 @@ export const typescriptServer = ({
     afterCreate?.();
     return result;
   };
-
-  const program = ts.createWatchProgram(host);
-  return program;
+  return ts.createWatchProgram(host);
 };
 
 function reportDiagnostic(diagnostic: ts.Diagnostic) {

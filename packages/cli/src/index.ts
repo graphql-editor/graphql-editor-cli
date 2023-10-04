@@ -13,14 +13,14 @@ import { CommandGetCIToken } from '@/commands/common/getCIToken.js';
 import { CommandDev } from '@/commands/common/dev.js';
 import Gei from '@/commands/gei/CLI.js';
 import CodeGen from '@/commands/codegen/CLI.js';
-import Cloud from '@/commands/create/CLI.js';
-import Create from '@/commands/cloud/CLI.js';
+import Create from '@/commands/create/CLI.js';
 import ExternalCI from '@/commands/externalCi/CLI.js';
 import Schema from '@/commands/schema/CLI.js';
 import { confOptions, projectOptions } from '@/common/promptOptions.js';
 import { CommandPrune } from '@/commands/common/prune.js';
 import { CommandInspect } from '@/commands/common/inspect.js';
-import { pushStuccoJson } from '@/commands/cloud/pushStuccoJson.js';
+export const GRAPHQL_HOST =
+  process.env.GRAPHQL_EDITOR_HOST || 'https://project-api.graphqleditor.com/';
 
 welcome().then(() => {
   new Configuration();
@@ -82,7 +82,6 @@ welcome().then(() => {
       },
     )
     .command(Create)
-    .command(Cloud)
     .command(Schema)
     .command(ExternalCI)
     .command(CodeGen)
@@ -98,16 +97,6 @@ welcome().then(() => {
     .command('token', 'Get CI token', async (argv) => {
       await CommandGetCIToken();
     })
-    .command(
-      'stucco',
-      'Update your stucco file to cloud for synchronizing resolvers',
-      async (yargs) => {},
-      async (argv) => {
-        await pushStuccoJson(
-          argv as Pick<ConfigurationOptions, 'project' | 'namespace'>,
-        );
-      },
-    )
     .showHelpOnFail(true)
     .demandCommand()
     .version()
