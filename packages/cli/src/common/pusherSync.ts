@@ -2,11 +2,6 @@ import { Config } from '@/Configuration/index.js';
 import { GRAPHQL_HOST } from '@/Editor';
 import Pusher from 'pusher-js';
 
-interface MemberInfo {
-  name: string;
-  nickname: string;
-}
-
 export const pusherSync = ({
   namespace,
   project,
