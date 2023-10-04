@@ -1,16 +1,7 @@
 import { bootstrapIntegrationFile } from '@/commands/gei/bootstrapIntegrationFile.js';
 import { integrateStuccoJson } from '@/commands/gei/integrate.js';
-import {
-  CommandPublishIntegration,
-  CommandRemoveIntegration,
-} from '@/commands/gei/integration.js';
-import { projectOptions, integrationOptions } from '@/common/promptOptions.js';
 import { CommandModule } from 'yargs';
 import { logger } from '@/common/log/index.js';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import fs from 'fs';
-import { Config } from '@/Configuration/index.js';
 
 export default {
   command: 'gei <command>',
@@ -57,43 +48,6 @@ export default {
               'Initialization successful. Edit the integration.ts file to insert the resolvers visible in integration.',
               'success',
             );
-        },
-      )
-      .command(
-        'publish',
-        'Publish a GraphQL Editor integration to use in no-code',
-        async (yargs) => {
-          yargs.options({
-            ...projectOptions,
-            ...integrationOptions,
-          });
-        },
-        async (argv) => {
-          await CommandPublishIntegration(
-            argv as Parameters<typeof CommandPublishIntegration>[0],
-          );
-          logger(
-            "Successfully added the integration to GraphQL Editor Marketplace.Don't forget to publish the package to npm or other registry.",
-            'success',
-          );
-        },
-      )
-      .command(
-        'unpublish',
-        'Publish a GraphQL Editor integration to use in no-code',
-        async (yargs) => {
-          yargs.options({
-            ...projectOptions,
-          });
-        },
-        async (argv) => {
-          await CommandRemoveIntegration(
-            argv as Parameters<typeof CommandRemoveIntegration>[0],
-          );
-          logger(
-            'Successfully removed integration from GraphQL Editor Marketplace',
-            'success',
-          );
         },
       );
   },

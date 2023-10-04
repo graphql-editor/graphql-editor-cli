@@ -1,4 +1,4 @@
-import { Subscription, Chain, GraphQLTypes, ValueTypes } from '@/zeus/index.js';
+import { Chain, GraphQLTypes, HOST, ValueTypes } from '@/zeus/index.js';
 import { Config } from '@/Configuration/index.js';
 import fetch from 'node-fetch';
 import { COMMON_FILES } from '@/gshared/constants/index.js';
@@ -18,19 +18,7 @@ const jolt = () => {
         Authorization: `Bearer ${token}`,
       }
     : {};
-  return Chain('https://api.staging.project.graphqleditor.com/graphql', {
-    headers,
-  });
-};
-
-const joltSubscription = () => {
-  const token = Config.getTokenOptions('token');
-  const headers: Record<string, string> = token
-    ? {
-        Authorization: `Bearer ${token}`,
-      }
-    : {};
-  return Subscription('https://api.staging.project.graphqleditor.com/graphql', {
+  return Chain(HOST, {
     headers,
   });
 };
@@ -74,7 +62,6 @@ export class Editor {
                 name: true,
                 description: true,
                 mocked: true,
-                inCloud: true,
                 sources: [
                   {},
                   {
@@ -118,7 +105,6 @@ export class Editor {
               id: true,
               description: true,
               mocked: true,
-              inCloud: true,
               team: {
                 id: true,
               },
@@ -325,23 +311,6 @@ export class Editor {
           });
         }),
     );
-  };
-  public static getServerLessMongo = async (projectId: string) => {
-    const checking = ora(
-      'Checking if remote mongo serverless configuration exists',
-    ).start();
-    const response = await jolt()('query')({
-      getProject: [
-        { project: projectId },
-        {
-          dbConnection: true,
-        },
-      ],
-    });
-    const result = response.getProject?.dbConnection;
-    if (result) checking.succeed();
-    else checking.fail();
-    return result;
   };
   public static publishIntegration = async (
     projectId: string,

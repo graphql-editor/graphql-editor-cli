@@ -29,9 +29,6 @@ interface SentRenameData {
 type SentPayLoad = SentSaveData | SentRemoveData | SentRenameData;
 type ReceivePayload = ReceiveSaveData | SentRemoveData | SentRenameData;
 
-interface SentData {
-  diffs: Array<SentPayLoad>;
-}
 interface ReceiveData {
   diffs: Array<ReceivePayload>;
 }
