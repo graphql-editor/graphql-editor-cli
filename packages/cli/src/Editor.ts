@@ -5,8 +5,6 @@ import { COMMON_FILES } from '@/gshared/constants/index.js';
 import ora from 'ora';
 import { mergeSDLs } from 'graphql-js-tree';
 
-export const GRAPHQL_HOST =
-  process.env.GRAPHQL_EDITOR_HOST || 'https://project-api.graphqleditor.com/';
 export interface FileArray {
   name: string;
   content: Buffer;

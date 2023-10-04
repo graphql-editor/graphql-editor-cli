@@ -5,8 +5,7 @@ import express from 'express';
 import fetch from 'node-fetch';
 import { Config, TokenConf } from '@/Configuration/index.js';
 import { logger } from '@/common/log/index.js';
-import { GRAPHQL_HOST } from '@/Editor';
-
+import { GRAPHQL_HOST } from '../index.js';
 function base64URLEncode(str: Buffer) {
   return str
     .toString('base64')
