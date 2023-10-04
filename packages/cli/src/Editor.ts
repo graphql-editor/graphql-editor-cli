@@ -5,6 +5,8 @@ import { COMMON_FILES } from '@/gshared/constants/index.js';
 import ora from 'ora';
 import { mergeSDLs } from 'graphql-js-tree';
 
+export const GRAPHQL_HOST =
+  process.env.GRAPHQL_EDITOR_HOST || 'https://project-api.graphqleditor.com/';
 export interface FileArray {
   name: string;
   content: Buffer;
@@ -62,6 +64,7 @@ export class Editor {
                 name: true,
                 description: true,
                 mocked: true,
+                inCloud: true,
                 sources: [
                   {},
                   {
@@ -311,25 +314,6 @@ export class Editor {
           });
         }),
     );
-  };
-  public static publishIntegration = async (
-    projectId: string,
-    integration: ValueTypes['AddProjectInput'],
-  ) => {
-    const response = await jolt()('mutation')({
-      marketplace: {
-        addProject: [{ id: projectId, opts: integration }, true],
-      },
-    });
-    return response.marketplace?.addProject;
-  };
-  public static removeIntegration = async (projectId: string) => {
-    const response = await jolt()('mutation')({
-      marketplace: {
-        removeProject: [{ id: projectId }, true],
-      },
-    });
-    return response.marketplace?.removeProject;
   };
   public static getDeviceCode = async () => {
     const response = await fetch(

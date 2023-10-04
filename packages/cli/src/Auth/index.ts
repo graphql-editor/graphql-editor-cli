@@ -5,6 +5,7 @@ import express from 'express';
 import fetch from 'node-fetch';
 import { Config, TokenConf } from '@/Configuration/index.js';
 import { logger } from '@/common/log/index.js';
+import { GRAPHQL_HOST } from '@/Editor';
 
 function base64URLEncode(str: Buffer) {
   return str
@@ -54,20 +55,17 @@ export class Auth {
         }
       }
       if (process.env.GRAPHQL_EDITOR_TOKEN) {
-        const response = await fetch(
-          'https://api.staging.project.graphqleditor.com/oauth/token',
-          {
-            method: 'POST',
-            headers: {
-              'Content-type': 'application/json',
-            },
-            body: JSON.stringify({
-              refresh_token: process.env.GRAPHQL_EDITOR_TOKEN,
-              client_id: 'pNh9rJhjO2qnD1gAlfKtQFnlxN88LCil',
-              grant_type: 'refresh_token',
-            }),
+        const response = await fetch(`${GRAPHQL_HOST}/oauth/token`, {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
           },
-        );
+          body: JSON.stringify({
+            refresh_token: process.env.GRAPHQL_EDITOR_TOKEN,
+            client_id: 'pNh9rJhjO2qnD1gAlfKtQFnlxN88LCil',
+            grant_type: 'refresh_token',
+          }),
+        });
         const result = (await response.json()) as {
           access_token: string;
           id_token: string;

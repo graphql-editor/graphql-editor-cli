@@ -1,4 +1,5 @@
 import { Config } from '@/Configuration/index.js';
+import { GRAPHQL_HOST } from '@/Editor';
 import Pusher from 'pusher-js';
 
 interface MemberInfo {
@@ -15,7 +16,7 @@ export const pusherSync = ({
 }) => {
   const pusher = new Pusher('ee58c700921c5e079a64', {
     cluster: 'us2',
-    authEndpoint: `https://api.staging.project.graphqleditor.com/pusher/auth`,
+    authEndpoint: `${GRAPHQL_HOST}/pusher/auth`,
     auth: {
       headers: {
         Authorization: `Bearer ${Config.getTokenOptions('token')}`,
