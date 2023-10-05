@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import { COMMON_FILES } from '@/gshared/constants/index.js';
 import ora from 'ora';
 import { mergeSDLs } from 'graphql-js-tree';
+import { format } from 'node:path';
 
 export interface FileArray {
   name: string;
@@ -62,7 +63,6 @@ export class Editor {
                 name: true,
                 description: true,
                 mocked: true,
-                inCloud: true,
                 sources: [
                   {},
                   {
