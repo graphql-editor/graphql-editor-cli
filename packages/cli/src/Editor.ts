@@ -62,7 +62,6 @@ export class Editor {
                 name: true,
                 description: true,
                 mocked: true,
-                inCloud: true,
                 sources: [
                   {},
                   {
