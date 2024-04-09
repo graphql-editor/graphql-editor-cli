@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-cli",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/api.js",
   "author": "Artur Czemiel",
@@ -42,7 +42,7 @@
     "typescript-transform-paths": "^3.4.6"
   },
   "peerDependencies": {
-    "typescript": "^4.8.3"
+    "typescript": "^5.2.2"
   },
   "dependencies": {
     "adm-zip": "^0.5.9",
