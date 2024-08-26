@@ -1,15 +1,16 @@
 {
   "name": "sandbox",
   "private": true,
-  "version": "0.8.8",
+  "version": "0.8.9",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "author": "Artur Czemiel",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "cli": "node ../cli/lib/index.js",
+    "cli": "npx gecli schema pull",
     "integrate": "npm run cli -- gei integrate"
   },
-  "devDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "graphql-editor-cli": "^0.9.4"
+  }
 }

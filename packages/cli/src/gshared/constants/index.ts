@@ -5,7 +5,7 @@ export const FAKER_DEPLOY_FILE = "faker.json";
 export const ENDPOINT_CONFIGURATION_FILE = "cloudConfig.json";
 export const JAMSTACK_CONFIG_FILE = "jamstack.json";
 
-export const IS_VERSION_FILE_REGEX = /^schema-(.*)\.json$/;
+export const IS_VERSION_FILE_REGEX = /^schema-(.*)\.graphql$/;
 
 export const SLACK_JOIN = `https://discord.gg/wVcZdmd`;
 
