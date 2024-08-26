@@ -3,7 +3,7 @@
 import { AllTypesProps, ReturnTypes, Ops } from './const.js';
 import fetch, { Response } from 'node-fetch';
 import WebSocket from 'ws';
-export const HOST = "https://project-api.graphqleditor.com/graphql"
+export const HOST = "https://api.prod.graphqleditor.com/graphql"
 
 
 export const HEADERS = {}

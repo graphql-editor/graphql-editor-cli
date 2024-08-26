@@ -20,7 +20,7 @@ import { confOptions, projectOptions } from '@/common/promptOptions.js';
 import { CommandPrune } from '@/commands/common/prune.js';
 import { CommandInspect } from '@/commands/common/inspect.js';
 export const GRAPHQL_HOST =
-  process.env.GRAPHQL_EDITOR_HOST || 'https://project-api.graphqleditor.com/';
+  process.env.GRAPHQL_EDITOR_HOST || 'https://api.prod.graphqleditor.com/';
 
 welcome().then(() => {
   new Configuration();

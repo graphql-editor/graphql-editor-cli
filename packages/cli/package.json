@@ -1,6 +1,6 @@
 {
   "name": "graphql-editor-cli",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "GraphQL -> anything. Use GraphQL as your source of truth. GraphQL Editor Official CLI.",
   "main": "lib/api.js",
   "author": "Artur Czemiel",
@@ -14,7 +14,7 @@
     "build": "npm run clean && tspc --build tsconfig.build.json",
     "start": "npm run clean && tspc --build tsconfig.build.json --watch",
     "clean": "rimraf lib/",
-    "editor": "zeus https://project-api.graphqleditor.com/graphql ./src -n --es",
+    "editor": "zeus https://api.prod.graphqleditor.com/graphql ./src -n --es",
     "update": "zeus $GRAPHQL_EDITOR_HOST ./src -n --es",
     "shared": "imp sync",
     "cli": "node lib/index.js"
